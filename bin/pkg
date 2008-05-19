@@ -18,7 +18,7 @@ fi
 check_deps () {
 	[ -r $PDIR/$1/.deps ] || return 0
 	DEPS=($(cat $PDIR/$1/.deps))
-	for dep in DEPS; {
+	for dep in $DEPS; {
 		if [ ! -d $PDIR/$dep ]; then
 			echo -n "$1 depends on $dep. Install dependency? [Y/n] "
 			read
