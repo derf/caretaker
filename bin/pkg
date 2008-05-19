@@ -65,7 +65,7 @@ pkg_update () {
 	cd $PDIR
 	for i in *(/); {
 		echo_status "Updating package $i..."
-		check_deps "$1"
+		check_deps "$i"
 		cd $i
 		hg $HG_OPTIONS fetch
 		checklinks $CL_OPTIONS
