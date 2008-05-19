@@ -15,11 +15,26 @@ if [ ! -d $PDIR ]; then
 	exit 100
 fi
 
+check_deps () {
+	[ -r $PDIR/$1/.deps ] || return 0
+	DEPS=($(cat $PDIR/$1/.deps))
+	for dep in DEPS; {
+		if [ ! -d $PDIR/$dep ]; then
+			echo -n "$1 depends on $dep. Install dependency? [Y/n] "
+			read
+			if [ ! "$REPLY" = 'n' ]; then
+				"$0" add "$dep"
+			fi
+		fi
+	}
+}
+
 pkg_add () {
 	if [ -d $PDIR/$1 ]; then
 		echo_status "Package already installed!"
 		return 100
 	fi
+	check_deps "$1"
 	cd $PDIR || return 255
 	echo_status 'Retrieving package...'
 	hg $HG_OPTIONS clone $PKG_ROOT/$1 || return 255
@@ -50,6 +65,7 @@ pkg_update () {
 	cd $PDIR
 	for i in *(/); {
 		echo_status "Updating package $i..."
+		check_deps "$1"
 		cd $i
 		hg $HG_OPTIONS fetch
 		checklinks $CL_OPTIONS
