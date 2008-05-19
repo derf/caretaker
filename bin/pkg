@@ -23,7 +23,7 @@ check_deps () {
 			echo -n "$1 depends on $dep. Install dependency? [Y/n] "
 			read
 			if [ ! "$REPLY" = 'n' ]; then
-				"$0" add "$dep"
+				pkg add "$dep"
 			fi
 		fi
 	}
