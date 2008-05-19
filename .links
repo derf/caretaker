@@ -1,4 +1,3 @@
 soft bin/checklinks ../packages/core/bin/checklinks
 soft bin/pkg ../packages/core/bin/pkg
-soft .ssh/config ../packages/core/etc/ssh_config
 soft .hgrc packages/core/etc/hgrc
