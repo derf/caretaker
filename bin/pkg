@@ -1,0 +1,66 @@
+#!/usr/bin/env zsh
+PDIR="$HOME/packages"
+PKG_ROOT="ssh://derf.homelinux.org/packages"
+local info=$'\e[0;36m'
+local reset=$'\e[0m'
+
+echo_status () {
+	echo "${info}$*${reset}"
+}
+
+if [ ! -d $PDIR ]; then
+	echo_status "$PDIR not found!!"
+	exit 100
+fi
+
+pkg_add () {
+	if [ -d $PDIR/$1 ]; then
+		echo_status "Package already installed!"
+		return 100
+	fi
+	cd $PDIR || return 255
+	echo_status 'Retrieving package...'
+	hg clone $PKG_ROOT/$1 || return 255
+	if [ -f $1/hooks/post-add ]; then
+		echo_status 'Executing post-add hook'
+		. $1/hooks/post-add
+	fi
+	echo_status 'Checking symlinks...'
+	cd $1
+	checklinks
+	return 0
+}
+
+pkg_remove () {
+	if [ ! -d $PDIR/$1 ]; then
+		echo_status "Package not installed!"
+		return 100
+	fi
+	if [ -f $PDIR/$1/hooks/pre-remove ]; then
+		echo_status 'Executing pre-remove hook'
+		. $PDIR/$1/hooks/pre-remove
+	fi
+	rm -r $PDIR/$1
+	echo_status "Package removed."
+}
+
+pkg_update () {
+	cd $PDIR
+	for i in *(/); {
+		echo_status "Updating package $i..."
+		cd $i
+		hg fetch
+		checklinks
+		if [ -f hooks/post-update ]; then
+			echo_status 'Executing post-update hook'
+			. hooks/post-update
+		fi
+		cd ..
+	}
+}
+
+case "$1" in
+	add) pkg_add "$2" ;;
+	update) pkg_update ;;
+	remove) pkg_remove "$2" ;;
+esac
