@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
 # bootstrap - populate a home with the most necessary scripts
 # After running this, other packages can be installed using 'pkg'
 
