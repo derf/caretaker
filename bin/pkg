@@ -5,7 +5,7 @@ VCS_CMD="hg"
 VCS_OPTIONS="--quiet"
 VCS_ADD="clone"
 VCS_UPDATE="fetch"
-CL_OPTIONS-"-q"
+CL_OPTIONS="-q"
 local info=$'\e[0;36m'
 local reset=$'\e[0m'
 
