@@ -1,10 +1,13 @@
 #!/usr/bin/env zsh
 PDIR="$HOME/packages"
 PKG_ROOT="ssh://derf.homelinux.org/packages"
+VCS_CMD="hg"
+VCS_OPTIONS="--quiet"
+VCS_ADD="clone"
+VCS_UPDATE="fetch"
+CL_OPTIONS-"-q"
 local info=$'\e[0;36m'
 local reset=$'\e[0m'
-local HG_OPTIONS='--quiet'
-local CL_OPTIONS='-q'
 
 echo_status () {
 	echo "${info}$*${reset}"
@@ -37,7 +40,7 @@ pkg_add () {
 	check_deps "$1"
 	cd $PDIR || return 255
 	echo_status 'Retrieving package...'
-	hg $HG_OPTIONS clone $PKG_ROOT/$1 || return 255
+	$VCS_CMD $VCS_OPTIONS $VCS_ADD $PKG_ROOT/$1 || return 255
 	if [ -f $1/hooks/post-add ]; then
 		echo_status 'Executing post-add hook'
 		. $1/hooks/post-add
@@ -67,7 +70,7 @@ pkg_update () {
 		echo_status "Updating package $i..."
 		check_deps "$i"
 		cd $i
-		hg $HG_OPTIONS fetch
+		$VCS_CMD $VCS_OPTIONS $VCS_UPDATE
 		checklinks $CL_OPTIONS
 		if [ -f hooks/post-update ]; then
 			echo_status 'Executing post-update hook'
