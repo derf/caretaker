@@ -4,7 +4,8 @@ PKG_ROOT="ssh://derf.homelinux.org/packages"
 VCS_CMD="hg"
 VCS_OPTIONS="--quiet"
 VCS_ADD="clone"
-VCS_UPDATE="fetch"
+VCS_UPDATE="pull"
+VCS_UPDATE_OPTIONS="--update"
 CL_OPTIONS="-q"
 local info=$'\e[0;36m'
 local reset=$'\e[0m'
@@ -70,7 +71,7 @@ pkg_update () {
 		echo_status "Updating package $i..."
 		check_deps "$i"
 		cd $i
-		$VCS_CMD $VCS_OPTIONS $VCS_UPDATE
+		$VCS_CMD $VCS_OPTIONS $VCS_UPDATE $VCS_UPDATE_OPTIONS
 		checklinks $CL_OPTIONS
 		if [ -f hooks/post-update ]; then
 			echo_status 'Executing post-update hook'
