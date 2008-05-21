@@ -98,9 +98,14 @@ pkg_changesrc () {
 	}
 }
 
+pkg_list_installed () {
+	=ls -1 $PDIR
+}
+
 case "$1" in
 	add) pkg_add "$2" ;;
 	changeroot) pkg_changesrc "$2" ;;
+	list) pkg_list_installed ;;
 	remove) pkg_remove "$2" ;;
 	update) pkg_update_wrapper "$2" ;;
 esac
