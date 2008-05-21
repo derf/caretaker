@@ -66,19 +66,27 @@ pkg_remove () {
 }
 
 pkg_update () {
-	cd $PDIR
-	for i in *(/); {
-		echo_status "Updating package $i..."
-		check_deps "$i"
-		cd $i
-		$VCS_CMD $VCS_OPTIONS $VCS_UPDATE $VCS_UPDATE_OPTIONS
-		checklinks $CL_OPTIONS
-		if [ -f hooks/post-update ]; then
-			echo_status 'Executing post-update hook'
-			. hooks/post-update
-		fi
-		cd ..
-	}
+	cd $PDIR/$1
+	echo_status "Updating package $1"
+	check_deps $1
+	$VCS_CMD $VCS_OPTIONS $VCS_UPDATE $VCS_UPDATE_OPTIONS
+	checklinks $CL_OPTIONS
+	if [ -f hooks/post-update ]; then
+		echo_status 'Executing post-update hook'
+		. hooks/post-update
+	fi
+	cd ..
+}
+
+pkg_update_wrapper () {
+	if [ -n "$1" ]; then
+		pkg_update "$1"
+	else
+		cd $PDIR
+		for i in *(/); {
+			pkg_update "$i"
+		}
+	fi
 }
 
 pkg_changesrc () {
@@ -94,5 +102,5 @@ case "$1" in
 	add) pkg_add "$2" ;;
 	changeroot) pkg_changesrc "$2" ;;
 	remove) pkg_remove "$2" ;;
-	update) pkg_update ;;
+	update) pkg_update_wrapper "$2" ;;
 esac
