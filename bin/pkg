@@ -4,6 +4,7 @@ PKG_ROOT="ssh://derf.homelinux.org/packages"
 VCS_CMD="hg"
 VCS_OPTIONS="--quiet"
 VCS_ADD="clone"
+VCS_STATUS="status"
 VCS_UPDATE="pull"
 VCS_UPDATE_OPTIONS="--update"
 CL_OPTIONS="-q"
@@ -68,7 +69,6 @@ pkg_remove () {
 pkg_update () {
 	cd $PDIR/$1
 	echo_status "Updating package $1"
-	check_deps $1
 	$VCS_CMD $VCS_OPTIONS $VCS_UPDATE $VCS_UPDATE_OPTIONS
 	checklinks $CL_OPTIONS
 	if [ -f hooks/post-update ]; then
@@ -102,10 +102,29 @@ pkg_list_installed () {
 	=ls -1 $PDIR
 }
 
+pkg_status () {
+	cd $PDIR/$1
+	echo_status "Checking $1 status..."
+	check_deps $1
+	$VCS_CMD $VCS_STATUS
+}
+
+pkg_status_wrapper () {
+	if [ -n "$1" ]; then
+		pkg_status "$1"
+	else
+		cd $PDIR
+		for i in *(/); {
+			pkg_status "$i"
+		}
+	fi
+}
+
 case "$1" in
 	add) pkg_add "$2" ;;
 	changeroot) pkg_changesrc "$2" ;;
 	list) pkg_list_installed ;;
 	remove) pkg_remove "$2" ;;
+	status) pkg_status_wrapper "$2" ;;
 	update) pkg_update_wrapper "$2" ;;
 esac
