@@ -103,7 +103,7 @@ pkg_list_installed () {
 }
 
 pkg_list_available () {
-	if grep "^ssh" "$PKG_ROOT" &> /dev/null; then
+	if grep "^ssh" <<< "$PKG_ROOT" &> /dev/null; then
 		ssh $(sed 's!^ssh://!!' <<< "$PKG_ROOT" | sed -r 's!^([^/]*)/.*$!\1!') 'ls -1'
 	fi
 }
