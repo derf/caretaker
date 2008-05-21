@@ -28,7 +28,7 @@ check_deps () {
 			echo -n "$1 depends on $dep. Install dependency? [Y/n] "
 			read
 			if [ ! "$REPLY" = 'n' ]; then
-				pkg add "$dep"
+				pkg_add "$dep"
 			fi
 		fi
 	}
@@ -36,7 +36,7 @@ check_deps () {
 
 pkg_add () {
 	if [ -d $PDIR/$1 ]; then
-		echo_status "Package already installed!"
+		echo_status "Package '$1' is already installed!"
 		return 100
 	fi
 	check_deps "$1"
@@ -55,7 +55,7 @@ pkg_add () {
 
 pkg_remove () {
 	if [ ! -d $PDIR/$1 ]; then
-		echo_status "Package not installed!"
+		echo_status "Package '$1' is not installed!"
 		return 100
 	fi
 	if [ -f $PDIR/$1/hooks/pre-remove ]; then
