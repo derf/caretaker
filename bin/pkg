@@ -81,8 +81,18 @@ pkg_update () {
 	}
 }
 
+pkg_changesrc () {
+	cd $PDIR
+	for i in *(/); {
+		if [ -f $i/.hg/hgrc ]; then
+			sed -ri "s!(default = )[^:]*://[^/]*/!\1$1/!" $i/.hg/hgrc
+		fi
+	}
+}
+
 case "$1" in
 	add) pkg_add "$2" ;;
-	update) pkg_update ;;
+	changeroot) pkg_changesrc "$2" ;;
 	remove) pkg_remove "$2" ;;
+	update) pkg_update ;;
 esac
