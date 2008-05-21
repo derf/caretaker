@@ -102,6 +102,12 @@ pkg_list_installed () {
 	=ls -1 $PDIR
 }
 
+pkg_list_available () {
+	if grep "^ssh" "$PKG_ROOT" &> /dev/null; then
+		ssh $(sed 's!^ssh://!!' <<< "$PKG_ROOT" | sed -r 's!^([^/]*)/.*$!\1!') 'ls -1'
+	fi
+}
+
 pkg_status () {
 	cd $PDIR/$1
 	echo_status "Checking $1 status..."
@@ -124,6 +130,7 @@ case "$1" in
 	add) pkg_add "$2" ;;
 	changeroot) pkg_changesrc "$2" ;;
 	list) pkg_list_installed ;;
+	list-all) pkg_list_available ;;
 	remove) pkg_remove "$2" ;;
 	status) pkg_status_wrapper "$2" ;;
 	update) pkg_update_wrapper "$2" ;;
