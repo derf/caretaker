@@ -1,0 +1,17 @@
+Host *
+	ControlMaster auto
+	ControlPath /tmp/ssh-%h-%p-%r
+
+Host woot
+	Hostname saviour
+	AddressFamily inet
+	Port 60022
+
+Host git
+	Hostname saviour
+	AddressFamily inet
+	Port 61022
+
+Host home
+	Hostname derf.homelinux.org
+	AddressFamily inet
