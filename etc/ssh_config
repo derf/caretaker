@@ -11,7 +11,3 @@ Host git
 	Hostname saviour
 	AddressFamily inet
 	Port 61022
-
-Host home
-	Hostname derf.homelinux.org
-	AddressFamily inet
