@@ -43,12 +43,12 @@ pkg_add () {
 	cd $PDIR || return 255
 	echo_status 'Retrieving package...'
 	$VCS_CMD $VCS_OPTIONS $VCS_ADD $PKG_ROOT/$1 || return 255
-	if [ -f $1/hooks/post-add ]; then
+	if [ -f $PDIR/$1/hooks/post-add ]; then
 		echo_status 'Executing post-add hook'
-		. $1/hooks/post-add
+		. $PDIR/$1/hooks/post-add
 	fi
 	echo_status 'Checking symlinks...'
-	cd $1
+	cd $PDIR/$1
 	checklinks $CL_OPTIONS
 	return 0
 }
@@ -75,7 +75,7 @@ pkg_update () {
 		echo_status 'Executing post-update hook'
 		. hooks/post-update
 	fi
-	cd ..
+	cd $PDIR
 }
 
 pkg_update_wrapper () {
