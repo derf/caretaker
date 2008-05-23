@@ -129,6 +129,8 @@ pkg_status_wrapper () {
 case "$1" in
 	add) pkg_add "$2" ;;
 	changeroot) pkg_changesrc "$2" ;;
+	delete) pkg_remove "$2" ;;
+	install) pkg_add "$2" ;;
 	list) pkg_list_installed ;;
 	list-all) pkg_list_available ;;
 	remove) pkg_remove "$2" ;;
