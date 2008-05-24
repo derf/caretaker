@@ -8,22 +8,30 @@ VCS_STATUS="status"
 VCS_UPDATE="pull"
 VCS_UPDATE_OPTIONS="--update"
 CL_OPTIONS="-q"
-local info=$'\e[0;36m'
-local reset=$'\e[0m'
+info=$'\e[0;36m'
+error=$'\e[1;31m'
+reset=$'\e[0m'
 
-echo_status () {
+info () {
 	echo "${info}$*${reset}"
 }
 
-if [ ! -d $PDIR ]; then
-	echo_status "$PDIR not found!!"
+error () {
+	echo "${error}$*${reset}"
 	exit 100
+}
+
+if [ ! -d $PDIR ]; then
+	error "$PDIR not found!!"
 fi
 
 check_deps () {
 	[ -r $PDIR/$1/.deps ] || return 0
 	DEPS=($(cat $PDIR/$1/.deps))
 	for dep in $DEPS; {
+		if [ "$dep" = "$1" ]; then
+			error "This package depends on itself. Therefore, I'm considering it borked. Not installing."
+		fi
 		if [ ! -d $PDIR/$dep ]; then
 			echo -n "$1 depends on $dep. Install dependency? [Y/n] "
 			read
@@ -36,18 +44,18 @@ check_deps () {
 
 pkg_add () {
 	if [ -d $PDIR/$1 ]; then
-		echo_status "Package '$1' is already installed!"
+		info "Package '$1' is already installed!"
 		return 100
 	fi
 	check_deps "$1"
 	cd $PDIR || return 255
-	echo_status 'Retrieving package...'
+	info 'Retrieving package...'
 	$VCS_CMD $VCS_OPTIONS $VCS_ADD $PKG_ROOT/$1 || return 255
 	if [ -f $PDIR/$1/hooks/post-add ]; then
-		echo_status 'Executing post-add hook'
+		info 'Executing post-add hook'
 		. $PDIR/$1/hooks/post-add
 	fi
-	echo_status 'Checking symlinks...'
+	info 'Checking symlinks...'
 	cd $PDIR/$1
 	checklinks $CL_OPTIONS
 	return 0
@@ -55,24 +63,24 @@ pkg_add () {
 
 pkg_remove () {
 	if [ ! -d $PDIR/$1 ]; then
-		echo_status "Package '$1' is not installed!"
+		info "Package '$1' is not installed!"
 		return 100
 	fi
 	if [ -f $PDIR/$1/hooks/pre-remove ]; then
-		echo_status 'Executing pre-remove hook'
+		info 'Executing pre-remove hook'
 		. $PDIR/$1/hooks/pre-remove
 	fi
 	rm -r $PDIR/$1
-	echo_status "Package removed."
+	info "Package removed."
 }
 
 pkg_update () {
 	cd $PDIR/$1
-	echo_status "Updating package $1"
+	info "Updating package $1"
 	$VCS_CMD $VCS_OPTIONS $VCS_UPDATE $VCS_UPDATE_OPTIONS
 	checklinks $CL_OPTIONS
 	if [ -f hooks/post-update ]; then
-		echo_status 'Executing post-update hook'
+		info 'Executing post-update hook'
 		. hooks/post-update
 	fi
 	cd $PDIR
@@ -110,7 +118,7 @@ pkg_list_available () {
 
 pkg_status () {
 	cd $PDIR/$1
-	echo_status "Checking $1 status..."
+	info "Checking $1 status..."
 	check_deps $1
 	$VCS_CMD $VCS_STATUS
 }
