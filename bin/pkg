@@ -54,7 +54,7 @@ pkg_add () {
 		return 100
 	fi
 	cd $PDIR || return 255
-	info 'Retrieving package...'
+	info "Retrieving package $1..."
 	$VCS_CMD $VCS_OPTIONS $VCS_ADD $PKG_ROOT/$1 || return 255
 	if [ -f $PDIR/$1/hooks/post-add ]; then
 		info 'Executing post-add hook'
