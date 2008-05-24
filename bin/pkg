@@ -28,6 +28,7 @@ fi
 check_deps () {
 	[ -r $PDIR/$1/.deps ] || return 0
 	DEPS=($(cat $PDIR/$1/.deps))
+	INSTALL=''
 	for dep in $DEPS; {
 		if [ "$dep" = "$1" ]; then
 			error "This package depends on itself. Therefore, I'm considering it borked. Not installing."
@@ -36,10 +37,15 @@ check_deps () {
 			echo -n "$1 depends on $dep. Install dependency? [Y/n] "
 			read
 			if [ ! "$REPLY" = 'n' ]; then
-				pkg_add "$dep"
+				INSTALL+=" $dep"
 			fi
 		fi
 	}
+	if [ -n "$INSTALL" ]; then
+		for pkg in $INSTALL; {
+			pkg_add "$pkg"
+		}
+	fi
 }
 
 pkg_add () {
