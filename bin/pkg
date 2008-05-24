@@ -28,7 +28,7 @@ fi
 check_deps () {
 	[ -r $PDIR/$1/.deps ] || return 0
 	DEPS=($(cat $PDIR/$1/.deps))
-	INSTALL=''
+	INSTALL=()
 	for dep in $DEPS; {
 		if [ "$dep" = "$1" ]; then
 			error "This package depends on itself. Therefore, I'm considering it borked. Not installing."
@@ -53,7 +53,6 @@ pkg_add () {
 		info "Package '$1' is already installed!"
 		return 100
 	fi
-	check_deps "$1"
 	cd $PDIR || return 255
 	info 'Retrieving package...'
 	$VCS_CMD $VCS_OPTIONS $VCS_ADD $PKG_ROOT/$1 || return 255
@@ -61,6 +60,7 @@ pkg_add () {
 		info 'Executing post-add hook'
 		. $PDIR/$1/hooks/post-add
 	fi
+	check_deps "$1"
 	info 'Checking symlinks...'
 	cd $PDIR/$1
 	checklinks $CL_OPTIONS
