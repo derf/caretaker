@@ -16,13 +16,17 @@ info () {
 	echo "${info}$*${reset}"
 }
 
-error () {
+warn () {
+	echo "${error}$*${reset}"
+}
+
+die () {
 	echo "${error}$*${reset}"
 	exit 100
 }
 
 if [ ! -d $PDIR ]; then
-	error "$PDIR not found!!"
+	die "$PDIR not found!!"
 fi
 
 check_deps () {
@@ -31,7 +35,8 @@ check_deps () {
 	INSTALL=()
 	for dep in $DEPS; {
 		if [ "$dep" = "$1" ]; then
-			error "This package depends on itself. Therefore, I'm considering it borked. Not installing."
+			warn "This package depends on itself. Therefore, I'm considering it borked. Not installing."
+			return 100
 		fi
 		if [ ! -d $PDIR/$dep ]; then
 			echo -n "$1 depends on $dep. Install dependency? [Y/n] "
