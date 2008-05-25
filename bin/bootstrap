@@ -17,7 +17,7 @@ mkdir -p ~/var/tmp/incoming
 # Fetch the core package, containing checklinks and pkg
 cd ~/packages
 echo "fetching core"
-hg clone ssh://derf.homelinux.org/packages/core
+hg clone ssh://derf.homelinux.org/var/packages_root/core
 
 # Create symlinks for pkg and checklinks
 cd core

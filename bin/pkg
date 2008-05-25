@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 PDIR="$HOME/packages"
-PKG_ROOT="ssh://derf.homelinux.org/packages"
+PKG_ROOT="ssh://derf.homelinux.org/var/packages_root"
 VCS_CMD="hg"
 VCS_OPTIONS="--quiet"
 VCS_ADD="clone"
