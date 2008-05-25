@@ -25,6 +25,10 @@ die () {
 	exit 100
 }
 
+if [ -f $HOME/.pkg.conf ]; then
+	. $HOME/.pkg.conf
+fi
+
 if [ ! -d $PDIR ]; then
 	die "$PDIR not found!!"
 fi

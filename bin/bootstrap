@@ -10,6 +10,7 @@ fi
 
 # Make basic dirctories
 mkdir -p ~/bin
+mkdir -p ~/lib
 mkdir -p ~/packages
 mkdir -p ~/var/tmp/incoming
 
