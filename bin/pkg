@@ -14,15 +14,15 @@ error=$'\e[1;31m'
 reset=$'\e[0m'
 
 info () {
-	echo "${info}$*${reset}"
+	echo -ne "${info}$*${reset}"
 }
 
 warn () {
-	echo "${error}$*${reset}"
+	echo -ne "${error}$*${reset}"
 }
 
 die () {
-	echo "${error}$*${reset}"
+	echo -ne "${error}$*${reset}"
 	exit 100
 }
 
@@ -40,7 +40,7 @@ check_deps () {
 	INSTALL=()
 	for dep in $DEPS; {
 		if ([ "$dep" = "$1" ]) {
-			warn "This package depends on itself. Therefore, I'm considering it borked. Not installing."
+			warn "This package depends on itself. Therefore, I'm considering it borked. Not installing.\n"
 			return 100
 		}
 		if ([ ! -d $PDIR/$dep ]) {
@@ -60,18 +60,18 @@ check_deps () {
 
 pkg_add () {
 	if ([ -d $PDIR/$1 ]) {
-		info "Package '$1' is already installed!"
+		info "Package '$1' is already installed!\n"
 		return 100
 	}
 	cd $PDIR || return 255
-	info "Retrieving package $1..."
+	info "Retrieving package $1...\n"
 	$VCS_CMD $VCS_OPTIONS $VCS_ADD $PKG_ROOT/$1 || return 255
 	if ([ -f $PDIR/$1/hooks/post-add ]) {
-		info 'Executing post-add hook'
+		info 'Executing post-add hook\n'
 		. $PDIR/$1/hooks/post-add
 	}
 	check_deps "$1"
-	info 'Checking symlinks...'
+	info 'Checking symlinks...\n'
 	cd $PDIR/$1
 	checklinks $CL_OPTIONS
 	return 0
@@ -79,11 +79,11 @@ pkg_add () {
 
 pkg_remove () {
 	if ([ ! -d $PDIR/$1 ]) {
-		info "Package '$1' is not installed!"
+		info "Package '$1' is not installed!\n"
 		return 100
 	}
 	if ([ -f $PDIR/$1/hooks/pre-remove ]) {
-		info 'Executing pre-remove hook'
+		info 'Executing pre-remove hook\n'
 		. $PDIR/$1/hooks/pre-remove
 	}
 	rm -r $PDIR/$1
@@ -92,17 +92,18 @@ pkg_remove () {
 
 pkg_update () {
 	cd $PDIR/$1
+	info "Checking package $1 ...       \r"
 	NEW=$($VCS_CMD $VCS_OPTIONS $VCS_INCOMING)
 	if ([ $? = 0 ]) {
-		info "Updating package $1 to $(echo $NEW | tail -n 1)"
+		info "\nUpdating package $1 to $(echo $NEW | tail -n 1)\n"
 		$VCS_CMD $VCS_OPTIONS $VCS_UPDATE $VCS_UPDATE_OPTIONS
 		checklinks $CL_OPTIONS
 		if ([ -f hooks/post-update ]) {
-			info 'Executing post-update hook'
+			info 'Executing post-update hook\n'
 			. hooks/post-update
 		}
-	} else {
-		info "up-to-date: $1"
+#	} else {
+#		info "up-to-date: $1"
 	}
 	cd $PDIR
 }
@@ -139,7 +140,7 @@ pkg_list_available () {
 
 pkg_status () {
 	cd $PDIR/$1
-	info "Checking $1 status..."
+	info "Checking $1 status...\n"
 	check_deps $1
 	$VCS_CMD $VCS_STATUS
 }
