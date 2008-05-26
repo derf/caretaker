@@ -3,10 +3,10 @@
 # After running this, other packages can be installed using 'pkg'
 
 # Without mercurial, this is pretty pointless
-if ! which hg &> /dev/null; then
+if ( ! which hg &> /dev/null) {
 	echo Mercurial not found!
 	exit 100
-fi
+}
 
 # Make basic dirctories
 mkdir -p ~/bin
