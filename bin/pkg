@@ -92,18 +92,18 @@ pkg_remove () {
 
 pkg_update () {
 	cd $PDIR/$1
-	info "Checking package $1 ...       \r"
+	info "Checking package $1 ..."
 	NEW=$($VCS_CMD $VCS_OPTIONS $VCS_INCOMING)
 	if ([ $? = 0 ]) {
-		info "\nUpdating package $1 to $(echo $NEW | tail -n 1)\n"
+		info "\rUpdating package $1 to $(echo $NEW | tail -n 1)\n"
 		$VCS_CMD $VCS_OPTIONS $VCS_UPDATE $VCS_UPDATE_OPTIONS
 		checklinks $CL_OPTIONS
 		if ([ -f hooks/post-update ]) {
 			info 'Executing post-update hook\n'
 			. hooks/post-update
 		}
-#	} else {
-#		info "up-to-date: $1"
+	} else {
+		info "\r                                        \r"
 	}
 	cd $PDIR
 }
