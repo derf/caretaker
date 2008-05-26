@@ -26,50 +26,50 @@ die () {
 	exit 100
 }
 
-if [ -f $HOME/.pkg.conf ]; then
+if ([ -f $HOME/.pkg.conf ]) {
 	. $HOME/.pkg.conf
-fi
+}
 
-if [ ! -d $PDIR ]; then
+if ([ ! -d $PDIR ]) {
 	die "$PDIR not found!!"
-fi
+}
 
 check_deps () {
 	[ -r $PDIR/$1/.deps ] || return 0
 	DEPS=($(cat $PDIR/$1/.deps))
 	INSTALL=()
 	for dep in $DEPS; {
-		if [ "$dep" = "$1" ]; then
+		if ([ "$dep" = "$1" ]) {
 			warn "This package depends on itself. Therefore, I'm considering it borked. Not installing."
 			return 100
-		fi
-		if [ ! -d $PDIR/$dep ]; then
+		}
+		if ([ ! -d $PDIR/$dep ]) {
 			echo -n "$1 depends on $dep. Install dependency? [Y/n] "
 			read
-			if [ ! "$REPLY" = 'n' ]; then
+			if ([ ! "$REPLY" = 'n' ]) {
 				INSTALL+="$dep"
-			fi
-		fi
+			}
+		}
 	}
-	if [ -n "$INSTALL" ]; then
+	if ([ -n "$INSTALL" ]) {
 		for pkg in $INSTALL; {
 			pkg_add "$pkg"
 		}
-	fi
+	}
 }
 
 pkg_add () {
-	if [ -d $PDIR/$1 ]; then
+	if ([ -d $PDIR/$1 ]) {
 		info "Package '$1' is already installed!"
 		return 100
-	fi
+	}
 	cd $PDIR || return 255
 	info "Retrieving package $1..."
 	$VCS_CMD $VCS_OPTIONS $VCS_ADD $PKG_ROOT/$1 || return 255
-	if [ -f $PDIR/$1/hooks/post-add ]; then
+	if ([ -f $PDIR/$1/hooks/post-add ]) {
 		info 'Executing post-add hook'
 		. $PDIR/$1/hooks/post-add
-	fi
+	}
 	check_deps "$1"
 	info 'Checking symlinks...'
 	cd $PDIR/$1
@@ -78,51 +78,51 @@ pkg_add () {
 }
 
 pkg_remove () {
-	if [ ! -d $PDIR/$1 ]; then
+	if ([ ! -d $PDIR/$1 ]) {
 		info "Package '$1' is not installed!"
 		return 100
-	fi
-	if [ -f $PDIR/$1/hooks/pre-remove ]; then
+	}
+	if ([ -f $PDIR/$1/hooks/pre-remove ]) {
 		info 'Executing pre-remove hook'
 		. $PDIR/$1/hooks/pre-remove
-	fi
+	}
 	rm -r $PDIR/$1
 	info "Package removed."
 }
 
 pkg_update () {
 	cd $PDIR/$1
-	if $VCS_CMD $VCS_OPTIONS $VCS_INCOMING; then
+	if ($VCS_CMD $VCS_OPTIONS $VCS_INCOMING) {
 		info "Updating package $1"
 		$VCS_CMD $VCS_OPTIONS $VCS_UPDATE $VCS_UPDATE_OPTIONS
 		checklinks $CL_OPTIONS
-		if [ -f hooks/post-update ]; then
+		if ([ -f hooks/post-update ]) {
 			info 'Executing post-update hook'
 			. hooks/post-update
-		fi
-	else
+		}
+	} else {
 		info "up-to-date: $1"
-	fi
+	}
 	cd $PDIR
 }
 
 pkg_update_wrapper () {
-	if [ -n "$1" ]; then
+	if ([ -n "$1" ]) {
 		pkg_update "$1"
-	else
+	} else {
 		cd $PDIR
 		for i in *(/); {
 			pkg_update "$i"
 		}
-	fi
+	}
 }
 
 pkg_changesrc () {
 	cd $PDIR
 	for i in *(/); {
-		if [ -f $i/.hg/hgrc ]; then
+		if ([ -f $i/.hg/hgrc ]) {
 			sed -ri "s!(default = )[^:]*://.*\$!\1$1/$i!" $i/.hg/hgrc
-		fi
+		}
 	}
 }
 
@@ -131,9 +131,9 @@ pkg_list_installed () {
 }
 
 pkg_list_available () {
-	if grep "^ssh" <<< "$PKG_ROOT" &> /dev/null; then
+	if (grep "^ssh" <<< "$PKG_ROOT" &> /dev/null) {
 		ssh -q $(sed 's!^ssh://!!' <<< "$PKG_ROOT" | sed -r 's!^([^/]*)/.*$!\1!') 'ls -1 packages'
-	fi
+	}
 }
 
 pkg_status () {
@@ -144,14 +144,14 @@ pkg_status () {
 }
 
 pkg_status_wrapper () {
-	if [ -n "$1" ]; then
+	if ([ -n "$1" ]) {
 		pkg_status "$1"
-	else
+	} else {
 		cd $PDIR
 		for i in *(/); {
 			pkg_status "$i"
 		}
-	fi
+	}
 }
 
 case "$1" in
