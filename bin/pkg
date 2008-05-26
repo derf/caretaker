@@ -4,6 +4,7 @@ PKG_ROOT="ssh://derf.homelinux.org/var/packages_root"
 VCS_CMD="hg"
 VCS_OPTIONS="--quiet"
 VCS_ADD="clone"
+VCS_INCOMING="incoming"
 VCS_STATUS="status"
 VCS_UPDATE="pull"
 VCS_UPDATE_OPTIONS="--update"
@@ -91,12 +92,16 @@ pkg_remove () {
 
 pkg_update () {
 	cd $PDIR/$1
-	info "Updating package $1"
-	$VCS_CMD $VCS_OPTIONS $VCS_UPDATE $VCS_UPDATE_OPTIONS
-	checklinks $CL_OPTIONS
-	if [ -f hooks/post-update ]; then
-		info 'Executing post-update hook'
-		. hooks/post-update
+	if $VCS_CMS $VCS_OPTIONS $VCS_INCOMING; then
+		info "Updating package $1"
+		$VCS_CMD $VCS_OPTIONS $VCS_UPDATE $VCS_UPDATE_OPTIONS
+		checklinks $CL_OPTIONS
+		if [ -f hooks/post-update ]; then
+			info 'Executing post-update hook'
+			. hooks/post-update
+		fi
+	else
+		info "up-to-date: $1"
 	fi
 	cd $PDIR
 }
