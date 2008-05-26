@@ -92,7 +92,7 @@ pkg_remove () {
 
 pkg_update () {
 	cd $PDIR/$1
-	if $VCS_CMS $VCS_OPTIONS $VCS_INCOMING; then
+	if $VCS_CMD $VCS_OPTIONS $VCS_INCOMING; then
 		info "Updating package $1"
 		$VCS_CMD $VCS_OPTIONS $VCS_UPDATE $VCS_UPDATE_OPTIONS
 		checklinks $CL_OPTIONS
