@@ -92,8 +92,8 @@ pkg_remove () {
 
 pkg_update () {
 	cd $PDIR/$1
-	if ($VCS_CMD $VCS_OPTIONS $VCS_INCOMING) {
-		info "Updating package $1"
+	if (NEW=$VCS_CMD $VCS_OPTIONS $VCS_INCOMING) {
+		info "Updating package $1 to $NEW"
 		$VCS_CMD $VCS_OPTIONS $VCS_UPDATE $VCS_UPDATE_OPTIONS
 		checklinks $CL_OPTIONS
 		if ([ -f hooks/post-update ]) {
