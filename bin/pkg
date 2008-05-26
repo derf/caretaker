@@ -93,7 +93,7 @@ pkg_remove () {
 pkg_update () {
 	cd $PDIR/$1
 	NEW=$($VCS_CMD $VCS_OPTIONS $VCS_INCOMING)
-	if ([ $? != 0 ]) {
+	if ([ $? = 0 ]) {
 		info "Updating package $1 to $(echo $NEW | tail -n 1)"
 		$VCS_CMD $VCS_OPTIONS $VCS_UPDATE $VCS_UPDATE_OPTIONS
 		checklinks $CL_OPTIONS
