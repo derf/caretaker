@@ -140,9 +140,15 @@ pkg_list_available () {
 
 pkg_status () {
 	cd $PDIR/$1
-	info "Checking $1 status...\n"
+	info "Checking $1 status..."
 	check_deps $1
-	$VCS_CMD $VCS_STATUS
+	STATUS=$($VCS_CMD $VCS_STATUS)
+	if ([ -n "$STATUS" ]) {
+		info "\rLocally modified in $1:\n"
+		echo "$STATUS"
+	} else {
+		info "\r                                        \r"
+	}
 }
 
 pkg_status_wrapper () {
