@@ -97,6 +97,7 @@ pkg_update () {
 	if ([ $? = 0 ]) {
 		info "\rUpdating package $1 to $(echo $NEW | tail -n 1)\n"
 		$VCS_CMD $VCS_OPTIONS $VCS_UPDATE $VCS_UPDATE_OPTIONS
+		info "\rUpdated package $1 to $(echo $NEW | tail -n 1) \n"
 		checklinks $CL_OPTIONS
 		if ([ -f hooks/post-update ]) {
 			info 'Executing post-update hook\n'
