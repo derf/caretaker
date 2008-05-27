@@ -28,7 +28,7 @@ die () {
 }
 
 check_sed () {
-	QUUX=$(echo foox | sed -r 's/^fo{2}(.)$/quu\1/' 2 > /dev/stdout)
+	QUUX=$(echo foox | sed -r 's/^fo{2}(.)$/quu\1/' 2> /dev/null)
 	if ([ "$QUUX" != 'quux' ]) {
 		warn "sed is not working properly. This may produce unexpected behaviour.\n"
 	}
@@ -132,7 +132,7 @@ pkg_changesrc () {
 	cd $PDIR
 	for i in *(/); {
 		if ([ -f $i/.hg/hgrc ]) {
-			sed -ri "s!(default = )[^:]*://.*\$!\1$1/$i!" $i/.hg/hgrc
+			sed -i "s!default = [^:]*://.*\$!default = $1/$i!" $i/.hg/hgrc
 		}
 	}
 }
