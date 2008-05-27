@@ -11,7 +11,7 @@ VCS_UPDATE="pull"
 VCS_UPDATE_OPTIONS="--update"
 CL_OPTIONS="-q"
 info=$'\e[0;36m'
-error=$'\e[1;31m'
+error=$'\e[0;31m'
 reset=$'\e[0m'
 
 info () {
@@ -25,6 +25,13 @@ warn () {
 die () {
 	echo -ne "${error}$*${reset}"
 	exit 100
+}
+
+check_sed () {
+	QUUX=$(echo foox | sed -r 's/^fo{2}(.)$/quu\1/')
+	if ([ ! $QUUX = 'quux' ]) {
+		warn "sed is not working properly. This may produce unexpected behaviour.\n"
+	}
 }
 
 if ([ -f $HOME/.pkg.conf ]) {
@@ -163,6 +170,8 @@ pkg_status_wrapper () {
 		}
 	}
 }
+
+check_sed
 
 case "$1" in
 	add) pkg_add "$2" ;;
