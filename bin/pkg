@@ -28,7 +28,7 @@ die () {
 }
 
 check_sed () {
-	QUUX=$(echo foox | sed -r 's/^fo{2}(.)$/quu\1/')
+	QUUX=$(echo foox | sed -r 's/^fo{2}(.)$/quu\1/' 2 > /dev/stdout)
 	if ([ "$QUUX" != 'quux' ]) {
 		warn "sed is not working properly. This may produce unexpected behaviour.\n"
 	}
