@@ -1,4 +1,5 @@
 #!/usr/bin/env zsh
+# Recommended: hg >= 1.0
 PDIR="$HOME/packages"
 PKG_ROOT="ssh://derf.homelinux.org/var/packages_root"
 VCS_CMD="hg"
