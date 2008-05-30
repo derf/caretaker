@@ -2,11 +2,7 @@
 # bootstrap - populate a home with the most necessary scripts
 # After running this, other packages can be installed using 'pkg'
 
-# Without mercurial, this is pretty pointless
-if ( ! which hg &> /dev/null) {
-	echo Mercurial not found!
-	exit 100
-}
+HG=hg
 
 # Make basic dirctories
 mkdir -p ~/bin
@@ -14,11 +10,20 @@ mkdir -p ~/lib
 mkdir -p ~/packages
 mkdir -p ~/var/tmp/incoming
 
+if ( ! which hg &> /dev/null) {
+	echo 'Mercurial not found, fetching...'
+	cd ~/packages
+	ssh derf.homelinux.org 'tar cz -C ~/var/packages_root mercurial-bin' | tar xz
+	HG="$HOME/packages/mercurial-bin/mercurial-1.0.1/hg"
+}
+
 # Fetch the core package, containing checklinks and pkg
 cd ~/packages
 echo "fetching core"
-hg clone ssh://derf.homelinux.org/var/packages_root/core
+$HG clone ssh://derf.homelinux.org/var/packages_root/core
 
 # Create symlinks for pkg and checklinks
 cd core
 bin/checklinks
+cd ~/packages/mercurial-bin
+~/bin/checklinks
