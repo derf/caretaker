@@ -103,7 +103,7 @@ pkg_remove () {
 		. $PDIR/$1/hooks/pre-remove
 	}
 	rm -r $PDIR/$1
-	info "Package removed."
+	info "Package removed.\n"
 }
 
 pkg_update () {
