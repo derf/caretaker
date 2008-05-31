@@ -10,6 +10,11 @@ mkdir -p ~/lib
 mkdir -p ~/packages
 mkdir -p ~/var/tmp/incoming
 
+if ( ! which python &> /dev/null ) {
+	echo "No Python found. This hsot sucks."
+	exit 200
+}
+
 if ( ! which hg &> /dev/null) {
 	echo 'Mercurial not found, fetching...'
 	cd ~/packages
