@@ -207,12 +207,12 @@ pkg_info () {
 	echo $LOG | grep -m1 'date:' | grep -Eo '[A-Z][a-z]{2}.*'
 	if ([ -r dependencies ]) {
 		info "Depends: "
-		cat dependencies | tr "\n" " " | sed 's/ /, /g'
+		cat dependencies | tr "\n" " " | sed 's/ /, /g' | sed 's/, $//'
 		echo
 	}
 	if ([ -r tags ]) {
 		info "Tags: "
-		cat tags | tr "\n" " " | sed 's/ /, /g'
+		cat tags | tr "\n" " " | sed 's/ /, /g' | sed 's/, $//'
 		echo
 	}
 	if ([ -d hooks ]) {
