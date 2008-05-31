@@ -178,6 +178,10 @@ pkg_info () {
 	echo $LOG | grep -m1 'changeset:' | grep -E -o '[0-9]{1,}:[0-9a-f]*'
 	info "Last update: "
 	echo $LOG | grep -m1 'date:' | grep -Eo '[A-Z][a-z]{2}.*' 
+	if ([ -d hooks ]) {
+		info "Hooks: "
+		ls hooks
+	}
 	if ([ -r .deps ]) {
 		info "Dependencies:\n"
 		cat .deps
