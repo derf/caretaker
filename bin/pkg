@@ -224,6 +224,11 @@ pkg_info () {
 	}
 }
 
+pkg_log () {
+	cd $PDIR/$1 || return
+	hg glog | less
+}
+
 check_sed
 
 case "$1" in
@@ -234,6 +239,7 @@ case "$1" in
 	install) pkg_add "$2" ;;
 	list) pkg_list_installed ;;
 	list-all) pkg_list_available ;;
+	log) pkg_log "$2" ;;
 	remove) pkg_remove "$2" ;;
 	status) pkg_status_wrapper "$2" ;;
 	update) pkg_update_wrapper "$2" ;;
