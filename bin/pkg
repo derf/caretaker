@@ -180,6 +180,10 @@ pkg_info () {
 	echo $LOG | grep -m1 'date:' | grep -Eo '[A-Z][a-z]{2}.*'
 	info "repo size: "
 	du -sh .hg | grep -o '.*[KMG]'
+	if ([ -d hooks ]) {
+		info "Hooks: "
+		ls hooks
+	}
 	if ([ -r .deps ]) {
 		info "Dependencies:\n"
 		cat .deps
