@@ -179,7 +179,7 @@ real_priority () {
 		3) echo "standard" ;;
 		2) echo "optional" ;;
 		1) echo "extra" ;;
-		*) echo "?" ;;
+		*) echo ;;
 	esac
 }
 
@@ -190,20 +190,28 @@ pkg_info () {
 	info "Priority: "
 	real_priority $(cat priority 2> /dev/null || echo 0)
 	LOG=$(hg log)
-	info "Current version: "
+	info "Version: "
 	echo $LOG | grep -m1 'changeset:' | grep -E -o '[0-9]{1,}:[0-9a-f]*'
-	info "Last update: "
+	info "Date: "
 	echo $LOG | grep -m1 'date:' | grep -Eo '[A-Z][a-z]{2}.*'
-	info "repo size: "
-	du -sh .hg | grep -o '.*[KMG]'
+	if ([ -r dependencies ]) {
+		info "Depends: "
+		cat dependencies | tr "\n" " " | sed 's/ /, /g'
+		echo
+	}
+	if ([ -r tags ]) {
+		info "Tags: "
+		cat tags | tr "\n" " " | sed 's/ /, /g'
+	}
 	if ([ -d hooks ]) {
 		info "Hooks: "
 		ls hooks
 	}
-	if ([ -r dependencies ]) {
-		info "Dependencies:\n"
-		cat dependencies | tr "\n" " "
-		echo
+	info "Repository size: "
+	du -sh .hg | grep -o '.*[KMG]'
+	if ([ -r description ]) {
+		info "Description:\n"
+		cat description
 	}
 }
 
