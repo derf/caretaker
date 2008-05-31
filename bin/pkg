@@ -38,6 +38,9 @@ if ([ -f $HOME/.pkg.conf ]) {
 	. $HOME/.pkg.conf
 }
 
+export PDIR
+export PKG_ROOT
+
 if ([ ! -d $PDIR ]) {
 	die "$PDIR not found!!"
 }
