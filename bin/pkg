@@ -90,6 +90,14 @@ pkg_remove () {
 		info "Package '$1' is not installed!\n"
 		return 100
 	}
+	cd $PDIR/$1
+	if ([ -r priority ]) {
+		if ([ $(cat priority) -gt 3 ]) {
+			warn "Package '$1' is $(real_priority $(cat priority)). Really remove? [y/N] "
+			read
+			[ "$REPLY" = 'y' ] || return
+		}
+	}
 	if ([ -f $PDIR/$1/hooks/pre-remove ]) {
 		info 'Executing pre-remove hook\n'
 		. $PDIR/$1/hooks/pre-remove
