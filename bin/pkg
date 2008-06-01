@@ -208,8 +208,11 @@ pkg_info () {
 	[ -z "$1" ] && die "Not enough arguments\n"
 	info "Package: "
 	echo "$1"
-	info "Priority: "
-	real_priority $(cat priority 2> /dev/null || echo 0)
+	if ([ -r priority ]) {
+		prio=$(cat priority)
+		info "Priority: "
+		echo "$prio ($(real_priority $prio))"
+	}
 	LOG=$(hg log)
 	info "Version: "
 	echo $LOG | grep -m1 'changeset:' | grep -E -o '[0-9]{1,}:[0-9a-f]*'
