@@ -1,0 +1,14 @@
+bootstrap - install the most essential utilities in $HOME.
+
+Usage: ./bootstrap
+
+bootstrap will, in this order, do the following:
+
+	* create a basic directory structure
+
+	* Check whether python is installed on the machine
+
+	* Check whether mercurial is install on the machine
+	  If not, receives a pre-build one via ssh/tar
+
+	* Clone and then install the core repository

@@ -1,0 +1,27 @@
+checklinks - Automatically symlink files
+
+Usage: checklinks [ -q ]
+
+Options:
+
+	-q
+		quiet. No output if a symlink remained unchained
+
+checklinks will read $PWD/.links for instructions about symlinks
+Each line contains, separated by spaces:
+
+	the symlink type
+		This may be one of 'soft' or 'hard', indicating it either is a
+		softlink/symlink or a hardlink.
+		Note: The following definitions of source/target only apply for soft
+		links. The corresponding meanings for hard links are unknown.
+
+	the source
+		path of the source, i.e. the symlink
+		This is relative to $HOME
+
+	the target
+		path of the target, i.e. the symlink's destination
+		This is relative to the source. See path_resolution(7)
+
+Lines beginning with an invalied symlink type will be ignored
