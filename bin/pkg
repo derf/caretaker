@@ -205,6 +205,7 @@ real_priority () {
 
 pkg_info () {
 	cd $PDIR/$1 || return
+	[ -z "$1" ] && die "Not enough arguments\n"
 	info "Package: "
 	echo "$1"
 	info "Priority: "
