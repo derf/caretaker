@@ -1,0 +1,71 @@
+pkg - Package maintaining utility
+
+Usage: pkg action [ package ]
+
+action may be one of:
+
+	add, install
+		fetch given package from the package_root and install it
+
+	changelog
+		Show package's changelog (if available)
+
+	changeroot
+		Change the default source on all packages
+		Example: `changeroot ssh://kraftwerk/var/packages_root` will change
+		the source of core to 'ssh://kraftwerk/var/packages_root/core'
+
+	delete, remove
+		Remove the package from the local packages tree
+		Note: This does not yet remove the symlinks
+
+	info
+		Show information on a package, like dependencies, version, etc
+
+	list
+		List all installed packages
+
+	list-all
+		List all available (both installed and not installed packages
+		Hint: `diff <(pkg list) <(pkg list-all)` will show all packages
+		that are currently not installed
+
+	log
+		Show commit history for package
+
+	status
+		Check for local changes to the packages files
+		If no arguments is given, checks all installed packages
+
+	update
+		retreive and install newest available version of package
+		If no argument is given, updates all installed packages
+
+
+~/.pkg.conf:
+	Contains configuration vars
+
+	syntax: VAR='argument'
+	comments with "#" are supported
+
+	PKG_ROOT
+		the package root path
+		Default: ssh://derf.homelinux.org/var/packages_root
+
+	PDIR
+		path for the local package tree
+		WARNING: changing this will break everything. Don't do it.
+		Default: $HOME/packages
+
+	VCS_CMD
+		Command to invoke the vcs
+		Default: hg
+
+	VCS_OPTIONS
+		global options to invoke VCS_CMD with
+		Default: --quiet
+
+	CL_OPTIONS
+		Options to invoke checklinks with
+		Default: -q
+

@@ -271,6 +271,11 @@ pkg_changelog () {
 	[ -r $PDIR/$1/changelog ] && view $PDIR/$1/changelog
 }
 
+pkg_doc () {
+	# FIXME this sucks
+	[ -r $PDIR/*/doc/$1 ] && less $PDIR/*/doc/$1
+}
+
 check_sed
 
 case "$1" in
@@ -278,6 +283,7 @@ case "$1" in
 	changelog) pkg_changelog "$2" ;;
 	changeroot) pkg_changesrc "$2" ;;
 	delete) pkg_remove "$2" ;;
+	doc) pkg_doc "$2" ;;
 	info) pkg_info "$2" ;;
 	install) pkg_add "$2" ;;
 	list) pkg_list_installed ;;
