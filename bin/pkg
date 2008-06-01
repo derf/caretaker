@@ -232,6 +232,9 @@ pkg_info () {
 		info "Hooks: "
 		ls hooks
 	}
+	if ([ -r Makefile ]) {
+		info "Makefile\n"
+	}
 	info "Repository size: "
 	du -sh .hg | grep -o '.*[KMG]'
 	if ([ -r description ]) {
