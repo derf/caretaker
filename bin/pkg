@@ -27,6 +27,18 @@ die () {
 	exit 100
 }
 
+confirm_yes () {
+	echo -n "${info}$*${reset} [Y/n] "
+	read -q
+	[ -z "$REPLY" ] && true
+}
+
+confirm_no () {
+	echo -n "${error}$*${reset} [y/N] "
+	read -q
+}
+
+
 check_sed () {
 	QUUX=$(echo foox | sed -r 's/^fo{2}(.)$/quu\1/' 2> /dev/null)
 	if ([ "$QUUX" != 'quux' ]) {
@@ -55,9 +67,7 @@ check_deps () {
 			return 100
 		}
 		if ([ ! -d $PDIR/$dep ]) {
-			echo -n "$1 depends on $dep. Install dependency? [Y/n] "
-			read
-			if ([ ! "$REPLY" = 'n' ]) {
+			if (confirm_yes "$1 depends on $dep. Install dependency?") {
 				INSTALL+="$dep"
 			}
 		}
@@ -101,9 +111,7 @@ pkg_remove () {
 	cd $PDIR/$1
 	if ([ -r priority ]) {
 		if ([ $(cat priority) -gt 3 ]) {
-			warn "Package '$1' is $(real_priority $(cat priority)). Really remove? [y/N] "
-			read
-			[ "$REPLY" = 'y' ] || return
+			confirm_no "Package '$1' is $(real_priority $(cat priority)). Really remove?" || return
 		}
 	}
 	if ([ -f $PDIR/$1/hooks/pre-remove ]) {
