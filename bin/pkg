@@ -232,25 +232,21 @@ pkg_info () {
 		DESCRIPTION=$(cat description)
 	}
 
-	# Show 'em
-	info "Package: "
-	echo "$NAME"
-	info "Priority: "
-	echo "$PRIORITY ($PRIORITY_NAME)"
-	info "Version: "
-	echo "$VERSION"
-	info "Date: "
-	echo "$DATE"
-	info "Dependencies: "
-	echo "$DEPENDENCIES"
-	info "Tags: "
-	echo "$TAGS"
-	info "Hooks: "
-	echo "$HOOKS"
-	info "Repository Size: "
-	echo "$SIZE"
-	info "Description:\n"
-	echo "$DESCRIPTION"
+	show_info () {
+		[ -z "$2" ] && return
+		info "$1: "
+		echo "$2"
+	}
+
+	show_info "Package" "$NAME"
+	show_info "Priority" "$PRIORITY ($PRIORITY_NAME)"
+	show_info "Version" "$VERSION"
+	show_info "Date" "$DATE"
+	show_info "Dependencies" "$DEPENDENCIES"
+	show_info "Tags" "$TAGS"
+	show_info "Hooks" "$HOOKS"
+	show_info "Repostiry Size" "$SIZE"
+	show_info "Description" "$DESCRIPTION"
 }
 
 pkg_log () {
