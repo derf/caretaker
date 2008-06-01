@@ -109,10 +109,8 @@ pkg_add () {
 }
 
 pkg_remove () {
-	if ([ ! -d $PDIR/$1 ]) {
-		info "Package '$1' is not installed!\n"
-		return 100
-	}
+	[ -d $PDIR/$1 ] || die "Package '$1' is not installed!\n"
+	[ -d $PDIR/$1/.hg ] || die "Not a valid package: '$1'\n"
 	cd $PDIR/$1
 	if ([ -r priority ]) {
 		if ([ $(cat priority) -gt 3 ]) {
