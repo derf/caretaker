@@ -253,7 +253,7 @@ pkg_info () {
 	show_info "Priority" "$PRIORITY ($PRIORITY_NAME)"
 	show_info "Version" "$VERSION"
 	show_info "Date" "$DATE"
-	show_info "Dependencies" "$DEPENDENCIES"
+	show_info "Depends" "$DEPENDENCIES"
 	show_info "Tags" "$TAGS"
 	show_info "Hooks" "$HOOKS"
 	show_info "Repostiry Size" "$SIZE"
