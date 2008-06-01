@@ -1,26 +1,30 @@
 pkg - Package maintaining utility
 
-Usage: pkg action [ package ]
+Usage: pkg action [ arguments ]
 
 action may be one of:
 
-	add, install
+	add, install package
 		fetch given package from the package_root and install it
 
-	changelog
+	changelog package
 		Show package's changelog (if available)
 
-	changeroot
-		Change the default source on all packages
+	changeroot source
+		Change the default source on all packages to source
 		Example: `changeroot ssh://kraftwerk/var/packages_root` will change
 		the source of core to 'ssh://kraftwerk/var/packages_root/core'
 
-	delete, remove
+	delete, remove package
 		Remove the package from the local packages tree
 		Note: This does not yet remove the symlinks
 
-	info
-		Show information on a package, like dependencies, version, etc
+	doc command
+		Show documentation on command, if available
+		Note: command must be shipped by a package, of course
+
+	info package
+		Show information on package, like dependencies, version, etc
 
 	list
 		List all installed packages
@@ -30,14 +34,14 @@ action may be one of:
 		Hint: `diff <(pkg list) <(pkg list-all)` will show all packages
 		that are currently not installed
 
-	log
+	log package
 		Show commit history for package
 
-	status
+	status [ package ]
 		Check for local changes to the packages files
 		If no arguments is given, checks all installed packages
 
-	update
+	update [ package ]
 		retreive and install newest available version of package
 		If no argument is given, updates all installed packages
 
