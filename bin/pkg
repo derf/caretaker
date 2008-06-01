@@ -30,6 +30,7 @@ die () {
 confirm_yes () {
 	echo -n "$* [Y/n] "
 	read -k 1
+	[ $REPLY != $'\n' ] && echo
 	if ([ "$REPLY" = 'y' -o "$REPLY" = 'Y' -o "$REPLY" = $'\n' ]) {
 		true
 	} else {
