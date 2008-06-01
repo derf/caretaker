@@ -242,10 +242,15 @@ pkg_log () {
 	hg glog | less
 }
 
+pkg_changelog () {
+	[ -r $PDIR/$1/changelog ] && view $PDIR/$1/changelog
+}
+
 check_sed
 
 case "$1" in
 	add) pkg_add "$2" ;;
+	changelog) pkg_changelog "$2" ;;
 	changeroot) pkg_changesrc "$2" ;;
 	delete) pkg_remove "$2" ;;
 	info) pkg_info "$2" ;;
