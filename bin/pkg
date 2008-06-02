@@ -27,6 +27,16 @@ die () {
 	exit 100
 }
 
+pkg_proto () {
+	if (echo "$PKG_ROOT" | grep "^ssh" &> /dev/null) {
+		echo 'ssh'
+	} elif (echo "$PKG_ROOT" | grep "^/" &> /dev/null) {
+		echo 'file'
+	} else {
+		false
+	}
+}
+
 confirm_yes () {
 	echo -n "$* [Y/n] "
 	read -k 1
@@ -173,8 +183,10 @@ pkg_list_installed () {
 }
 
 pkg_list_available () {
-	if (echo "$PKG_ROOT" | grep "^ssh" &> /dev/null) {
+	if ([ "$(pkg_proto)" = 'ssh' ]) {
 		ssh -q $(echo "$PKG_ROOT" | sed 's!^ssh://!!' | sed -r 's!^([^/]*)/.*$!\1!') ls -1 $(echo "$PKG_ROOT" | sed 's!^ssh://[^/]*/!!')
+	} elif ([ "$(pkg_proto)" = 'file' ]) {
+		ls -1 $PKG_ROOT
 	}
 }
 
