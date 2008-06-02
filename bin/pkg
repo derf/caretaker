@@ -297,7 +297,13 @@ pkg_changelog () {
 
 pkg_doc () {
 	# FIXME this sucks
-	[ -r $PDIR/*/doc/$1 ] && less $PDIR/*/doc/$1
+	if ([ -r $PDIR/*/doc/$1 ]) {
+		less $PDIR/*/doc/$1
+	} elif ([ -x $PDIR/*/bin/$1 ]) {
+		if (file $PDIR/*/bin/$1 | grep 'perl script text executable' &> /dev/null) {
+			perldoc $PDIR/*/bin/$1
+		}
+	}
 }
 
 check_sed
