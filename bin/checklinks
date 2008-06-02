@@ -88,3 +88,57 @@ sub print_format {
 	}
 	print "$src -> $dst\n";
 }
+
+__END__
+
+=head1 NAME
+
+checklinks - create/update symlinks
+
+=head1 SYNOPSIS
+
+B<checklinks> [ B<-q> ]
+
+=head1 DESCRIPTION
+
+Create or update symlinks based on a file
+
+=head1 OPTIONS
+
+=over
+
+=item B<-q>
+
+quiet. Hide unchanged symlinks
+
+=back
+
+=head1 FILES
+
+The symlink definitions are read from the file B<.links> in the current working
+directory. Each line contains, separated by spaces:
+
+=over
+
+=item the symlink type
+
+This may be one of 'soft' or 'hard', indicating either a symlink or a hardlink.
+Note: The use of hardlinks is discouraged and not documented. The following
+definitions only apply to symlinks. For hardlinks, may the source be with you.
+
+=item the source
+
+path of the source, i.e. the symlink. Relative to $HOME
+
+=item the target
+
+path of the target, i.e. the symlink's destination.
+This is relativ to the source. See I<path_resolution>(7)
+
+=back
+
+Lines beginning with an invalid symlink type will be ignored.
+
+=head1 BUGS
+
+There are no checks whether the symlink target actually exists
