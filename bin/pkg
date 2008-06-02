@@ -27,14 +27,35 @@ die () {
 	exit 100
 }
 
-pkg_proto () {
-	if (echo "$PKG_ROOT" | grep "^ssh" &> /dev/null) {
-		echo 'ssh'
+# Local configuration
+if ([ -f $HOME/.pkg.conf ]) {
+	. $HOME/.pkg.conf
+}
+
+export PDIR
+export PKG_ROOT
+
+## Gather some additional information about the PKG_ROOT
+
+# Protocol
+if (echo "$PKG_ROOT" | grep "^ssh" &> /dev/null) {
+	PKG_PROTO='ssh'
 	} elif (echo "$PKG_ROOT" | grep "^/" &> /dev/null) {
-		echo 'file'
-	} else {
-		false
-	}
+	PKG_PROTO='file'
+} else {
+	false
+}
+
+# Host
+if ([ "$PKG_PROTO" = "ssh" ]) {
+	PKG_HOST=$(echo "$PKG_ROOT" | sed 's!^ssh://!!' | sed -r 's!^([^/]*)/.*$!\1!')
+}
+
+# Remote path
+if ([ "$PKG_PROTO" = "ssh" ]) {
+	PKG_PATH$(echo "$PKG_ROOT" | sed 's!^ssh://!!' | sed -r 's!^([^/]*)/.*$!\1!')
+} elif ([ "$PKG_PROTO" = "file" ]) {
+	PKG_PATH="$PKG_ROOT"
 }
 
 confirm_yes () {
@@ -60,13 +81,6 @@ check_sed () {
 		warn "sed is not working properly. This may produce unexpected behaviour.\n"
 	}
 }
-
-if ([ -f $HOME/.pkg.conf ]) {
-	. $HOME/.pkg.conf
-}
-
-export PDIR
-export PKG_ROOT
 
 if ([ ! -d $PDIR ]) {
 	die "$PDIR not found!!"
@@ -183,10 +197,10 @@ pkg_list_installed () {
 }
 
 pkg_list_available () {
-	if ([ "$(pkg_proto)" = 'ssh' ]) {
-		ssh -q $(echo "$PKG_ROOT" | sed 's!^ssh://!!' | sed -r 's!^([^/]*)/.*$!\1!') ls -1 $(echo "$PKG_ROOT" | sed 's!^ssh://[^/]*/!!')
-	} elif ([ "$(pkg_proto)" = 'file' ]) {
-		ls -1 $PKG_ROOT
+	if ([ "$PKG_PROTO" = 'ssh' ]) {
+		ssh -q "$PKG_HOST" ls -1 "$PKG_PATH"
+	} elif ([ "$PKG_PROTO" = 'file' ]) {
+		ls -1 "$PKG_PATH"
 	}
 }
 
