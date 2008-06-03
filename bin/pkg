@@ -110,7 +110,7 @@ check_deps () {
 
 create_docs () {
 	cd $PDIR/$1
-	if ([ -d docs ]) {
+	if ([ -d doc ]) {
 		cp docs/* $PDIR/.collected/doc/
 	}
 	if ([ -d bin ]) {
