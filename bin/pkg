@@ -116,7 +116,7 @@ populate_collected () {
 	if ([ -d bin ]) {
 		for i in bin; {
 			if (podchecker bin/$i &> /dev/null) {
-				pod2man bin/$i > $PDIR/.collected/man/$i
+				pod2man bin/$i > $PDIR/.collected/man/man1/$i
 			}
 		}
 	}
