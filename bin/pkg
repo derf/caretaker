@@ -108,10 +108,10 @@ check_deps () {
 	}
 }
 
-create_docs () {
+populate_collected () {
 	cd $PDIR/$1
 	if ([ -d doc ]) {
-		cp docs/* $PDIR/.collected/doc/
+		cp doc/* $PDIR/.collected/doc/
 	}
 	if ([ -d bin ]) {
 		for i in bin; {
@@ -142,7 +142,7 @@ pkg_add () {
 	check_deps "$1"
 	cd $PDIR/$1
 	checklinks $CL_OPTIONS
-	create_docs "$1"
+	populate_collected "$1"
 	return 0
 }
 
@@ -180,7 +180,7 @@ pkg_update () {
 			. hooks/post-update
 		}
 		checklinks $CL_OPTIONS
-		create_docs "$1"
+		populate_collected "$1"
 	} else {
 		info "\r                                        \r"
 	}
