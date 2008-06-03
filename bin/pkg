@@ -14,6 +14,11 @@ info=$'\e[0;36m'
 error=$'\e[0;31m'
 reset=$'\e[0m'
 
+
+##
+## Internal functions for displaying stuff
+##
+
 info () {
 	echo -ne "${info}$*${reset}"
 }
@@ -31,7 +36,7 @@ clear_line () {
 	echo -ne "\r                                                          \r"
 }
 
-# Local configuration
+# Read local configuration
 if ([ -f $HOME/.pkg.conf ]) {
 	. $HOME/.pkg.conf
 }
@@ -39,7 +44,27 @@ if ([ -f $HOME/.pkg.conf ]) {
 export PDIR
 export PKG_ROOT
 
-## Gather some additional information about the PKG_ROOT
+
+##
+## Make sure everything's sane
+## Warn otherwise
+##
+
+check_sed () {
+	QUUX=$(echo foox | sed -r 's/^fo{2}(.)$/quu\1/' 2> /dev/null)
+	if ([ "$QUUX" != 'quux' ]) {
+		warn "sed is not working properly. This may produce unexpected behaviour.\n"
+	}
+}
+
+if ([ ! -d $PDIR ]) {
+	die "$PDIR not found!!"
+}
+
+
+##
+## Some additional variables related to PKG_ROOT
+##
 
 # Protocol
 if (echo "$PKG_ROOT" | grep "^ssh" &> /dev/null) {
@@ -62,6 +87,12 @@ if ([ "$PKG_PROTO" = "ssh" ]) {
 	PKG_PATH="$PKG_ROOT"
 }
 
+
+##
+## Ask the user for confirmation
+##
+
+# Default reply: Yes
 confirm_yes () {
 	echo -n "$* [Y/n] "
 	read -k 1
@@ -73,23 +104,32 @@ confirm_yes () {
 	}
 }
 
+# Default reply: No
 confirm_no () {
 	echo -n "$* [y/N] "
 	read -q
 }
 
 
-check_sed () {
-	QUUX=$(echo foox | sed -r 's/^fo{2}(.)$/quu\1/' 2> /dev/null)
-	if ([ "$QUUX" != 'quux' ]) {
-		warn "sed is not working properly. This may produce unexpected behaviour.\n"
-	}
+##
+## Major internal functions
+##
+
+# Return an understandable priority from the numeric one
+real_priority () {
+	case "$1" in
+		6) echo "essential" ;;
+		5) echo "important" ;;
+		4) echo "required" ;;
+		3) echo "standard" ;;
+		2) echo "optional" ;;
+		1) echo "extra" ;;
+		*) echo ;;
+	esac
 }
 
-if ([ ! -d $PDIR ]) {
-	die "$PDIR not found!!"
-}
 
+# Check dependencies and offer to install them
 check_deps () {
 	[ -r $PDIR/$1/dependencies ] || return 0
 	DEPS=($(cat $PDIR/$1/dependencies))
@@ -112,6 +152,8 @@ check_deps () {
 	}
 }
 
+# Write a packages' files to .collected
+# Currently, this is only documentation
 populate_collected () {
 	cd $PDIR/$1 || return
 	info "Enabling documentation "
@@ -129,6 +171,9 @@ populate_collected () {
 	clear_line
 }
 
+# Remove a packages' files from .collected
+# Assuming there are no packages with colliding files
+# TODO: Make sure there are none
 genocide_collected () {
 	cd $PDIR/$1 || return
 	info "Removing documentation"
@@ -144,6 +189,11 @@ genocide_collected () {
 	}
 	clear_line
 }
+
+
+##
+## Finally - the functions actually doing something
+##
 
 pkg_add () {
 	if ([ -d $PDIR/$1 ]) {
@@ -211,6 +261,7 @@ pkg_update () {
 	cd $PDIR
 }
 
+# If no package was specified, update everything
 pkg_update_wrapper () {
 	if ([ -n "$1" ]) {
 		pkg_update "$1"
@@ -222,6 +273,7 @@ pkg_update_wrapper () {
 	}
 }
 
+# Change the 'default' url in every package's .hgrc
 pkg_changesrc () {
 	cd $PDIR
 	for i in *(/); {
@@ -243,6 +295,7 @@ pkg_list_available () {
 	}
 }
 
+# Local modifications should not be overseen...
 pkg_status () {
 	cd $PDIR/$1
 	info "Checking $1 status..."
@@ -256,6 +309,7 @@ pkg_status () {
 	}
 }
 
+# Same as with update - if no package is specified, check all
 pkg_status_wrapper () {
 	if ([ -n "$1" ]) {
 		pkg_status "$1"
@@ -267,18 +321,7 @@ pkg_status_wrapper () {
 	}
 }
 
-real_priority () {
-	case "$1" in
-		6) echo "essential" ;;
-		5) echo "important" ;;
-		4) echo "required" ;;
-		3) echo "standard" ;;
-		2) echo "optional" ;;
-		1) echo "extra" ;;
-		*) echo ;;
-	esac
-}
-
+# Various information related to a package
 pkg_info () {
 	cd $PDIR/$1 || return
 	[ -z "$1" ] && die "Not enough arguments\n"
@@ -334,6 +377,7 @@ pkg_changelog () {
 	[ -r $PDIR/$1/changelog ] && view $PDIR/$1/changelog
 }
 
+# Almost obsoleted by the bin/* -> man/ stuff
 pkg_doc () {
 	if ([ -r $PDIR/.collected/man/$1 ]) {
 		man $PDIR/.collected/man/$1
@@ -344,7 +388,10 @@ pkg_doc () {
 	}
 }
 
-check_sed
+
+##
+## Now what shall we do...
+##
 
 case "$1" in
 	add) pkg_add "$2" ;;
