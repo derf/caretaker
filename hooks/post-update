@@ -1,0 +1,3 @@
+mkdir $PDIR/.links
+mkdir $PDIR/.links/{bin,doc,man,etc,include}
+
