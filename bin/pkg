@@ -27,6 +27,10 @@ die () {
 	exit 100
 }
 
+clear_line () {
+	echo -ne "\r                                                          \r"
+}
+
 # Local configuration
 if ([ -f $HOME/.pkg.conf ]) {
 	. $HOME/.pkg.conf
@@ -122,7 +126,23 @@ populate_collected () {
 			echo -n "."
 		}
 	}
-	info "\r                                                  \r"
+	clear_line
+}
+
+genocide_collected () {
+	cd $PDIR/$1 || return
+	info "Removing documentation"
+	if ([ -d doc ]) {
+		for i in doc/*; {
+			rm $PDIR/.collected/$i
+		}
+	}
+	if ([ -d bin ]) {
+		for i in bin/*; {
+			rm -f $PDIR/.collected/man/man1/$(basename $i).1
+		}
+	}
+	clear_line
 }
 
 pkg_add () {
@@ -163,6 +183,7 @@ pkg_remove () {
 		. $PDIR/$1/hooks/pre-remove
 	}
 	rm -r $PDIR/$1
+	genocide_collected "$1"
 	info "Package removed.\n"
 }
 
@@ -185,7 +206,7 @@ pkg_update () {
 		checklinks $CL_OPTIONS
 		populate_collected "$1"
 	} else {
-		info "\r                                        \r"
+		clear_line
 	}
 	cd $PDIR
 }
@@ -231,7 +252,7 @@ pkg_status () {
 		info "\rLocally modified in $1:\n"
 		echo "$STATUS"
 	} else {
-		info "\r                                        \r"
+		clear_line
 	}
 }
 
