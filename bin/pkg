@@ -109,7 +109,8 @@ check_deps () {
 }
 
 populate_collected () {
-	cd $PDIR/$1
+	cd $PDIR/$1 || return
+	info "Enabling documentation "
 	if ([ -d doc ]) {
 		cp doc/* $PDIR/.collected/doc/
 	}
@@ -118,8 +119,10 @@ populate_collected () {
 			if (podchecker $i &> /dev/null) {
 				pod2man $i > $PDIR/.collected/man/man1/$(basename $i).1
 			}
+			echo "."
 		}
 	}
+	info "\r                                                  \r"
 }
 
 pkg_add () {
