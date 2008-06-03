@@ -114,7 +114,7 @@ populate_collected () {
 		cp doc/* $PDIR/.collected/doc/
 	}
 	if ([ -d bin ]) {
-		for i in bin; {
+		for i in bin/*; {
 			if (podchecker bin/$i &> /dev/null) {
 				pod2man bin/$i > $PDIR/.collected/man/man1/$i
 			}
