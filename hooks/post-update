@@ -1,3 +1,4 @@
-mkdir $PDIR/.links
-mkdir $PDIR/.links/{bin,doc,man,etc,include}
-
+rmdir $PDIR/.links/{bin,doc,man,etc,include}
+rmdir $PDIR/.links
+mkdir $PDIR/.collected
+mkdir $PDIR/.collected/{bin,doc,man,etc,include}

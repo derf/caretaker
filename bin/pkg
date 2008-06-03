@@ -108,6 +108,20 @@ check_deps () {
 	}
 }
 
+create_docs () {
+	cd $PDIR/$1
+	if ([ -d docs ]) {
+		cp docs/* $PDIR/.collected/doc/
+	}
+	if ([ -d bin ]) {
+		for i in bin; {
+			if (podchecker bin/$i &> /dev/null) {
+				pod2man bin/$i > $PDIR/.collected/man/$i
+			}
+		}
+	}
+}
+
 pkg_add () {
 	if ([ -d $PDIR/$1 ]) {
 		info "Package '$1' is already installed!\n"
@@ -126,9 +140,9 @@ pkg_add () {
 		. $PDIR/$1/hooks/post-add
 	}
 	check_deps "$1"
-	info 'Checking symlinks...\n'
 	cd $PDIR/$1
 	checklinks $CL_OPTIONS
+	create_docs "$1"
 	return 0
 }
 
@@ -166,6 +180,7 @@ pkg_update () {
 			. hooks/post-update
 		}
 		checklinks $CL_OPTIONS
+		create_docs "$1"
 	} else {
 		info "\r                                        \r"
 	}
