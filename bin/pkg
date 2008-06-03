@@ -296,13 +296,15 @@ pkg_changelog () {
 }
 
 pkg_doc () {
-	# FIXME this sucks
-	if ([ -r $PDIR/*/doc/$1 ]) {
-		less $PDIR/*/doc/$1
-	} elif ([ -x $PDIR/*/bin/$1 ]) {
+	# FIXME this globbing sucks
+	if ([ -x $PDIR/*/bin/$1 ]) {
 		if (file $PDIR/*/bin/$1 | grep 'perl script text executable' &> /dev/null) {
 			perldoc $PDIR/*/bin/$1
 		}
+	} elif ([ -r $PDIR/*/doc/$1 ]) {
+		less $PDIR/*/doc/$1
+	} else {
+		echo "No documentation found"
 	}
 }
 
