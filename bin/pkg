@@ -311,11 +311,10 @@ pkg_changelog () {
 }
 
 pkg_doc () {
-	# FIXME this globbing sucks
-	if (file $PDIR/*/bin/$1 | grep 'perl script text executable' &> /dev/null) {
-		perldoc $PDIR/*/bin/$1
-	} elif ([ -r $PDIR/*/doc/$1 ]) {
-		less $PDIR/*/doc/$1
+	if ([ -r $PDIR/.collected/man/$1 ]) {
+		man $PDIR/.collected/man/$1
+	} elif ([ -r $PDIR/.collected/doc/$1 ]) {
+		less $PDIR/.collected/doc/$1
 	} else {
 		echo "No documentation found"
 	}

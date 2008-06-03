@@ -1,4 +1,1 @@
-rmdir $PDIR/.links/{bin,doc,man,etc,include}
-rmdir $PDIR/.links
-mkdir $PDIR/.collected
-mkdir $PDIR/.collected/{bin,doc,man,etc,include}
+mkdir -p $PDIR/.collected/{bin,doc,man,etc,include}
