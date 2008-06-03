@@ -119,7 +119,7 @@ populate_collected () {
 			if (podchecker $i &> /dev/null) {
 				pod2man $i > $PDIR/.collected/man/man1/$(basename $i).1
 			}
-			echo "."
+			echo -n "."
 		}
 	}
 	info "\r                                                  \r"
