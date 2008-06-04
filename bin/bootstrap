@@ -7,7 +7,7 @@ HG=hg
 # Make basic dirctories
 mkdir -p ~/bin
 mkdir -p ~/lib
-mkdir -p ~/packages/.links/{bin,doc,man,etc,include}
+mkdir -p ~/packages/.collected/{bin,doc,man/man{1..8},etc,include}
 mkdir -p ~/var/tmp/incoming
 
 if ( ! which python &> /dev/null ) {
