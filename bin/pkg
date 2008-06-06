@@ -82,7 +82,7 @@ if ([ "$PKG_PROTO" = "ssh" ]) {
 
 # Remote path
 if ([ "$PKG_PROTO" = "ssh" ]) {
-	PKG_PATH=$(echo "$PKG_ROOT" | sed 's!^ssh://!!' | sed -r 's!^([^/]*)/.*$!\1!')
+	PKG_PATH=$(echo "$PKG_ROOT" | sed 's!^ssh://'"$PKG_HOST"'/!!')
 } elif ([ "$PKG_PROTO" = "file" ]) {
 	PKG_PATH="$PKG_ROOT"
 }
