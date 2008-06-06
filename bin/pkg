@@ -300,6 +300,7 @@ pkg_status () {
 	cd $PDIR/$1
 	info "Checking $1 status..."
 	check_deps $1
+	checklinks $CL_OPTIONS
 	STATUS=$($VCS_CMD $VCS_STATUS)
 	if ([ -n "$STATUS" ]) {
 		info "\rLocally modified in $1:\n"
