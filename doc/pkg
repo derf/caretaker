@@ -1,75 +1,115 @@
+=head1 NAME
+
 pkg - Package maintaining utility
 
-Usage: pkg action [ arguments ]
+=head1 SYNOPSIS
 
-action may be one of:
+B<pkg> I<action> [ I<arguments> ]
 
-	add, install package
-		fetch given package from the package_root and install it
+=head1 DESCRIPTION
 
-	changelog package
-		Show package's changelog (if available)
+I<action> may be one of:
 
-	changeroot source
-		Change the default source on all packages to source
-		Example: `changeroot ssh://kraftwerk/var/packages_root` will change
-		the source of core to 'ssh://kraftwerk/var/packages_root/core'
+=over
 
-	delete, remove package
-		Remove the package from the local packages tree
-		Note: This does not yet remove the symlinks
+=item B<add>, B<install> I<package>
 
-	doc command
-		Show documentation on command, if available
-		Note: command must be shipped by a package, of course
+fetch given I<package> from the package_root and install it
 
-	info package
-		Show information on package, like dependencies, version, etc
+=item B<changelog> I<package>
 
-	list
-		List all installed packages
+Show I<package>'s changelog (if available)
 
-	list-all
-		List all available (both installed and not installed packages
-		Hint: `diff <(pkg list) <(pkg list-all)` will show all packages
-		that are currently not installed
+=item B<changeroot> I<source>
 
-	log package
-		Show commit history for package
+Change the default source on all packages to I<source>
 
-	status [ package ]
-		Check for local changes to the packages files
-		If no arguments is given, checks all installed packages
+Example: `changeroot ssh://kraftwerk/var/packages_root` will change
+the source of core to 'ssh://kraftwerk/var/packages_root/core'
 
-	update [ package ]
-		retreive and install newest available version of package
-		If no argument is given, updates all installed packages
+=item B<delete>, B<remove> I<package>
+
+Remove I<package> from the local packages tree
+Note: This does not yet remove the symlinks
+
+=item B<info> I<package>
+
+Show information on I<package>, like dependencies, version, etc
+
+=item B<list>
+
+List all installed packages
+
+=item B<list-all>
+
+List all available (both installed and not installed packages
+
+Hint: `diff <(pkg list) <(pkg list-all)` will show all packages
+that are currently not installed
+
+=item B<log> I<package>
+
+Show commit history for package
+
+=item B<status> [ I<package> ]
 
 
-~/.pkg.conf:
-	Contains configuration vars
+Check for local changes to the I<package>'s files.
+If no arguments is given, checks all installed packages
 
-	syntax: VAR='argument'
-	comments with "#" are supported
+=item B<update> [ I<package> ]
 
-	PKG_ROOT
-		the package root path
-		Default: ssh://derf.homelinux.org/var/packages_root
+retrieve and install newest available version of I<package>
+If no argument is given, updates all installed packages
 
-	PDIR
-		path for the local package tree
-		WARNING: changing this will break everything. Don't do it.
-		Default: $HOME/packages
+=back
 
-	VCS_CMD
-		Command to invoke the vcs
-		Default: hg
+=head1 FILES
 
-	VCS_OPTIONS
-		global options to invoke VCS_CMD with
-		Default: --quiet
+=over
 
-	CL_OPTIONS
-		Options to invoke checklinks with
-		Default: -q
+=item F<~/.pkg.conf>
 
+Contains configuration vars
+
+syntax: VAR='argument'.
+comments with "#" are supported
+
+=back
+
+=head2 VARIABLES
+
+=over
+
+=item PKG_ROOT
+
+the package root path.
+Default: ssh://derf.homelinux.org/var/packages_root
+
+=item PDIR
+
+path for the local package tree.
+Default: $HOME/packages
+
+WARNING: changing this will break everything. Don't do it.
+
+=item VCS_CMD
+
+Command to invoke the vcs.
+Default: hg
+
+=item VCS_OPTIONS
+
+global options to invoke VCS_CMD with.
+Default: --quiet
+
+=item CL_OPTIONS
+
+Options to invoke checklinks with
+Default: -q
+
+=back
+
+=head1 AUTHOR
+
+Daniel Friesel <derf@derf.homelinux.org>
