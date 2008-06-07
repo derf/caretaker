@@ -1,6 +1,12 @@
+=head1 NAME
+
 bootstrap - install the most essential utilities in $HOME.
 
-Usage: ./bootstrap
+=head1 SYNOPSIS
+
+B<./bootstrap>
+
+=head1 DESCRIPTION
 
 bootstrap will, in this order, do the following:
 
@@ -12,3 +18,7 @@ bootstrap will, in this order, do the following:
 	  If not, receives a pre-build one via ssh/tar
 
 	* Clone and then install the core repository
+
+=head1 AUTHOR
+
+Daniel Friesel <derf@derf.homelinux.org>
