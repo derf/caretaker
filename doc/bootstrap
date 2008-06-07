@@ -12,14 +12,18 @@ B<./bootstrap>
 
 bootstrap will, in this order, do the following:
 
-	* create a basic directory structure
+=over
 
-	* Check whether python is installed on the machine
+=item * create a basic directory structure
 
-	* Check whether mercurial is install on the machine
-	  If not, receives a pre-build one via ssh/tar
+=item * Check whether python is installed on the machine
 
-	* Clone and then install the core repository
+=item * Check whether mercurial is install on the machine.
+If not, receives a pre-build one via ssh/tar
+
+=item * Clone and then install the core repository
+
+=back
 
 =head1 AUTHOR
 
