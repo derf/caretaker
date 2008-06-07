@@ -158,7 +158,7 @@ populate_collected () {
 	cd $PDIR/$1 || return
 	info "Enabling documentation "
 	if ([ -d man ]) {
-		for section in man/*;
+		for section in man/*; {
 			for i in man/$section/*; {
 				if (podchecker $i &> /dev/null) {
 					pod2man -c "$1 package" -r "/home/derf" $i > $PDIR/.collected/man/man$section/$(basename $i).$section
