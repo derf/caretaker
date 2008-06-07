@@ -1,12 +1,14 @@
 =head1 NAME
 
-pkg - Package maintaining utility
+pkg - Package maintenance utility
 
 =head1 SYNOPSIS
 
 B<pkg> I<action> [ I<arguments> ]
 
 =head1 DESCRIPTION
+
+B<pkg> is the basic script for maintaining packages
 
 I<action> may be one of:
 
@@ -59,7 +61,7 @@ If no arguments is given, checks all installed packages
 
 =item B<update> [ I<package> ]
 
-retrieve and install newest available version of I<package>
+retrieve and install newest available version of I<package>.
 If no argument is given, updates all installed packages
 
 =back
@@ -105,7 +107,7 @@ Default: --quiet
 
 =item CL_OPTIONS
 
-Options to invoke checklinks with
+Options to invoke checklinks with.
 Default: -q
 
 =back
