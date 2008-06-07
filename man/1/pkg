@@ -76,47 +76,15 @@ If no argument is given, updates all installed packages
 
 Contains configuration vars
 
-syntax: VAR='argument'.
-comments with "#" are supported
-
-=back
-
-=head2 VARIABLES
-
-=over
-
-=item PKG_ROOT
-
-the package root path.
-Default: ssh://derf.homelinux.org/var/packages_root
-
-=item PDIR
-
-path for the local package tree.
-Default: $HOME/packages
-
-WARNING: changing this will break everything. Don't do it.
-
-=item VCS_CMD
-
-Command to invoke the vcs.
-Default: hg
-
-=item VCS_OPTIONS
-
-global options to invoke VCS_CMD with.
-Default: --quiet
-
-=item CL_OPTIONS
-
-Options to invoke checklinks with.
-Default: -q
-
 =back
 
 =head1 AUTHOR
 
 Daniel Friesel <derf@derf.homelinux.org>
+
+=head1 SEE ALSO
+
+L<pkg.conf>(5)
 
 =cut
 
