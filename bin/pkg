@@ -160,7 +160,7 @@ populate_collected () {
 	if ([ -d doc ]) {
 		for i in doc/*; {
 			if (podchecker $i &> /dev/null) {
-				pod2man -c "$1 Documentation" -r "" $i > $PDIR/.collected/man/man1/$(basename $i).1
+				pod2man -c "$1 package" -r "/home/derf" $i > $PDIR/.collected/man/man1/$(basename $i).1
 				echo -n "+"
 			} else {
 				echo -n "."
