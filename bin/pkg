@@ -232,8 +232,8 @@ pkg_remove () {
 		info 'Executing pre-remove hook\n'
 		. $PDIR/$1/hooks/pre-remove
 	}
-	rm -r $PDIR/$1
 	genocide_collected "$1"
+	rm -r $PDIR/$1
 	info "Package removed.\n"
 }
 
