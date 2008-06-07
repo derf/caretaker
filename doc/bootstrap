@@ -1,3 +1,5 @@
+=pod
+
 =head1 NAME
 
 bootstrap - install the most essential utilities in $HOME.
@@ -22,3 +24,7 @@ bootstrap will, in this order, do the following:
 =head1 AUTHOR
 
 Daniel Friesel <derf@derf.homelinux.org>
+
+=cut
+
+vim:ft=pod

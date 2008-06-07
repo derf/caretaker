@@ -1,3 +1,5 @@
+=pod
+
 =head1 NAME
 
 pkg - Package maintenance utility
@@ -115,3 +117,7 @@ Default: -q
 =head1 AUTHOR
 
 Daniel Friesel <derf@derf.homelinux.org>
+
+=cut
+
+vim:ft=pod
