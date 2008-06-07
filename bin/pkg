@@ -408,4 +408,5 @@ case "$1" in
 	remove) pkg_remove "$2" ;;
 	status) pkg_status_wrapper "$2" ;;
 	update) pkg_update_wrapper "$2" ;;
+	*) die "wait, what?\n" ;;
 esac
