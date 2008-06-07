@@ -161,16 +161,20 @@ populate_collected () {
 		for i in doc/*; {
 			if (podchecker $i &> /dev/null) {
 				pod2man -c "$1 Documentation" -r "" $i > $PDIR/.collected/man/man1/$(basename $i).1
+				echo -n "+"
+			} else {
+				echo -n "."
 			}
-		echo -n "."
 		}
 	}
 	if ([ -d bin ]) {
 		for i in bin/*; {
 			if (podchecker $i &> /dev/null) {
 				pod2man $i > $PDIR/.collected/man/man1/$(basename $i).1
+				echo -n "+"
+			} else {
+				echo -n "."
 			}
-			echo -n "."
 		}
 	}
 	clear_line
