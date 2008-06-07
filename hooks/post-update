@@ -1,1 +1,0 @@
-mkdir -p $PDIR/.collected/{bin,doc,man/man1,etc,include}
