@@ -257,7 +257,7 @@ pkg_update () {
 		info "Updating: $1 to $(echo $NEW | tail -n 1)"
 		$VCS_CMD $VCS_OPTIONS $VCS_UPDATE $VCS_UPDATE_OPTIONS
 		clear_line
-		info "Updated: $1 to $(echo $NEW | tail -n 1) \n"
+		info "Updated $1 to $(echo $NEW | tail -n 1) \n"
 		check_deps "$1"
 		if ([ -r Makefile ]) {
 			info "Building binaries\n"
