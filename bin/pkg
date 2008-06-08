@@ -251,9 +251,11 @@ pkg_update () {
 	info "Looking for updates: $1"
 	NEW=$($VCS_CMD $VCS_OPTIONS $VCS_INCOMING)
 	if ([ $? = 0 ]) {
-		info "\rUpdating: $1 to $(echo $NEW | tail -n 1)"
+		clear_line
+		info "Updating: $1 to $(echo $NEW | tail -n 1)"
 		$VCS_CMD $VCS_OPTIONS $VCS_UPDATE $VCS_UPDATE_OPTIONS
-		info "\rUpdated: $1 to $(echo $NEW | tail -n 1) \n"
+		clear_line
+		info "Updated: $1 to $(echo $NEW | tail -n 1) \n"
 		if ([ -r Makefile ]) {
 			info "Building binaries\n"
 			make
