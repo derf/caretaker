@@ -133,7 +133,7 @@ path of the source, i.e. the symlink. Relative to $HOME
 =item the target
 
 path of the target, i.e. the symlink's destination.
-This is relativ to the source. See I<path_resolution>(7)
+This is relativ to the source. See L<path_resolution>(7)
 
 =back
 
