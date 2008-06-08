@@ -127,7 +127,6 @@ real_priority () {
 	esac
 }
 
-
 # Check dependencies and offer to install them
 check_deps () {
 	[ -r $PDIR/$1/dependencies ] || return 0
@@ -249,12 +248,12 @@ pkg_remove () {
 
 pkg_update () {
 	cd $PDIR/$1
-	info "Checking package $1..."
+	info "Looking for updates: $1"
 	NEW=$($VCS_CMD $VCS_OPTIONS $VCS_INCOMING)
 	if ([ $? = 0 ]) {
-		info "\rUpdating package $1 to $(echo $NEW | tail -n 1)"
+		info "\rUpdating: $1 to $(echo $NEW | tail -n 1)"
 		$VCS_CMD $VCS_OPTIONS $VCS_UPDATE $VCS_UPDATE_OPTIONS
-		info "\rUpdated package $1 to $(echo $NEW | tail -n 1) \n"
+		info "\rUpdated: $1 to $(echo $NEW | tail -n 1) \n"
 		if ([ -r Makefile ]) {
 			info "Building binaries\n"
 			make
@@ -308,7 +307,7 @@ pkg_list_available () {
 # Local modifications should not be overseen...
 pkg_status () {
 	cd $PDIR/$1
-	info "Checking $1 status..."
+	info "looking for local modifications: $1"
 	check_deps $1
 	checklinks $CL_OPTIONS
 	STATUS=$($VCS_CMD $VCS_STATUS)
