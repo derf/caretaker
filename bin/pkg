@@ -157,9 +157,11 @@ populate_collected () {
 	info "Enabling documentation "
 	if ([ -d man ]) {
 		for section in man/*; {
-			for i in $section/*; {
-				if (podchecker $i &> /dev/null) {
-					pod2man -c "$1 package" -r "/home/derf" $i > $PDIR/.collected/man/man$(basename $section)/$(basename $i).$(basename $section)
+			section=$(basename $section)
+			for manpage in man/$section/*; {
+				manpage=$(basename $manpage)
+				if (podchecker man/$section/$manpage &> /dev/null) {
+					pod2man -c "$1 package" -r "/home/derf" man/$section/$manpage > $PDIR/.collected/man/man$section/$manpage.$section
 					echo -n "+"
 				} else {
 					echo -n "."
