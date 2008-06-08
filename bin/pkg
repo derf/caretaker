@@ -50,11 +50,10 @@ export PKG_ROOT
 ## Warn otherwise
 ##
 
-check_sed () {
-	QUUX=$(echo foox | sed -r 's/^fo{2}(.)$/quu\1/' 2> /dev/null)
-	if ([ "$QUUX" != 'quux' ]) {
-		warn "sed is not working properly. This may produce unexpected behaviour.\n"
-	}
+# we need sed -r (and sed -i, but not checking for that here)
+QUUX=$(echo foox | sed -r 's/^fo{2}(.)$/quu\1/' 2> /dev/null)
+if ([ "$QUUX" != 'quux' ]) {
+	warn "sed is not working properly. This may produce unexpected behaviour.\n"
 }
 
 if ([ ! -d $PDIR ]) {
