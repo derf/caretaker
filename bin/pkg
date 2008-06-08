@@ -161,7 +161,7 @@ populate_collected () {
 			for manpage in man/$section/*; {
 				manpage=$(basename $manpage)
 				if (podchecker man/$section/$manpage &> /dev/null) {
-					pod2man -c "$1 package" -r "/home/derf" man/$section/$manpage > $PDIR/.collected/man/man$section/$manpage.$section
+					pod2man -s $section -c "$1 package" -r "/home/derf" man/$section/$manpage > $PDIR/.collected/man/man$section/$manpage.$section
 					echo -n "+"
 				} else {
 					echo -n "."
