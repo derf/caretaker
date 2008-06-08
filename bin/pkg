@@ -159,7 +159,7 @@ populate_collected () {
 		for section in man/*; {
 			for i in $section/*; {
 				if (podchecker $i &> /dev/null) {
-					pod2man -c "$1 package" -r "/home/derf" $i > $PDIR/.collected/man/man$(basename $section)/$(basename $i).$section
+					pod2man -c "$1 package" -r "/home/derf" $i > $PDIR/.collected/man/man$(basename $section)/$(basename $i).$(basename $section)
 					echo -n "+"
 				} else {
 					echo -n "."
