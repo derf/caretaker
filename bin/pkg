@@ -150,6 +150,24 @@ check_deps () {
 	}
 }
 
+check_conflicts () {
+	[ -r $PDIR/$1/conflicts ] || return 0
+	CONFLICTS=($(cat $PDIR/$1/conflicts))
+	REMOVE=()
+	for conflict in $CONFLICTS; {
+		if ([ -d $PDIR/$conflict ]) {
+			if (confirm_no "$1 conflicts with $conflict. Remove $conflict?") {
+				REMOVE+="$conflict"
+			}
+		}
+	}
+	if ([ -n "$REMOVE" ]) {
+		for pkg in $REMOVE; {
+			pkg_remove "$pkg"
+		}
+	}
+}
+
 # Write a packages' files to .collected
 # Currently, this is only documentation
 populate_collected () {
@@ -224,6 +242,7 @@ pkg_add () {
 		. $PDIR/$1/hooks/post-add
 	}
 	check_deps "$1"
+	check_conflicts "$1"
 	cd $PDIR/$1
 	checklinks $CL_OPTIONS
 	populate_collected "$1"
