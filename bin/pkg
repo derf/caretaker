@@ -232,7 +232,7 @@ genocide_collected () {
 	clear_line
 	if ([ -d bin ]) {
 		for i in bin/*(*); {
-			if ([ $(readlink $PDIR/.collected/$i) = "../../$1/$i" ]) {
+			if ([ "$(readlink $PDIR/.collected/$i)" = "../../$1/$i" ]) {
 				rm -f $PDIR/.collected/$i
 			}
 		}
