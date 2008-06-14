@@ -1,0 +1,23 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+my $i;
+my $package = shift or die('not enough arguments');
+my $verbose = 1;
+my $home = $ENV{HOME} || '/home/derf';
+my @binaries;
+
+opendir(BIN, "$home/bin");
+@binaries = readdir(BIN);
+closedir(BIN);
+
+foreach(@binaries) {
+	next if $_ eq '.';
+	next if $_ eq '..';
+	next unless (-l);
+	if ((split(/\//, readlink))[2] eq $package) {
+		unlink("$home/bin/$_");
+		print "Removed $_\n" if $verbose;
+	}
+}
