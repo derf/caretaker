@@ -3,8 +3,11 @@
     <note priority="low" time="1213221704" done="1213257550">
         implement package conflicts
     </note>
-    <note priority="medium" time="1213441704">
+    <note priority="medium" time="1213441704" done="1213467969">
         bin/pkg: Automatically symlink bin/*
+        <comment>
+            Now I just need to wait some time and then I can make ~/bin point to packages/.collected/bin
+        </comment>
     </note>
     <note priority="low" time="1213441632">
         bin/pkg: pkg_remove: Also remove symlinks from other places (~/.foo and such)
