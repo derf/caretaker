@@ -206,11 +206,17 @@ populate_collected () {
 genocide_collected () {
 	cd $PDIR/$1 || return
 	info "Removing documentation"
-#	if ([ -d man ]) {
-#		for i in man/*/*; {
-#			rm $PDIR/.collected/$i
-#		}
-#	}
+	if ([ -d man ]) {
+		for section in man/*; {
+			section=$(basename $section)
+			for manual in man/$section/*; {
+				manual=$(basename $manual)
+				if ([ -e $PDIR/.collected/man/man$section/$manual ]) {
+					rm $PDIR/.collected/man/man$section/$manual
+				}
+			}
+		}
+	}
 	if ([ -d bin ]) {
 		for i in bin/*; {
 			rm -f $PDIR/.collected/man/man1/$(basename $i).1
