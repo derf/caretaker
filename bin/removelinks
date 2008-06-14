@@ -15,9 +15,10 @@ closedir(BIN);
 foreach(@binaries) {
 	next if $_ eq '.';
 	next if $_ eq '..';
+	$_ = "$home/bin/$_";
 	next unless (-l);
 	if ((split(/\//, readlink))[2] eq $package) {
-		unlink("$home/bin/$_");
+		unlink;
 		print "Removed $_\n" if $verbose;
 	}
 }
