@@ -269,6 +269,7 @@ pkg_remove () {
 		. $PDIR/$1/hooks/pre-remove
 	}
 	genocide_collected "$1"
+	removelinks "$1"
 	rm -r $PDIR/$1
 	info "Package removed.\n"
 }
