@@ -198,6 +198,13 @@ populate_collected () {
 		}
 	}
 	clear_line
+	if ([ -d bin ]) {
+		for i in bin/*(*); {
+			if ([ ! -e $PDIR/.collected/$i ]) {
+				ln -s ../../$1/$i $PDIR/.collected/$i
+			}
+		}
+	}
 }
 
 # Remove a packages' files from .collected
@@ -223,6 +230,13 @@ genocide_collected () {
 		}
 	}
 	clear_line
+	if ([ -d bin ]) {
+		for i in bin/*(*); {
+			if ([ $(readlink $PDIR/.collected/$i) = "../../$1/$i" ]) {
+				rm -f $PDIR/.collected/$i
+			}
+		}
+	}
 }
 
 
