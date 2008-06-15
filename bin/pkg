@@ -135,6 +135,16 @@ real_priority () {
 	esac
 }
 
+# Execute a hook
+exec_hook () {
+	package="$1"
+	hook="$2"
+	if ([ -r $PDIR/$package/hooks/$hook ]) {
+		info "Executing $hook hook\n"
+		. $PDIR/$package/hooks/$hook
+	}
+}
+
 # Check dependencies and offer to install them
 check_deps () {
 	[ -r $PDIR/$1/dependencies ] || return 0
@@ -265,10 +275,7 @@ pkg_add () {
 		cd $PDIR/$1
 		make
 	}
-	if ([ -r $PDIR/$1/hooks/post-add ]) {
-		info 'Executing post-add hook\n'
-		. $PDIR/$1/hooks/post-add
-	}
+	exec_hook "$1" "post-add"
 	check_deps "$1"
 	check_conflicts "$1"
 	cd $PDIR/$1
@@ -286,10 +293,7 @@ pkg_remove () {
 			confirm_no "Package '$1' is $(real_priority $(cat priority)). Really remove?" || return
 		}
 	}
-	if ([ -f $PDIR/$1/hooks/pre-remove ]) {
-		info 'Executing pre-remove hook\n'
-		. $PDIR/$1/hooks/pre-remove
-	}
+	exec_hook "$1" "pre-remove"
 	genocide_collected "$1"
 	removelinks "$1"
 	rm -r $PDIR/$1
@@ -311,10 +315,7 @@ pkg_update () {
 			info "Building binaries\n"
 			make
 		}
-		if ([ -r hooks/post-update ]) {
-			info 'Executing post-update hook\n'
-			. hooks/post-update
-		}
+		exec_hook "$1" "post-update"
 		checklinks $CL_OPTIONS
 		populate_collected "$1"
 	} else {
