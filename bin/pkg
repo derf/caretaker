@@ -216,7 +216,7 @@ populate_collected () {
 	clear_line
 	if ([ -d bin ]) {
 		for i in bin/*(*); {
-			if ([ -L "$HOME/$i" -a "$(readlink $HOME/$i)" != "../$1/$i" ]) {
+			if ([ "$(readlink $HOME/$i)" != "../$1/$i" -a $? = 0]) {
 				rm -f "$HOME/$i"
 				ln -s ../${PDIR//$HOME\/}/$1/$i $HOME/$i
 			}
