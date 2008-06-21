@@ -32,12 +32,12 @@ die () {
 	exit 100
 }
 
-e_notinstalled () {
-	die "Not installed: $1\n"
+check_installed () {
+	[ -n "$1" -a -d $PDIR/$1 ] || die "Not installed: $1\n"
 }
 
-e_invalid () {
-	die "Not a valid package name: '$1'\n"
+check_valid () {
+	[ -d $PDIR/$1/.hg ] || die "Not a valid package name: '$1'\n"
 }
 
 clear_line () {
@@ -282,8 +282,8 @@ pkg_add () {
 }
 
 pkg_remove () {
-	[ -d $PDIR/$1 ] || e_notinstalled "$1"
-	[ -d $PDIR/$1/.hg ] || e_invalid "$1"
+	check_installed "$1"
+	check_valid "$1"
 	cd $PDIR/$1
 	if ([ -r priority ]) {
 		if ([ $(cat priority) -gt 3 ]) {
@@ -297,7 +297,7 @@ pkg_remove () {
 }
 
 pkg_update () {
-	cd $PDIR/$1 || e_notinstalled "$1"
+	check_installed "$1"
 	info "Looking for updates: $1"
 	NEW=$($VCS_CMD $VCS_OPTIONS $VCS_INCOMING)
 	if ([ $? = 0 ]) {
@@ -356,7 +356,7 @@ pkg_list_available () {
 
 # Local modifications should not be overseen...
 pkg_status () {
-	cd $PDIR/$1 || e_notinstalled "$1"
+	check_installed "$1"
 	info "looking for local modifications: $1"
 #	check_deps $1
 #	checklinks $CL_OPTIONS
@@ -382,7 +382,7 @@ pkg_status_wrapper () {
 
 # Various information related to a package
 pkg_info () {
-	cd $PDIR/$1 || e_notinstalled "$1"
+	check_installed "$1"
 	[ -z "$1" ] && die "Not enough arguments\n"
 	# Fetch the infos
 	NAME="$1"
@@ -428,7 +428,7 @@ pkg_info () {
 }
 
 pkg_log () {
-	cd $PDIR/$1 || e_notinstalled "$1"
+	check_installed "$1"
 	hg glog | less
 }
 
