@@ -2,14 +2,12 @@
 # Recommended: hg >= 1.0
 PDIR="$HOME/packages"
 PKG_ROOT="ssh://derf.homelinux.org/var/packages_root"
-VCS_CMD="hg"
-VCS_OPTIONS="--quiet"
-VCS_ADD="clone"
-VCS_INCOMING="incoming"
-VCS_STATUS="status"
-VCS_UPDATE="pull"
-VCS_UPDATE_OPTIONS="--update"
-CL_OPTIONS="-q"
+VCS_CMD=(hg --quiet)
+VCS_ADD=(clone)
+VCS_INCOMING=(incoming)
+VCS_STATUS=(status)
+VCS_UPDATE=(pull --update)
+CL_OPTIONS=(-q)
 info=$'\e[0;36m'
 error=$'\e[0;31m'
 reset=$'\e[0m'
@@ -271,7 +269,7 @@ pkg_add () {
 	}
 	cd $PDIR || return 255
 	info "Retrieving package $1...\n"
-	$VCS_CMD $VCS_OPTIONS $VCS_ADD $PKG_ROOT/$1 || return 255
+	$VCS_CMD $VCS_ADD $PKG_ROOT/$1 || return 255
 	if ([ -r $PDIR/$1/Makefile ]) {
 		info "Building binaries\n"
 		cd $PDIR/$1
@@ -305,11 +303,11 @@ pkg_update () {
 	check_installed "$1"
 	cd $PDIR/$1
 	info "Looking for updates: $1"
-	NEW=$($VCS_CMD $VCS_OPTIONS $VCS_INCOMING)
+	NEW=$($VCS_CMD $VCS_INCOMING)
 	if ([ $? = 0 ]) {
 		clear_line
 		info "Updating: $1 to $(echo $NEW | tail -n 1)"
-		$VCS_CMD $VCS_OPTIONS $VCS_UPDATE $VCS_UPDATE_OPTIONS
+		$VCS_CMD $VCS_UPDATE
 		clear_line
 		info "Updated $1 to $(echo $NEW | tail -n 1) \n"
 		check_deps "$1"
