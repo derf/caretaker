@@ -303,6 +303,7 @@ pkg_remove () {
 
 pkg_update () {
 	check_installed "$1"
+	cd $PDIR/$1
 	info "Looking for updates: $1"
 	NEW=$($VCS_CMD $VCS_OPTIONS $VCS_INCOMING)
 	if ([ $? = 0 ]) {
@@ -362,6 +363,7 @@ pkg_list_available () {
 # Local modifications should not be overseen...
 pkg_status () {
 	check_installed "$1"
+	cd $PDIR/$1
 	info "looking for local modifications: $1"
 #	check_deps $1
 #	checklinks $CL_OPTIONS
@@ -388,6 +390,7 @@ pkg_status_wrapper () {
 # Various information related to a package
 pkg_info () {
 	check_installed "$1"
+	cd $PDIR/$1
 	[ -z "$1" ] && die "Not enough arguments\n"
 	# Fetch the infos
 	NAME="$1"
@@ -434,7 +437,7 @@ pkg_info () {
 
 pkg_log () {
 	check_installed "$1"
-	hg glog | less
+	hg -R $PDIR/$1 glog | less
 }
 
 pkg_changelog () {
