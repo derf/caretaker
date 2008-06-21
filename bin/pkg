@@ -152,20 +152,14 @@ check_deps () {
 	DEPS=($(cat $PDIR/$1/dependencies))
 	INSTALL=()
 	for dep in $DEPS; {
-		if ([ "$dep" = "$1" ]) {
-			warn "This package depends on itself. Therefore, I'm considering it borked. Not installing.\n"
-			return 100
-		}
 		if ([ ! -d $PDIR/$dep ]) {
 			if (confirm_yes "$1 depends on $dep. Install dependency?") {
 				INSTALL+="$dep"
 			}
 		}
 	}
-	if ([ -n "$INSTALL" ]) {
-		for pkg in $INSTALL; {
-			pkg_add "$pkg"
-		}
+	for pkg in $INSTALL; {
+		pkg_add "$pkg"
 	}
 }
 
