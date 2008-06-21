@@ -230,19 +230,17 @@ genocide_collected () {
 	cd $PDIR/$1 || return
 	info "Removing documentation"
 	if ([ -d man ]) {
-		for section in man/*; {
-			section=$(basename $section)
-			for manual in man/$section/*; {
-				manual=$(basename $manual)
-				if ([ -e $PDIR/.collected/man/man$section/$manual ]) {
-					rm $PDIR/.collected/man/man$section/$manual
-				}
+		for i in man/*/*; {
+			section=${i:h:t}
+			manual=${i:t}
+			if ([ -e $PDIR/.collected/man/man$section/$manual ]) {
+				rm $PDIR/.collected/man/man$section/$manual
 			}
 		}
 	}
 	if ([ -d bin ]) {
 		for i in bin/*; {
-			rm -f $PDIR/.collected/man/man1/$(basename $i).1
+			rm -f $PDIR/.collected/man/man1/${i:t}.1
 		}
 	}
 	clear_line
