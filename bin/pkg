@@ -155,7 +155,7 @@ check_deps () {
 		}
 	}
 	if ([ -n "$INSTALL" ]) {
-		info "$1 depends on the following packages: "
+		info "$1 has unmet dependencies: "
 		echo "$INSTALL"
 		if (confirm_yes "Install dependencies?") {
 			for pkg in $INSTALL; {
