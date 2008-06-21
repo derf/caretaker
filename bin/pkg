@@ -141,7 +141,8 @@ exec_hook () {
 	hook="$2"
 	if ([ -r $PDIR/$package/hooks/$hook ]) {
 		info "Executing $hook hook\n"
-		. $PDIR/$package/hooks/$hook
+		cd $PDIR/$package
+		. hooks/$hook
 	}
 }
 
