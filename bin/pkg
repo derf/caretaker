@@ -153,13 +153,19 @@ check_deps () {
 	INSTALL=()
 	for dep in $DEPS; {
 		if ([ ! -d $PDIR/$dep ]) {
-			if (confirm_yes "$1 depends on $dep. Install dependency?") {
-				INSTALL+="$dep"
-			}
+			INSTALL+="$dep"
 		}
 	}
-	for pkg in $INSTALL; {
-		pkg_add "$pkg"
+	if ([ -n "$INSTALL" ]) {
+		info "$1 depends on the following packages: "
+		echo "$INSTALL"
+		if (confirm_yes "Install dependencies?") {
+			for pkg in $INSTALL; {
+				pkg_add "$pkg"
+			}
+		} else {
+			die "Installation aborted"
+		}
 	}
 }
 
@@ -169,14 +175,18 @@ check_conflicts () {
 	REMOVE=()
 	for conflict in $CONFLICTS; {
 		if ([ -d $PDIR/$conflict ]) {
-			if (confirm_no "$1 conflicts with $conflict. Remove $conflict?") {
-				REMOVE+="$conflict"
-			}
+			REMOVE+="$conflict"
 		}
 	}
 	if ([ -n "$REMOVE" ]) {
-		for pkg in $REMOVE; {
-			pkg_remove "$pkg"
+		info "$1 conflicts with the following packages: "
+		echo "$REMOVE"
+		if (confirm_no "Remove conflicting packages and proceed with installation?") {
+			for pkg in $REMOVE; {
+				pkg_remove "$pkg"
+			}
+		} else {
+			die "Installation aborted"
 		}
 	}
 }
