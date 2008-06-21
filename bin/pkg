@@ -292,7 +292,6 @@ pkg_remove () {
 	}
 	exec_hook "$1" "pre-remove"
 	genocide_collected "$1"
-	removelinks "$1"
 	rm -r $PDIR/$1
 	info "Package removed.\n"
 }
