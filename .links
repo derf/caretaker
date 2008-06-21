@@ -1,4 +1,1 @@
-soft bin/checklinks ../packages/core/bin/checklinks
-soft bin/pkg ../packages/core/bin/pkg
-soft bin/removelinks ../packages/core/bin/removelinks
 soft .hgrc packages/core/etc/hgrc
