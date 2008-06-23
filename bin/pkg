@@ -2,11 +2,6 @@
 # Recommended: hg >= 1.0
 PDIR="$HOME/packages"
 PKG_ROOT="ssh://derf.homelinux.org/var/packages_root"
-VCS_CMD=(hg --quiet)
-VCS_ADD=(clone)
-VCS_INCOMING=(incoming)
-VCS_STATUS=(status)
-VCS_UPDATE=(pull --update)
 CL_OPTIONS=(-q)
 info=$'\e[0;36m'
 error=$'\e[0;31m'
