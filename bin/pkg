@@ -134,8 +134,8 @@ vcs_incoming () {
 }
 
 vcs_update () {
-	[ -d .hg   ] && hg --quiet pull --update
-	[ -d .git  ] && git pull --quiet
+	[ -d .hg   ] && hg pull --update
+	[ -d .git  ] && git pull
 }
 
 
@@ -325,10 +325,8 @@ pkg_update () {
 	NEW=$(vcs_incoming)
 	if ([ $? = 0 ]) {
 		clear_line
-		info "Updating: $1 to $(echo $NEW | tail -n 1)"
+		info "Updating $1 to $(echo $NEW | tail -n 1)\n"
 		vcs_update
-		clear_line
-		info "Updated $1 to $(echo $NEW | tail -n 1) \n"
 		check_deps "$1"
 		if ([ -r Makefile ]) {
 			info "Building binaries\n"
