@@ -16,9 +16,10 @@ I<action> may be one of:
 
 =over
 
-=item B<add>, B<install> I<package>
+=item B<add>, B<install> I<package> [ I<repository type> ]
 
-fetch given I<package> from the package_root and install it
+fetch given I<package>, tracked with I<repository type> (default: hg)
+from the package_root and install it
 
 =item B<changelog> I<package>
 

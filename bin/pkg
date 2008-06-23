@@ -120,6 +120,30 @@ confirm_no () {
 ## Major internal functions
 ##
 
+## VCS Wrappers
+
+vcs_add () {
+	cd "$PDIR"
+	case "$1" in
+		git)   git clone "$2" ;;
+		hg|'') hg clone "$2"  ;;
+		*)     die "Package '$2' does not exist\n" ;;
+	esac
+}
+
+vcs_incoming () {
+	# [ -d .vcs ] && vcs incoming will not work here, since the [] will return
+	# something. We need the return value of vcs.
+	if ([ -d .hg   ]) && hg incoming
+	if ([ -d .git  ]) && false
+}
+
+vcs_update () {
+	[ -d .hg   ] && hg --quiet pull --update
+	[ -d .git  ] && git pull
+}
+
+
 # Return an understandable priority from the numeric one
 real_priority () {
 	case "$1" in
@@ -269,7 +293,7 @@ pkg_add () {
 	}
 	cd $PDIR || return 255
 	info "Retrieving package $1...\n"
-	$VCS_CMD $VCS_ADD $PKG_ROOT/$1 || return 255
+	vcs_add "$2" "$PKG_ROOT/$1" || return 255
 	if ([ -r $PDIR/$1/Makefile ]) {
 		info "Building binaries\n"
 		cd $PDIR/$1
@@ -303,11 +327,11 @@ pkg_update () {
 	check_installed "$1"
 	cd $PDIR/$1
 	info "Looking for updates: $1"
-	NEW=$($VCS_CMD $VCS_INCOMING)
+	NEW=$(vcs_incoming)
 	if ([ $? = 0 ]) {
 		clear_line
 		info "Updating: $1 to $(echo $NEW | tail -n 1)"
-		$VCS_CMD $VCS_UPDATE
+		vcs_update
 		clear_line
 		info "Updated $1 to $(echo $NEW | tail -n 1) \n"
 		check_deps "$1"
@@ -459,13 +483,13 @@ pkg_doc () {
 ##
 
 case "$1" in
-	add) pkg_add "$2" ;;
+	add) pkg_add "$2" "$3" ;;
 	changelog) pkg_changelog "$2" ;;
 	changeroot) pkg_changesrc "$2" ;;
 	delete) pkg_remove "$2" ;;
 	doc) pkg_doc "$2" ;;
 	info) pkg_info "$2" ;;
-	install) pkg_add "$2" ;;
+	install) pkg_add "$2" "$3" ;;
 	list) pkg_list_installed ;;
 	list-all) pkg_list_available ;;
 	log) pkg_log "$2" ;;
