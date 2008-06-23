@@ -18,4 +18,7 @@
     <note priority="low" time="1214002909">
         bin/pkg: Add 'triggers' (a package provides it's own crontab/zsh config etc, it is no longer in the package cron/zsh)
     </note>
+    <note priority="low" time="1214166094">
+        bin/pkg: pkg_remove: Check reverse dependencies
+    </note>
 </todo>
