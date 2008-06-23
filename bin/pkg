@@ -130,7 +130,7 @@ vcs_incoming () {
 	# [ -d .vcs ] && vcs incoming will not work here, since the [] will return
 	# something. We need the return value of vcs.
 	[ -d .hg   ] && {hg --quiet incoming; return}
-	[ -d .git  ] && {false              ; return}
+	[ -d .git  ] && {true               ; return}
 }
 
 vcs_update () {
