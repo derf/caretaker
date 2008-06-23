@@ -79,6 +79,12 @@ Contains configuration vars
 
 =back
 
+=head1 BUGS
+
+packages tracked in git are not completely supported.
+'pkg update' will always try to update them, no matter whether there were
+changed or not. Plus, the output of 'pkg update' will break a  bit.
+
 =head1 AUTHOR
 
 Daniel Friesel <derf@derf.homelinux.org>
