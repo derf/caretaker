@@ -135,7 +135,7 @@ vcs_incoming () {
 
 vcs_update () {
 	[ -d .hg   ] && hg --quiet pull --update
-	[ -d .git  ] && git --quiet pull
+	[ -d .git  ] && git pull
 }
 
 
