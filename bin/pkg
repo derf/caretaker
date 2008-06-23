@@ -122,7 +122,7 @@ vcs_add () {
 	case "$1" in
 		git)   git clone "$2" ;;
 		hg|'') hg clone "$2"  ;;
-		*)     die "Package '$2' does not exist\n" ;;
+		*)     die "Cannot handle repository format '$1'\n" ;;
 	esac
 }
 
