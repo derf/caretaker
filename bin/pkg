@@ -58,7 +58,7 @@ if ([ "$QUUX" != 'quux' ]) {
 }
 
 if ([ ! -d $PDIR ]) {
-	die "$PDIR not found!!"
+	die "$PDIR not found!!\n"
 }
 
 
