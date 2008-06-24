@@ -127,15 +127,18 @@ vcs_add () {
 }
 
 vcs_incoming () {
-	# [ -d .vcs ] && vcs incoming will not work here, since the [] will return
-	# something. We need the return value of vcs.
 	[ -d .hg   ] && {hg --quiet incoming; return}
 	[ -d .git  ] && {true               ; return}
 }
 
+vcs_log () {
+	[ -d .hg   ] && {hg log | less      ; return}
+	[ -d .git  ] && {git log            ; return}
+}
+
 vcs_update () {
-	[ -d .hg   ] && hg pull --update
-	[ -d .git  ] && git pull
+	[ -d .hg   ] && {hg pull --update   ; return}
+	[ -d .git  ] && {git pull           ; return}
 }
 
 
@@ -454,7 +457,8 @@ pkg_info () {
 
 pkg_log () {
 	check_installed "$1"
-	hg -R $PDIR/$1 glog | less
+	cd $PDIR/$1
+	vcs_log
 }
 
 pkg_changelog () {
