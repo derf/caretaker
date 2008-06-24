@@ -16,7 +16,7 @@ I<action> may be one of:
 
 =over
 
-=item B<add>, B<install> I<package> [ I<repository type> ]
+=item B<add>|B<install> I<package> [ I<repository type> ]
 
 fetch given I<package>, tracked with I<repository type> (default: hg)
 from the package_root and install it
@@ -32,7 +32,7 @@ Change the default source on all packages to I<source>
 Example: `changeroot ssh://kraftwerk/var/packages_root` will change
 the source of core to 'ssh://kraftwerk/var/packages_root/core'
 
-=item B<delete>, B<remove> I<package>
+=item B<delete>|B<remove> I<package>
 
 Remove I<package> from the local packages tree
 Note: This does not yet remove the symlinks
@@ -84,6 +84,8 @@ Contains configuration vars
 packages tracked in git are not completely supported.
 'pkg update' will always try to update them, no matter whether there were
 changed or not. Plus, the output of 'pkg update' will break a  bit.
+'pkg changeroot' only works for hg packages.
+There might be more fail.
 
 =head1 AUTHOR
 
