@@ -325,7 +325,9 @@ pkg_update () {
 	NEW=$(vcs_incoming)
 	if ([ $? = 0 ]) {
 		clear_line
-		info "Updating $1 to $(echo $NEW | tail -n 1)\n"
+		info "Updating $1"
+		[ -n "$NEW" ] && info "to $(echo $NEW | tail -n 1)"
+		info "\n"
 		vcs_update
 		check_deps "$1"
 		if ([ -r Makefile ]) {
