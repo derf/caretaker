@@ -183,8 +183,6 @@ check_deps () {
 			for pkg in $INSTALL; {
 				pkg_add "$pkg"
 			}
-		} else {
-			die "Installation aborted"
 		}
 	}
 }
