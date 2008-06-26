@@ -34,11 +34,19 @@ $HG clone ssh://derf.homelinux.org/var/packages_root/core
 # Create symlinks for pkg and checklinks
 cd core
 bin/checklinks
+for i in bin/*(*); {
+	ln -s ../packages/core/$i $HOME/$i
+}
+
 if ([ -d $HOME/packages/.mercurial-bin ]) {
 	cd ~/packages/.mercurial-bin
 	~/bin/checklinks
 }
 
 [ "$RCEMPTY" = yes ] && rm $HOME/.zshrc
+
+PATH=$HOME/bin:$PATH
+
+rehash
 
 pkg add zsh
