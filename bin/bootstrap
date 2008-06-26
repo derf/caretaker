@@ -3,6 +3,10 @@
 # After running this, other packages can be installed using 'pkg'
 
 HG=hg
+if ([ ! -e $HOME/.zshrc ]) {
+	RCEMPTY=yes
+	touch $HOME/.zshrc
+}
 
 # Make basic dirctories
 mkdir -p ~/bin
@@ -34,3 +38,7 @@ if ([ -d $HOME/packages/.mercurial-bin ]) {
 	cd ~/packages/.mercurial-bin
 	~/bin/checklinks
 }
+
+[ "$RCEMPTY" = yes ] && rm $HOME/.zshrc
+
+pkg add zsh
