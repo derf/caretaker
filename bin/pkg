@@ -17,11 +17,11 @@ info () {
 }
 
 warn () {
-	echo -ne "${error}$*${reset}"
+	echo -ne "${error}$*${reset}" > /dev/stderr
 }
 
 die () {
-	echo -ne "${error}$*${reset}"
+	echo -ne "${error}$*${reset}" > /dev/stderr
 	exit 100
 }
 
