@@ -319,6 +319,15 @@ pkg_remove () {
 	info "Package removed.\n"
 }
 
+pkg_update () {
+	cd $PDIR
+	if ("$PKG_PROTO" = 'ssh') {
+		scp $PKG_ROOT/.links .
+	} elif ("$PKG_PROTO" = 'file') {
+		cp $PKG_ROOT/.links .
+	}
+}
+
 pkg_upgrade () {
 	check_installed "$1"
 	cd $PDIR/$1
@@ -492,6 +501,7 @@ case "$1" in
 	log) pkg_log "$2" ;;
 	remove) pkg_remove "$2" ;;
 	status) pkg_status_wrapper "$2" ;;
+	update) pkg_update ;;
 	upgrade) pkg_upgrade_wrapper "$2" ;;
 	*) die "wait, what?\n" ;;
 esac
