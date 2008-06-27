@@ -326,7 +326,7 @@ pkg_remove () {
 pkg_update () {
 	cd $PDIR
 	if ([ "$PKG_PROTO" = 'ssh' ]) {
-		scp $PKG_HOST:$(echo $PKG_ROOT | cut -d / -f 4- | sed 's!~/!!')/.list .remote-list
+		scp $PKG_HOST:$(echo $PKG_ROOT | cut -d / -f 4- | sed 's!~/!!')/.list .list-remote
 	} elif ([ "$PKG_PROTO" = 'file' ]) {
 		cp $PKG_ROOT/.list .list-remote
 	}
