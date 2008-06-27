@@ -324,7 +324,7 @@ pkg_update () {
 	if ([ "$PKG_PROTO" = 'ssh' ]) {
 		scp $PKG_HOST:$(echo $PKG_ROOT | cut -d / -f 4- | sed 's!~/!!')/.list .remote-list
 	} elif ([ "$PKG_PROTO" = 'file' ]) {
-		cp $PKG_ROOT/.links .
+		cp $PKG_ROOT/.list .
 	}
 	core/include/pkglist $PDIR
 }
