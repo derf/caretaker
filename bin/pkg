@@ -127,8 +127,7 @@ vcs_add () {
 }
 
 vcs_incoming () {
-	[ -d .hg   ] && {hg --quiet incoming; return}
-	[ -d .git  ] && {true               ; return}
+	[ $(grep ^"$1" $PDIR/.list | cut -d ' ' -f 3) = $(grep ^"$2" $PDIR/.list-remote | cut -d ' ' -f 3) ]
 }
 
 vcs_log () {
@@ -337,7 +336,7 @@ pkg_upgrade () {
 	check_installed "$1"
 	cd $PDIR/$1
 	info "Looking for updates: $1"
-	NEW=$(vcs_incoming)
+	NEW=$(vcs_incoming "$1")
 	if ([ $? = 0 ]) {
 		clear_line
 		info "Updating $1"
