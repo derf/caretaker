@@ -62,7 +62,7 @@ Show commit history for package
 Check for local changes to the I<package>'s files.
 If no arguments is given, checks all installed packages
 
-=item B<update> [ I<package> ]
+=item B<upgrade> [ I<package> ]
 
 retrieve and install newest available version of I<package>.
 If no argument is given, updates all installed packages
@@ -82,8 +82,8 @@ Contains configuration vars
 =head1 BUGS
 
 packages tracked in git are not completely supported.
-'pkg update' will always try to update them, no matter whether there were
-changed or not. Plus, the output of 'pkg update' will break a  bit.
+'pkg upgrade' will always try to update them, no matter whether there were
+changed or not. Plus, the output of 'pkg upgrade' will break a  bit.
 'pkg changeroot' only works for hg packages.
 There might be more fail.
 

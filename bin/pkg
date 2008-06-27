@@ -136,7 +136,7 @@ vcs_log () {
 	[ -d .git  ] && {git log            ; return}
 }
 
-vcs_update () {
+vcs_upgrade () {
 	[ -d .hg   ] && {hg pull --update   ; return}
 	[ -d .git  ] && {git pull           ; return}
 }
@@ -319,7 +319,7 @@ pkg_remove () {
 	info "Package removed.\n"
 }
 
-pkg_update () {
+pkg_upgrade () {
 	check_installed "$1"
 	cd $PDIR/$1
 	info "Looking for updates: $1"
@@ -329,7 +329,7 @@ pkg_update () {
 		info "Updating $1"
 		[ -n "$NEW" ] && info " to $(echo $NEW | tail -n 1)"
 		info "\n"
-		vcs_update
+		vcs_upgrade
 		check_deps "$1"
 		if ([ -r Makefile ]) {
 			info "Building binaries\n"
@@ -345,13 +345,13 @@ pkg_update () {
 }
 
 # If no package was specified, update everything
-pkg_update_wrapper () {
+pkg_upgrade_wrapper () {
 	if ([ -n "$1" ]) {
-		pkg_update "$1"
+		pkg_upgrade "$1"
 	} else {
 		cd $PDIR
 		for i in *(/); {
-			pkg_update "$i"
+			pkg_upgrade "$i"
 		}
 	}
 }
@@ -492,6 +492,6 @@ case "$1" in
 	log) pkg_log "$2" ;;
 	remove) pkg_remove "$2" ;;
 	status) pkg_status_wrapper "$2" ;;
-	update) pkg_update_wrapper "$2" ;;
+	upgrade) pkg_upgrade_wrapper "$2" ;;
 	*) die "wait, what?\n" ;;
 esac
