@@ -119,9 +119,9 @@ confirm_no () {
 
 vcs_add () {
 	cd "$PDIR"
-	case "$1" in
-		git)   git clone "$2" ;;
-		hg|'') hg clone "$2"  ;;
+	case vcs_type "$1" in
+		git)   git clone "$1" ;;
+		hg)    hg clone "$1"  ;;
 		*)     die "Cannot handle repository format '$1'\n" ;;
 	esac
 }
@@ -134,6 +134,10 @@ vcs_incoming () {
 vcs_log () {
 	[ -d .hg   ] && {hg log | less      ; return}
 	[ -d .git  ] && {git log            ; return}
+}
+
+vcs_type () {
+	grep ^"$1" $PDIR/.list-remote | cut -d ' ' -f 2
 }
 
 vcs_upgrade () {
@@ -324,7 +328,7 @@ pkg_update () {
 	if ([ "$PKG_PROTO" = 'ssh' ]) {
 		scp $PKG_HOST:$(echo $PKG_ROOT | cut -d / -f 4- | sed 's!~/!!')/.list .remote-list
 	} elif ([ "$PKG_PROTO" = 'file' ]) {
-		cp $PKG_ROOT/.list .
+		cp $PKG_ROOT/.list .list-remote
 	}
 	core/include/pkglist $PDIR
 }
