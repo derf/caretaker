@@ -30,7 +30,7 @@ check_installed () {
 }
 
 check_valid () {
-	[ -d $PDIR/$1/.hg ] || die "Not a valid package name: '$1'\n"
+	[ -d $PDIR/$1/.hg -o -d $PDIR/$1/.git ] || die "Not a valid package name: '$1'\n"
 }
 
 clear_line () {
