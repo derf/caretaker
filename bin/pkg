@@ -128,7 +128,7 @@ vcs_add () {
 
 vcs_incoming () {
 	[ "$(grep ^"$1" $PDIR/.list | cut -d ' ' -f 3)" \
-	= "$(grep ^"$1" $PDIR/.list-remote | cut -d ' ' -f 3)" ]
+	!= "$(grep ^"$1" $PDIR/.list-remote | cut -d ' ' -f 3)" ]
 }
 
 vcs_log () {
