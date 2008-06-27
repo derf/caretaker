@@ -120,8 +120,8 @@ confirm_no () {
 vcs_add () {
 	cd "$PDIR"
 	case $(vcs_type "$1") in
-		git)   git clone "$1" ;;
-		hg)    hg clone "$1"  ;;
+		git)   git clone "$PKG_ROOT/$1" ;;
+		hg)    hg clone "$PKG_ROOT/$1"  ;;
 		*)     die "Cannot handle repository format '$1'\n" ;;
 	esac
 }
