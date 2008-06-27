@@ -322,7 +322,7 @@ pkg_remove () {
 pkg_update () {
 	cd $PDIR
 	if ("$PKG_PROTO" = 'ssh') {
-		scp $PKG_ROOT/.links .
+		scp $PKG_HOST:/(echo $PKG_ROOT | cut -d / -f 4-)/.links .
 	} elif ("$PKG_PROTO" = 'file') {
 		cp $PKG_ROOT/.links .
 	}
