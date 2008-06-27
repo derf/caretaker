@@ -326,6 +326,7 @@ pkg_update () {
 	} elif ([ "$PKG_PROTO" = 'file' ]) {
 		cp $PKG_ROOT/.links .
 	}
+	core/include/pkglist $PDIR
 }
 
 pkg_upgrade () {
