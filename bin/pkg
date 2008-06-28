@@ -383,15 +383,11 @@ pkg_changesrc () {
 }
 
 pkg_list_installed () {
-	=ls -1 $PDIR
+	cut -d ' ' -f 1 $PDIR/.list
 }
 
 pkg_list_available () {
-	if ([ "$PKG_PROTO" = 'ssh' ]) {
-		ssh -q "$PKG_HOST" ls -1 "$PKG_PATH"
-	} elif ([ "$PKG_PROTO" = 'file' ]) {
-		ls -1 "$PKG_PATH"
-	}
+	cut -d ' ' -f 1 $PDIT/.list-remote
 }
 
 # Local modifications should not be overseen...
