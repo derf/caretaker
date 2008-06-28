@@ -325,12 +325,14 @@ pkg_remove () {
 
 pkg_update () {
 	cd $PDIR
+	info "Updating package list..."
 	if ([ "$PKG_PROTO" = 'ssh' ]) {
-		scp $PKG_HOST:$(echo $PKG_ROOT | cut -d / -f 4- | sed 's!~/!!')/.list .list-remote
+		scp -q $PKG_HOST:$(echo $PKG_ROOT | cut -d / -f 4- | sed 's!~/!!')/.list .list-remote
 	} elif ([ "$PKG_PROTO" = 'file' ]) {
 		cp $PKG_ROOT/.list .list-remote
 	}
 	core/include/pkglist $PDIR
+	clear_line
 }
 
 pkg_upgrade () {
