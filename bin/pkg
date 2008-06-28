@@ -353,7 +353,6 @@ pkg_upgrade () {
 	if ([ $? = 0 ]) {
 		clear_line
 		info "Updating $1 to $(lst_remote_version $1)\n"
-		info "\n"
 		vcs_upgrade
 		check_deps "$1"
 		if ([ -r Makefile ]) {
