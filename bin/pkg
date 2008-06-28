@@ -114,21 +114,23 @@ confirm_no () {
 ##
 ## Major internal functions
 ##
+## Naming:
+## vcs_  do something by accessing the package
+## lst_  do something by accessing the list
 
 ## VCS Wrappers
 
 vcs_add () {
 	cd "$PDIR"
-	case $(vcs_type "$1") in
+	case $(lst_type "$1") in
 		git)   git clone "$PKG_ROOT/$1" ;;
 		hg)    hg clone "$PKG_ROOT/$1"  ;;
 		*)     die "Cannot handle repository format '$1'\n" ;;
 	esac
 }
 
-vcs_incoming () {
-	[ "$(grep ^"$1 " $PDIR/.list | cut -d ' ' -f 3)" \
-	!= "$(grep ^"$1 " $PDIR/.list-remote | cut -d ' ' -f 3)" ]
+lst_incoming () {
+	[ "$(lst_local_version $1)" != "$(lst_remote_version $1)" ]
 }
 
 vcs_log () {
@@ -136,13 +138,21 @@ vcs_log () {
 	[ -d .git  ] && {git log            ; return}
 }
 
-vcs_type () {
+lst_type () {
 	grep ^"$1" $PDIR/.list-remote | cut -d ' ' -f 2
 }
 
 vcs_upgrade () {
 	[ -d .hg   ] && {hg pull --update   ; return}
 	[ -d .git  ] && {git pull           ; return}
+}
+
+lst_local_version () {
+	grep ^"$1 " $PDIR/.list | cut -d ' ' -f 3
+}
+
+lst_remote_version () {
+	grep ^"$1 " $PDIR/.list-remote | cut -d ' ' -f 3
 }
 
 
@@ -339,11 +349,10 @@ pkg_upgrade () {
 	check_installed "$1"
 	cd $PDIR/$1
 	info "Looking for updates: $1"
-	NEW=$(vcs_incoming "$1")
+	NEW=$(lst_incoming "$1")
 	if ([ $? = 0 ]) {
 		clear_line
-		info "Updating $1"
-		[ -n "$NEW" ] && info " to $(echo $NEW | tail -n 1)"
+		info "Updating $1 to $(lst_remote_version $1)\n"
 		info "\n"
 		vcs_upgrade
 		check_deps "$1"
@@ -390,19 +399,12 @@ pkg_list_available () {
 	cut -d ' ' -f 1 $PDIR/.list-remote
 }
 
-# Local modifications should not be overseen...
 pkg_status () {
 	check_installed "$1"
 	cd $PDIR/$1
 	check_deps "$1"
 	check_conflicts "$1"
 	checklinks $CL_OPTIONS
-	STATUS=$($VCS_CMD $VCS_STATUS)
-	clear_line
-	if ([ -n "$STATUS" ]) {
-		info "Locally modified in $1:\n"
-		echo "$STATUS"
-	}
 }
 
 # Same as with update - if no package is specified, check all
@@ -421,16 +423,15 @@ pkg_status_wrapper () {
 pkg_info () {
 	check_installed "$1"
 	cd $PDIR/$1
-	[ -z "$1" ] && die "Not enough arguments\n"
+
 	# Fetch the infos
 	NAME="$1"
 	if ([ -r priority ]) {
 		PRIORITY=$(cat priority)
 		PRIORITY_NAME=$(real_priority "$PRIORITY")
 	}
-	LOG=$(hg log)
-	VERSION=$(echo $LOG | grep -m1 'changeset:' | grep -Eo '[0-9]{1,}:[0-9a-f]*')
-	DATE=$(echo $LOG | grep -m1 'date:' | grep -Eo '[A-Z][a-z]{2}.*')
+	LOCAL_VERSION=$(lst_local_version $1)
+	REMOTE_VERSION=$(lst_remote_version $1)
 	if ([ -r dependencies ]) {
 		DEPENDENCIES=$(cat dependencies | tr "\n" " " | sed 's/ /, /g' | sed 's/, $//')
 	}
@@ -443,7 +444,7 @@ pkg_info () {
 	if ([ -r Makefile ]) {
 		MAKEFILE=1
 	}
-	SIZE=$(du -sh .hg | grep -o '.*[KMG]')
+#	SIZE=$(du -sh .hg | grep -o '.*[KMG]')
 	if ([ -r description ]) {
 		DESCRIPTION=$(cat description)
 	}
@@ -456,8 +457,8 @@ pkg_info () {
 
 	show_info "Package" "$NAME"
 	show_info "Priority" "$PRIORITY ($PRIORITY_NAME)"
-	show_info "Version" "$VERSION"
-	show_info "Date" "$DATE"
+	show_info "Local Version" "$LOCAL_VERSION"
+	show_info "Remote Version" "$REMOTE_VERSION"
 	show_info "Depends" "$DEPENDENCIES"
 	show_info "Tags" "$TAGS"
 	show_info "Hooks" "$HOOKS"
