@@ -387,7 +387,7 @@ pkg_list_installed () {
 }
 
 pkg_list_available () {
-	cut -d ' ' -f 1 $PDIT/.list-remote
+	cut -d ' ' -f 1 $PDIR/.list-remote
 }
 
 # Local modifications should not be overseen...
