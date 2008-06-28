@@ -432,6 +432,7 @@ pkg_info () {
 	}
 	LOCAL_VERSION=$(lst_local_version $1)
 	REMOTE_VERSION=$(lst_remote_version $1)
+	REPO_TYPE=$(lst_type $1)
 	if ([ -r dependencies ]) {
 		DEPENDENCIES=$(cat dependencies | tr "\n" " " | sed 's/ /, /g' | sed 's/, $//')
 	}
@@ -444,7 +445,7 @@ pkg_info () {
 	if ([ -r Makefile ]) {
 		MAKEFILE=1
 	}
-#	SIZE=$(du -sh .hg | grep -o '.*[KMG]')
+	SIZE=$(du -sh .$(lst_type $1) | grep -o '.*[KMG]')
 	if ([ -r description ]) {
 		DESCRIPTION=$(cat description)
 	}
@@ -459,10 +460,11 @@ pkg_info () {
 	show_info "Priority" "$PRIORITY ($PRIORITY_NAME)"
 	show_info "Local Version" "$LOCAL_VERSION"
 	show_info "Remote Version" "$REMOTE_VERSION"
+	show_info "Repository Type" "$REPO_TYPE"
+	show_info "Repostiry Size" "$SIZE"
 	show_info "Depends" "$DEPENDENCIES"
 	show_info "Tags" "$TAGS"
 	show_info "Hooks" "$HOOKS"
-	show_info "Repostiry Size" "$SIZE"
 	show_info "Description" "$DESCRIPTION"
 }
 
