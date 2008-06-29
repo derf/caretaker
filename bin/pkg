@@ -442,33 +442,35 @@ pkg_status_wrapper () {
 
 # Various information related to a package
 pkg_info () {
-	check_installed "$1"
-	cd $PDIR/$1
+	cd $PDIR
 
 	# Fetch the infos
 	NAME="$1"
-	if ([ -r priority ]) {
-		PRIORITY=$(cat priority)
-		PRIORITY_NAME=$(real_priority "$PRIORITY")
-	}
 	LOCAL_VERSION=$(lst_local_version $1)
 	REMOTE_VERSION=$(lst_remote_version $1)
 	REPO_TYPE=$(lst_type $1)
-	if ([ -r dependencies ]) {
-		DEPENDENCIES=$(cat dependencies | tr "\n" " " | sed 's/ /, /g' | sed 's/, $//')
-	}
-	if ([ -r tags ]) {
-		TAGS=$(cat tags | tr "\n" " " | sed 's/ /, /g' | sed 's/, $//')
-	}
-	if ([ -d hooks ]) {
-		HOOKS=$(ls hooks)
-	}
-	if ([ -r Makefile ]) {
-		MAKEFILE=1
-	}
-	SIZE=$(du -sh .$(lst_type $1) | grep -o '.*[KMG]')
-	if ([ -r description ]) {
-		DESCRIPTION=$(cat description)
+	if ([ -d $1 ]) {
+		cd $1
+		if ([ -r priority ]) {
+			PRIORITY=$(cat priority)
+			PRIORITY_NAME=$(real_priority "$PRIORITY")
+		}
+		if ([ -r dependencies ]) {
+			DEPENDENCIES=$(cat dependencies | tr "\n" " " | sed 's/ /, /g' | sed 's/, $//')
+		}
+		if ([ -r tags ]) {
+			TAGS=$(cat tags | tr "\n" " " | sed 's/ /, /g' | sed 's/, $//')
+		}
+		if ([ -d hooks ]) {
+			HOOKS=$(ls hooks)
+		}
+		if ([ -r Makefile ]) {
+			MAKEFILE=1
+		}
+		SIZE=$(du -sh .$(lst_type $1) | grep -o '.*[KMG]')
+		if ([ -r description ]) {
+			DESCRIPTION=$(cat description)
+		}
 	}
 
 	show_info () {
