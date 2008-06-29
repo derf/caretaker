@@ -533,7 +533,7 @@ case "$1" in
 	delete) pkg_remove "$2" ;;
 	doc) pkg_doc "$2" ;;
 	info) pkg_info "$2" ;;
-	install) pkg_add "$2" "$3" ;;
+	install) pkg_add "$2" ;;
 	list) pkg_list_installed ;;
 	list-all) pkg_list_available ;;
 	local-update) pkg_update_local ;;
