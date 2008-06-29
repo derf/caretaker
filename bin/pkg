@@ -168,14 +168,6 @@ lst_update_full () {
 	}
 }
 
-lst_update () {
-	cd $PDIR
-	info "Updating package list..."
-	lst_update_remote
-	lst_update_full
-	clear_line
-}
-
 vcs_upgrade () {
 	[ -d .hg   ] && {hg pull --update   ; return}
 	[ -d .git  ] && {git pull           ; return}
@@ -440,6 +432,23 @@ pkg_status_wrapper () {
 	}
 }
 
+pkg_update () {
+	cd $PDIR
+	info "Updating package list..."
+	lst_update_remote
+	lst_update_full
+	clear_line
+}
+
+pkg_update_remote () {
+	cd $PDIR
+	lst_update_remote
+}
+
+pkg_update_local () {
+	lst_update_full
+}
+
 # Various information related to a package
 pkg_info () {
 	cd $PDIR
@@ -527,10 +536,12 @@ case "$1" in
 	install) pkg_add "$2" "$3" ;;
 	list) pkg_list_installed ;;
 	list-all) pkg_list_available ;;
+	local-update) pkg_update_local ;;
 	log) pkg_log "$2" ;;
+	remote-update) pkg_update_remote ;;
 	remove) pkg_remove "$2" ;;
 	status) pkg_status_wrapper "$2" ;;
-	update) lst_update ;;
+	update) pkg_update ;;
 	upgrade) pkg_upgrade_wrapper "$2" ;;
 	*) die "wait, what?\n" ;;
 esac
