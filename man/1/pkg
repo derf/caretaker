@@ -51,9 +51,17 @@ List all available (both installed and not installed packages
 Hint: `diff <(pkg list) <(pkg list-all)` will show all packages
 that are currently not installed
 
+=item B<local-update>
+
+Update the local package list
+
 =item B<log> I<package>
 
 Show commit history for package
+
+=item B<remote-update>
+
+Update remote package list
 
 =item B<status> [ I<package> ]
 
