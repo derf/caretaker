@@ -160,7 +160,7 @@ lst_update_remote () {
 	}
 }
 
-lst_update_full () {
+lst_update_local () {
 	cd $PDIR
 	rm -f .list
 	for i in *(@,/); {
@@ -436,7 +436,7 @@ pkg_update () {
 	cd $PDIR
 	info "Updating package list..."
 	lst_update_remote
-	lst_update_full
+	lst_update_local
 	clear_line
 }
 
@@ -446,7 +446,7 @@ pkg_update_remote () {
 }
 
 pkg_update_local () {
-	lst_update_full
+	lst_update_local
 }
 
 # Various information related to a package
