@@ -120,6 +120,16 @@ confirm_no () {
 
 ## VCS Wrappers
 
+vcs_to_lst () {
+	if ([ -d $1/.hg ]) {
+		echo -n "$1 hg "
+		hg -R $1 log | fgrep changeset | head -n 1 | cut -d ' ' -f 4
+	} elif ([ -d $1/.git ]) {
+		echo -n "$1 git "
+		git --git-dir=$1/.git log | fgrep commit | head -n 1 | cut -d ' ' -f 2
+	}
+}
+
 vcs_add () {
 	cd "$PDIR"
 	case $(lst_type "$1") in
@@ -140,6 +150,30 @@ vcs_log () {
 
 lst_type () {
 	grep ^"$1" $PDIR/.list-remote | cut -d ' ' -f 2
+}
+
+lst_update_remote () {
+	if ([ "$PKG_PROTO" = 'ssh' ]) {
+		scp -q $PKG_HOST:$(echo $PKG_ROOT | cut -d / -f 4- | sed 's!~/!!')/.list .list-remote
+	} elif ([ "$PKG_PROTO" = 'file' ]) {
+		cp $PKG_ROOT/.list .list-remote
+	}
+}
+
+lst_update_full () {
+	cd $PDIR
+	rm -f .list
+	for i in *(@,/); {
+		vcs_to_lst $i >> .list
+	}
+}
+
+lst_update () {
+	cd $PDIR
+	info "Updating package list..."
+	lst_update_remote
+	lst_update_full
+	clear_line
 }
 
 vcs_upgrade () {
@@ -331,18 +365,6 @@ pkg_remove () {
 	genocide_collected "$1"
 	rm -rf $PDIR/$1
 	info "Package removed.\n"
-}
-
-lst_update () {
-	cd $PDIR
-	info "Updating package list..."
-	if ([ "$PKG_PROTO" = 'ssh' ]) {
-		scp -q $PKG_HOST:$(echo $PKG_ROOT | cut -d / -f 4- | sed 's!~/!!')/.list .list-remote
-	} elif ([ "$PKG_PROTO" = 'file' ]) {
-		cp $PKG_ROOT/.list .list-remote
-	}
-	core/include/pkglist $PDIR
-	clear_line
 }
 
 pkg_upgrade () {
