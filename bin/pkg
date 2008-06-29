@@ -333,7 +333,7 @@ pkg_remove () {
 	info "Package removed.\n"
 }
 
-pkg_update () {
+lst_update () {
 	cd $PDIR
 	info "Updating package list..."
 	if ([ "$PKG_PROTO" = 'ssh' ]) {
@@ -506,7 +506,7 @@ case "$1" in
 	log) pkg_log "$2" ;;
 	remove) pkg_remove "$2" ;;
 	status) pkg_status_wrapper "$2" ;;
-	update) pkg_update ;;
+	update) lst_update ;;
 	upgrade) pkg_upgrade_wrapper "$2" ;;
 	*) die "wait, what?\n" ;;
 esac
