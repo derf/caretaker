@@ -175,6 +175,12 @@ lst_update_package () {
 	vcs_to_lst $1 >> .list
 }
 
+lst_remove_package () {
+	cd $PDIR
+	LIST=$(cat .list | grep -v ^"$1 ")
+	echo $LIST > .list
+}
+
 vcs_upgrade () {
 	[ -d .hg   ] && {hg pull --update   ; return}
 	[ -d .git  ] && {git pull           ; return}
@@ -362,6 +368,7 @@ pkg_remove () {
 	}
 	exec_hook "$1" "pre-remove"
 	genocide_collected "$1"
+	lst_remove_package $1
 	rm -rf $PDIR/$1
 	info "Package removed.\n"
 }
