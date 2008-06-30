@@ -144,7 +144,7 @@ lst_incoming () {
 }
 
 vcs_log () {
-	[ -d .hg   ] && {hg log | less      ; return}
+	[ -d .hg   ] && {hg glog | less      ; return}
 	[ -d .git  ] && {git log            ; return}
 }
 
@@ -166,6 +166,13 @@ lst_update_local () {
 	for i in *(@,/); {
 		vcs_to_lst $i >> .list
 	}
+}
+
+lst_update_package () {
+	cd $PDIR
+	LIST=$(cat .list | grep -v ^"$1 ")
+	echo $LIST > .list
+	vcs_to_lst $1 >> .list
 }
 
 vcs_upgrade () {
@@ -341,7 +348,7 @@ pkg_add () {
 	cd $PDIR/$1
 	checklinks $CL_OPTIONS
 	populate_collected "$1"
-	return 0
+	lst_update_package $1
 }
 
 pkg_remove () {
@@ -376,6 +383,7 @@ pkg_upgrade () {
 		exec_hook "$1" "post-update"
 		checklinks $CL_OPTIONS
 		populate_collected "$1"
+		lst_update_package $1
 	} else {
 		clear_line
 	}
