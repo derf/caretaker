@@ -149,7 +149,7 @@ vcs_log () {
 }
 
 lst_type () {
-	grep ^"$1" $PDIR/.list-remote | cut -d ' ' -f 2
+	grep ^"$1 " $PDIR/.list-remote | cut -d ' ' -f 2
 }
 
 lst_update_remote () {
