@@ -114,12 +114,8 @@ confirm_no () {
 ##
 ## Major internal functions
 ##
-## Naming:
-## vcs_  do something by accessing the package
-## lst_  do something by accessing the list
 
 ## VCS Wrappers
-
 vcs_to_lst () {
 	if [[ -d $1/.hg ]] {
 		echo -n "$1 hg "
@@ -139,13 +135,19 @@ vcs_add () {
 	esac
 }
 
-lst_incoming () {
-	[ "$(lst_local_version $1)" != "$(lst_remote_version $1)" ]
-}
-
 vcs_log () {
 	[[ -d .hg   ]] && {hg glog | less      ; return}
 	[[ -d .git  ]] && {git log            ; return}
+}
+
+vcs_upgrade () {
+	[[ -d .hg   ]] && {hg pull --update   ; return}
+	[[ -d .git  ]] && {git pull           ; return}
+}
+
+## List stuff
+lst_incoming () {
+	[ "$(lst_local_version $1)" != "$(lst_remote_version $1)" ]
 }
 
 lst_type () {
@@ -179,11 +181,6 @@ lst_remove_package () {
 	cd $PDIR
 	LIST=$(cat .list | grep -v ^"$1 ")
 	echo $LIST > .list
-}
-
-vcs_upgrade () {
-	[[ -d .hg   ]] && {hg pull --update   ; return}
-	[[ -d .git  ]] && {git pull           ; return}
 }
 
 lst_local_version () {
