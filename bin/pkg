@@ -77,7 +77,7 @@ if (echo "$PKG_ROOT" | grep "^ssh" &> /dev/null) {
 
 # Host
 if [[ "$PKG_PROTO" = "ssh" ]] {
-	PKG_HOST=$(echo "$PKG_ROOT" | sed 's!^ssh://!!' | sed -r 's!^[^/]*)/.*$!\1!')
+	PKG_HOST=$(echo "$PKG_ROOT" | sed 's!^ssh://!!' | sed -r 's!^([^/]*)/.*$!\1!')
 }
 
 # Remote path
