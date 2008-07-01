@@ -116,7 +116,7 @@ confirm_no () {
 ##
 
 ## VCS Wrappers
-vcs_to_lst () {
+vcs_to_list () {
 	if [[ -d $1/.hg ]] {
 		echo -n "$1 hg "
 		hg -R $1 log | fgrep changeset | head -n 1 | cut -d ' ' -f 4
@@ -128,7 +128,7 @@ vcs_to_lst () {
 
 vcs_add () {
 	cd "$PDIR"
-	case $(lst_type "$1") in
+	case $(list_type "$1") in
 		git)   git clone "$PKG_ROOT/$1" ;;
 		hg)    hg clone "$PKG_ROOT/$1"  ;;
 		*)     die "Cannot handle repository format '$1'\n" ;;
@@ -146,15 +146,15 @@ vcs_upgrade () {
 }
 
 ## List stuff
-lst_incoming () {
-	[ "$(lst_local_version $1)" != "$(lst_remote_version $1)" ]
+list_incoming () {
+	[ "$(list_local_version $1)" != "$(list_remote_version $1)" ]
 }
 
-lst_type () {
+list_type () {
 	grep ^"$1 " $PDIR/.list-remote | cut -d ' ' -f 2
 }
 
-lst_update_remote () {
+list_update_remote () {
 	if [[ "$PKG_PROTO" = 'ssh' ]] {
 		scp -q $PKG_HOST:$(echo $PKG_ROOT | cut -d / -f 4- | sed 's!~/!!')/.list .list-remote
 	} elif [[ "$PKG_PROTO" = 'file' ]] {
@@ -162,32 +162,32 @@ lst_update_remote () {
 	}
 }
 
-lst_update_local () {
+list_update_local () {
 	cd $PDIR
 	rm -f .list
 	for i in *(@,/); {
-		vcs_to_lst $i >> .list
+		vcs_to_list $i >> .list
 	}
 }
 
-lst_update_package () {
+list_update_package () {
 	cd $PDIR
 	LIST=$(cat .list | grep -v ^"$1 ")
 	echo $LIST > .list
-	vcs_to_lst $1 >> .list
+	vcs_to_list $1 >> .list
 }
 
-lst_remove_package () {
+list_remove_package () {
 	cd $PDIR
 	LIST=$(cat .list | grep -v ^"$1 ")
 	echo $LIST > .list
 }
 
-lst_local_version () {
+list_local_version () {
 	grep ^"$1 " $PDIR/.list | cut -d ' ' -f 3
 }
 
-lst_remote_version () {
+list_remote_version () {
 	grep ^"$1 " $PDIR/.list-remote | cut -d ' ' -f 3
 }
 
@@ -351,7 +351,7 @@ pkg_add () {
 	cd $PDIR/$1
 	checklinks $CL_OPTIONS
 	populate_collected "$1"
-	lst_update_package $1
+	list_update_package $1
 }
 
 pkg_remove () {
@@ -365,7 +365,7 @@ pkg_remove () {
 	}
 	exec_hook "$1" "pre-remove"
 	genocide_collected "$1"
-	lst_remove_package $1
+	list_remove_package $1
 	rm -rf $PDIR/$1
 	info "Package removed.\n"
 }
@@ -374,10 +374,10 @@ pkg_upgrade () {
 	check_installed "$1"
 	cd $PDIR/$1
 	info "Looking for updates: $1"
-	NEW=$(lst_incoming "$1")
+	NEW=$(list_incoming "$1")
 	if [[ $? = 0 ]] {
 		clear_line
-		info "Updating $1 to $(lst_remote_version $1)\n"
+		info "Updating $1 to $(list_remote_version $1)\n"
 		vcs_upgrade
 		check_deps "$1"
 		if [[ -r Makefile ]] {
@@ -387,7 +387,7 @@ pkg_upgrade () {
 		exec_hook "$1" "post-update"
 		checklinks $CL_OPTIONS
 		populate_collected "$1"
-		lst_update_package $1
+		list_update_package $1
 	} else {
 		clear_line
 	}
@@ -447,18 +447,18 @@ pkg_status_wrapper () {
 pkg_update () {
 	cd $PDIR
 	info "Updating package list..."
-	lst_update_remote
-	lst_update_local
+	list_update_remote
+	list_update_local
 	clear_line
 }
 
 pkg_update_remote () {
 	cd $PDIR
-	lst_update_remote
+	list_update_remote
 }
 
 pkg_update_local () {
-	lst_update_local
+	list_update_local
 }
 
 # Various information related to a package
@@ -467,9 +467,9 @@ pkg_info () {
 
 	# Fetch the infos
 	NAME="$1"
-	LOCAL_VERSION=$(lst_local_version $1)
-	REMOTE_VERSION=$(lst_remote_version $1)
-	REPO_TYPE=$(lst_type $1)
+	LOCAL_VERSION=$(list_local_version $1)
+	REMOTE_VERSION=$(list_remote_version $1)
+	REPO_TYPE=$(list_type $1)
 	if [[ -d $1 ]] {
 		cd $1
 		if [[ -r priority ]] {
@@ -488,7 +488,7 @@ pkg_info () {
 		if [[ -r Makefile ]] {
 			MAKEFILE=1
 		}
-		SIZE=$(du -sh .$(lst_type $1) | grep -o '.*[KMG]')
+		SIZE=$(du -sh .$(list_type $1) | grep -o '.*[KMG]')
 		if [[ -r description ]] {
 			DESCRIPTION=$(cat description)
 		}
