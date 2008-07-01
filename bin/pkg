@@ -26,11 +26,11 @@ die () {
 }
 
 check_installed () {
-	[ -n "$1" -a -d $PDIR/$1 ] || die "Not installed: $1\n"
+	[[ -n "$1" -a -d $PDIR/$1 ]] || die "Not installed: $1\n"
 }
 
 check_valid () {
-	[ -d $PDIR/$1/.hg -o -d $PDIR/$1/.git ] || die "Not a valid package name: '$1'\n"
+	[[ -d $PDIR/$1/.hg -o -d $PDIR/$1/.git ]] || die "Not a valid package name: '$1'\n"
 }
 
 clear_line () {
@@ -38,7 +38,7 @@ clear_line () {
 }
 
 # Read local configuration
-if ([ -f $HOME/.pkg.conf ]) {
+if [[ -f $HOME/.pkg.conf ]] {
 	. $HOME/.pkg.conf
 }
 
@@ -53,11 +53,11 @@ export PKG_ROOT
 
 # we need sed -r (and sed -i, but not checking for that here)
 QUUX=$(echo foox | sed -r 's/^fo{2}(.)$/quu\1/' 2> /dev/null)
-if ([ "$QUUX" != 'quux' ]) {
+if [[ "$QUUX" != 'quux' ]] {
 	warn "sed is not working properly. This may produce unexpected behaviour.\n"
 }
 
-if ([ ! -d $PDIR ]) {
+if [[ ! -d $PDIR ]] {
 	die "$PDIR not found!!\n"
 }
 
@@ -76,14 +76,14 @@ if (echo "$PKG_ROOT" | grep "^ssh" &> /dev/null) {
 }
 
 # Host
-if ([ "$PKG_PROTO" = "ssh" ]) {
-	PKG_HOST=$(echo "$PKG_ROOT" | sed 's!^ssh://!!' | sed -r 's!^([^/]*)/.*$!\1!')
+if [[ "$PKG_PROTO" = "ssh" ]] {
+	PKG_HOST=$(echo "$PKG_ROOT" | sed 's!^ssh://!!' | sed -r 's!^[[^/]*)/.*$!\1!')
 }
 
 # Remote path
-if ([ "$PKG_PROTO" = "ssh" ]) {
+if [[ "$PKG_PROTO" = "ssh" ]] {
 	PKG_PATH=$(echo "$PKG_ROOT" | sed 's!^ssh://'"$PKG_HOST"'/!!')
-} elif ([ "$PKG_PROTO" = "file" ]) {
+} elif [[ "$PKG_PROTO" = "file" ]] {
 	PKG_PATH="$PKG_ROOT"
 }
 
@@ -96,8 +96,8 @@ if ([ "$PKG_PROTO" = "ssh" ]) {
 confirm_yes () {
 	echo -n "$* [Y/n] "
 	read -k 1
-	[ $REPLY != $'\n' ] && echo
-	if ([ "$REPLY" = 'y' -o "$REPLY" = 'Y' -o "$REPLY" = $'\n' ]) {
+	[[ $REPLY != $'\n' ]] && echo
+	if [[ $REPLY = 'y' || $REPLY = 'Y' || $REPLY = $'\n' ]] {
 		true
 	} else {
 		false
@@ -121,10 +121,10 @@ confirm_no () {
 ## VCS Wrappers
 
 vcs_to_lst () {
-	if ([ -d $1/.hg ]) {
+	if [[ -d $1/.hg ]] {
 		echo -n "$1 hg "
 		hg -R $1 log | fgrep changeset | head -n 1 | cut -d ' ' -f 4
-	} elif ([ -d $1/.git ]) {
+	} elif [[ -d $1/.git ]] {
 		echo -n "$1 git "
 		git --git-dir=$1/.git log | fgrep commit | head -n 1 | cut -d ' ' -f 2
 	}
@@ -144,8 +144,8 @@ lst_incoming () {
 }
 
 vcs_log () {
-	[ -d .hg   ] && {hg glog | less      ; return}
-	[ -d .git  ] && {git log            ; return}
+	[[ -d .hg   ]] && {hg glog | less      ; return}
+	[[ -d .git  ]] && {git log            ; return}
 }
 
 lst_type () {
@@ -153,9 +153,9 @@ lst_type () {
 }
 
 lst_update_remote () {
-	if ([ "$PKG_PROTO" = 'ssh' ]) {
+	if [[ "$PKG_PROTO" = 'ssh' ]] {
 		scp -q $PKG_HOST:$(echo $PKG_ROOT | cut -d / -f 4- | sed 's!~/!!')/.list .list-remote
-	} elif ([ "$PKG_PROTO" = 'file' ]) {
+	} elif [[ "$PKG_PROTO" = 'file' ]] {
 		cp $PKG_ROOT/.list .list-remote
 	}
 }
@@ -182,8 +182,8 @@ lst_remove_package () {
 }
 
 vcs_upgrade () {
-	[ -d .hg   ] && {hg pull --update   ; return}
-	[ -d .git  ] && {git pull           ; return}
+	[[ -d .hg   ]] && {hg pull --update   ; return}
+	[[ -d .git  ]] && {git pull           ; return}
 }
 
 lst_local_version () {
@@ -212,7 +212,7 @@ real_priority () {
 exec_hook () {
 	package="$1"
 	hook="$2"
-	if ([ -r $PDIR/$package/hooks/$hook ]) {
+	if [[ -r $PDIR/$package/hooks/$hook ]] {
 		info "Executing $hook hook\n"
 		cd $PDIR/$package
 		. hooks/$hook
@@ -221,15 +221,15 @@ exec_hook () {
 
 # Check dependencies and offer to install them
 check_deps () {
-	[ -r $PDIR/$1/dependencies ] || return 0
+	[[ -r $PDIR/$1/dependencies ]] || return 0
 	DEPS=($(cat $PDIR/$1/dependencies))
 	INSTALL=()
 	for dep in $DEPS; {
-		if ([ ! -d $PDIR/$dep ]) {
+		if [[ ! -d $PDIR/$dep ]] {
 			INSTALL+="$dep"
 		}
 	}
-	if ([ -n "$INSTALL" ]) {
+	if [[ -n "$INSTALL" ]] {
 		info "$1 has unmet dependencies: "
 		echo "$INSTALL"
 		if (confirm_yes "Install dependencies?") {
@@ -241,15 +241,15 @@ check_deps () {
 }
 
 check_conflicts () {
-	[ -r $PDIR/$1/conflicts ] || return 0
+	[[ -r $PDIR/$1/conflicts ]] || return 0
 	CONFLICTS=($(cat $PDIR/$1/conflicts))
 	REMOVE=()
 	for conflict in $CONFLICTS; {
-		if ([ -d $PDIR/$conflict ]) {
+		if [[ -d $PDIR/$conflict ]] {
 			REMOVE+="$conflict"
 		}
 	}
-	if ([ -n "$REMOVE" ]) {
+	if [[ -n "$REMOVE" ]] {
 		info "$1 conflicts with the following packages: "
 		echo "$REMOVE"
 		if (confirm_no "Remove conflicting packages and proceed with installation?") {
@@ -267,7 +267,7 @@ check_conflicts () {
 populate_collected () {
 	cd $PDIR/$1 || return
 	info "Enabling documentation "
-	if ([ -d man ]) {
+	if [[ -d man ]] {
 		for i in man/*/*; {
 			section=${i:h:t}
 			manpage=${i:t}
@@ -279,7 +279,7 @@ populate_collected () {
 			}
 		}
 	}
-	if ([ -d bin ]) {
+	if [[ -d bin ]] {
 		for i in bin/*; {
 			if (podchecker $i &> /dev/null) {
 				pod2man $i > $PDIR/.collected/man/man1/${i:t}.1
@@ -290,9 +290,9 @@ populate_collected () {
 		}
 	}
 	clear_line
-	if ([ -d bin ]) {
+	if [[ -d bin ]] {
 		for i in bin/*(*); {
-			if ([ "$(readlink $HOME/$i)" != "../$1/$i" ]) {
+			if [[ "$(readlink $HOME/$i)" != "../$1/$i" ]] {
 				rm -f "$HOME/$i"
 				ln -s ../${PDIR//$HOME\/}/$1/$i $HOME/$i
 			}
@@ -306,24 +306,24 @@ populate_collected () {
 genocide_collected () {
 	cd $PDIR/$1 || return
 	info "Removing documentation"
-	if ([ -d man ]) {
+	if [[ -d man ]] {
 		for i in man/*/*; {
 			section=${i:h:t}
 			manual=${i:t}
-			if ([ -e $PDIR/.collected/man/man$section/$manual ]) {
+			if [[ -e $PDIR/.collected/man/man$section/$manual ]] {
 				rm $PDIR/.collected/man/man$section/$manual
 			}
 		}
 	}
-	if ([ -d bin ]) {
+	if [[ -d bin ]] {
 		for i in bin/*; {
 			rm -f $PDIR/.collected/man/man1/${i:t}.1
 		}
 	}
 	clear_line
-	if ([ -d bin ]) {
+	if [[ -d bin ]] {
 		for i in bin/*(*); {
-			if ([ "$(readlink $HOME/$i)" = "../${PDIR//$HOME\/}/$1/$i" ]) {
+			if [[ "$(readlink $HOME/$i)" = "../${PDIR//$HOME\/}/$1/$i" ]] {
 				rm -f $HOME/$i
 			}
 		}
@@ -336,14 +336,14 @@ genocide_collected () {
 ##
 
 pkg_add () {
-	if ([ -d $PDIR/$1 ]) {
+	if [[ -d $PDIR/$1 ]] {
 		info "Package '$1' is already installed!\n"
 		return 100
 	}
 	cd $PDIR || return 255
 	info "Retrieving package $1...\n"
 	vcs_add "$1" || return 255
-	if ([ -r $PDIR/$1/Makefile ]) {
+	if [[ -r $PDIR/$1/Makefile ]] {
 		info "Building binaries\n"
 		cd $PDIR/$1
 		make
@@ -361,8 +361,8 @@ pkg_remove () {
 	check_installed "$1"
 	check_valid "$1"
 	cd $PDIR/$1
-	if ([ -r priority ]) {
-		if ([ $(cat priority) -gt 3 ]) {
+	if [[ -r priority ]] {
+		if [[ $(cat priority) -gt 3 ]] {
 			confirm_no "Package '$1' is $(real_priority $(cat priority)). Really remove?" || return
 		}
 	}
@@ -378,12 +378,12 @@ pkg_upgrade () {
 	cd $PDIR/$1
 	info "Looking for updates: $1"
 	NEW=$(lst_incoming "$1")
-	if ([ $? = 0 ]) {
+	if [[ $? = 0 ]] {
 		clear_line
 		info "Updating $1 to $(lst_remote_version $1)\n"
 		vcs_upgrade
 		check_deps "$1"
-		if ([ -r Makefile ]) {
+		if [[ -r Makefile ]] {
 			info "Building binaries\n"
 			make
 		}
@@ -399,7 +399,7 @@ pkg_upgrade () {
 
 # If no package was specified, update everything
 pkg_upgrade_wrapper () {
-	if ([ -n "$1" ]) {
+	if [[ -n "$1" ]] {
 		pkg_upgrade "$1"
 	} else {
 		cd $PDIR
@@ -413,7 +413,7 @@ pkg_upgrade_wrapper () {
 pkg_changesrc () {
 	cd $PDIR
 	for i in *(/); {
-		if ([ -f $i/.hg/hgrc ]) {
+		if [[ -f $i/.hg/hgrc ]] {
 			sed -i "s!default = [^:]*://.*\$!default = $1/$i!" $i/.hg/hgrc
 		}
 	}
@@ -437,7 +437,7 @@ pkg_status () {
 
 # Same as with update - if no package is specified, check all
 pkg_status_wrapper () {
-	if ([ -n "$1" ]) {
+	if [[ -n "$1" ]] {
 		pkg_status "$1"
 	} else {
 		cd $PDIR
@@ -473,32 +473,32 @@ pkg_info () {
 	LOCAL_VERSION=$(lst_local_version $1)
 	REMOTE_VERSION=$(lst_remote_version $1)
 	REPO_TYPE=$(lst_type $1)
-	if ([ -d $1 ]) {
+	if [[ -d $1 ]] {
 		cd $1
-		if ([ -r priority ]) {
+		if [[ -r priority ]] {
 			PRIORITY=$(cat priority)
 			PRIORITY_NAME=$(real_priority "$PRIORITY")
 		}
-		if ([ -r dependencies ]) {
+		if [[ -r dependencies ]] {
 			DEPENDENCIES=$(cat dependencies | tr "\n" " " | sed 's/ /, /g' | sed 's/, $//')
 		}
-		if ([ -r tags ]) {
+		if [[ -r tags ]] {
 			TAGS=$(cat tags | tr "\n" " " | sed 's/ /, /g' | sed 's/, $//')
 		}
-		if ([ -d hooks ]) {
+		if [[ -d hooks ]] {
 			HOOKS=$(ls hooks)
 		}
-		if ([ -r Makefile ]) {
+		if [[ -r Makefile ]] {
 			MAKEFILE=1
 		}
 		SIZE=$(du -sh .$(lst_type $1) | grep -o '.*[KMG]')
-		if ([ -r description ]) {
+		if [[ -r description ]] {
 			DESCRIPTION=$(cat description)
 		}
 	}
 
 	show_info () {
-		[ -z "$2" ] && return
+		[[ -z "$2" ]] && return
 		info "$1: "
 		echo "$2"
 	}
@@ -522,14 +522,14 @@ pkg_log () {
 }
 
 pkg_changelog () {
-	[ -r $PDIR/$1/changelog ] && view $PDIR/$1/changelog
+	[[ -r $PDIR/$1/changelog ]] && view $PDIR/$1/changelog
 }
 
 # Almost obsoleted by the bin/* -> man/ stuff
 pkg_doc () {
-	if ([ -r $PDIR/.collected/man/$1 ]) {
+	if [[ -r $PDIR/.collected/man/$1 ]] {
 		man $PDIR/.collected/man/$1
-	} elif ([ -r $PDIR/.collected/doc/$1 ]) {
+	} elif [[ -r $PDIR/.collected/doc/$1 ]] {
 		less $PDIR/.collected/doc/$1
 	} else {
 		echo "No documentation found"
