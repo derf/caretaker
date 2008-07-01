@@ -26,11 +26,11 @@ die () {
 }
 
 check_installed () {
-	[[ -n "$1" -a -d $PDIR/$1 ]] || die "Not installed: $1\n"
+	[[ -n "$1" && -d $PDIR/$1 ]] || die "Not installed: $1\n"
 }
 
 check_valid () {
-	[[ -d $PDIR/$1/.hg -o -d $PDIR/$1/.git ]] || die "Not a valid package name: '$1'\n"
+	[[ -d $PDIR/$1/.hg || -d $PDIR/$1/.git ]] || die "Not a valid package name: '$1'\n"
 }
 
 clear_line () {
