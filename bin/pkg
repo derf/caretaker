@@ -146,6 +146,15 @@ vcs_upgrade () {
 }
 
 ## List stuff
+
+list_is_installed () {
+	grep ^"$1 " $PDIR/.list
+}
+
+list_exists () {
+	grep ^"$1 " $PDIR/.list-remote
+}
+
 list_incoming () {
 	[ "$(list_local_version $1)" != "$(list_remote_version $1)" ]
 }
