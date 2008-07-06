@@ -3,7 +3,10 @@
 # After running this, other packages can be installed using 'pkg'
 
 HG=hg
-if ([ ! -e $HOME/.zshrc ]) {
+
+# zsh keeps complaining about not having a configuration,
+# so let's be kind and give it an empty one.
+if ! [[ -e $HOME/.zshrc ]] {
 	RCEMPTY=yes
 	touch $HOME/.zshrc
 }
@@ -26,12 +29,10 @@ if ( ! which hg &> /dev/null) {
 	HG="$HOME/packages/.mercurial-bin/mercurial-1.0.1/hg"
 }
 
-# Fetch the core package, containing checklinks and pkg
 cd ~/packages
 echo "fetching core"
 $HG clone ssh://derf.homelinux.org/var/packages_root/core
 
-# Create symlinks for pkg and checklinks
 cd core
 bin/checklinks
 for i in bin/*(*); {
