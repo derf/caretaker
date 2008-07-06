@@ -346,34 +346,33 @@ pkg_add () {
 		info "Package '$1' is already installed!\n"
 		return 100
 	}
-	cd $PDIR || return 255
 	info "Retrieving package $1...\n"
-	vcs_add "$1" || return 255
+	cd $PDIR   || return 255
+	vcs_add $1 || return 255
+	cd $1      || return 255
 	if [[ -r $PDIR/$1/Makefile ]] {
 		info "Building binaries\n"
-		cd $PDIR/$1
 		make
 	}
-	exec_hook "$1" "post-add"
-	check_deps "$1"
-	check_conflicts "$1"
-	cd $PDIR/$1
+	exec_hook $1 "post-add"
+	check_deps $1
+	check_conflicts $1
 	checklinks $CL_OPTIONS
-	populate_collected "$1"
+	populate_collected $1
 	list_update_package $1
 }
 
 pkg_remove () {
-	check_installed "$1"
-	check_valid "$1"
+	check_installed $1
+	check_valid $1
 	cd $PDIR/$1
 	if [[ -r priority ]] {
 		if [[ $(cat priority) -gt 3 ]] {
 			confirm_no "Package '$1' is $(real_priority $(cat priority)). Really remove?" || return
 		}
 	}
-	exec_hook "$1" "pre-remove"
-	genocide_collected "$1"
+	exec_hook $1 "pre-remove"
+	genocide_collected $1
 	list_remove_package $1
 	rm -rf $PDIR/$1
 	info "Package removed.\n"
@@ -383,19 +382,20 @@ pkg_upgrade () {
 	check_installed "$1"
 	cd $PDIR/$1
 	info "Looking for updates: $1"
-	NEW=$(list_incoming "$1")
+	# TODO remove legacy
+	NEW=$(list_incoming $1)
 	if [[ $? = 0 ]] {
 		clear_line
 		info "Updating $1 to $(list_remote_version $1)\n"
 		vcs_upgrade
-		check_deps "$1"
+		check_deps $1
 		if [[ -r Makefile ]] {
 			info "Building binaries\n"
 			make
 		}
-		exec_hook "$1" "post-update"
+		exec_hook $1 "post-update"
 		checklinks $CL_OPTIONS
-		populate_collected "$1"
+		populate_collected $1
 		list_update_package $1
 	} else {
 		clear_line
