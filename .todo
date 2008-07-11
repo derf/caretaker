@@ -9,7 +9,7 @@
     <note priority="low" time="1213221704" done="1213257550">
         implement package conflicts
     </note>
-    <note priority="low" time="1213441632">
+    <note priority="low" time="1213441632" done="1215791073">
         bin/pkg: pkg_remove: Also remove symlinks from other places (~/.foo and such)
     </note>
     <note priority="low" time="1213441687">
