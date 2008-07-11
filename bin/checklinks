@@ -6,26 +6,44 @@ use Term::ANSIColor;
 my $base = $ENV{HOME};
 my ($type, $src, $dst);
 my $quiet = 0;
+my $remove = 0;
 
 unless (-f ".links") {
 	exit 0;
 }
 
-if (defined($ARGV[0]) and $ARGV[0] eq '-q') {
-	$quiet = 1;
+if (defined($ARGV[0])) {
+	if ($ARGV[0] eq '-q') {
+		$quiet = 1;
+	}
+	if ($ARGV[0] eq '-r') {
+		$remove = 1;
+	}
 }
 
 open(LINKS, '<.links') or die($!);
 while(<LINKS>) {
 	chomp;
 	($type, $src, $dst) = split;
-	if ($type eq 'soft') {
+	next unless ($type eq 'soft' or $type eq 'hard');
+	if ($remove) {
+		remove_link($src);
+	} elsif ($type eq 'soft') {
 		check_symlink($src, $dst);
 	} elsif ($type eq 'hard') {
 		check_hardlink($src, $dst);
 	}
 }
 close(LINKS);
+
+sub remove_link {
+	my $link = shift;
+
+	if (-l "$base/$link") {
+		unlink("$base/$link") or warn("cannot unlink $base/$link: $!");
+		print_format('removed', $link, '', 'red');
+	}
+}
 
 sub check_symlink {
 	my $src = shift;
@@ -39,10 +57,10 @@ sub check_symlink {
 		print_format('created', $src, $dst, 'cyan');
 	}
 	elsif (readlink("$base/$src") eq $dst) {
-		print_format('ok', $src, $dst, 'green') unless ($quiet);
+		print_format('ok', $src, $dst, 'green') unless $quiet;
 	}
 	elsif (readlink("$base/$src") eq "$base/$dst") {
-		print_format('absolute', $src, $dst, 'yellow') unless ($quiet);
+		print_format('absolute', $src, $dst, 'yellow') unless $quiet;
 	}
 	elsif (not -l "$base/$src" and -e "$base/$src") {
 		print colored ("$base/$src: File exists but is not a symlink. Not updating.\n", 'bold red');
@@ -71,7 +89,7 @@ sub check_hardlink {
 		print_format('updated', $src, $dst, 'cyan');
 	}
 	elsif ((stat("$base/$src"))[1] == (stat("$base/$dst"))[1]) {
-		print_format('ok', $src, $dst, 'green') unless ($quiet);
+		print_format('ok', $src, $dst, 'green') unless $quiet;
 	}
 }
 

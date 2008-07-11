@@ -373,6 +373,7 @@ pkg_remove () {
 	}
 	exec_hook $1 "pre-remove"
 	genocide_collected $1
+	checklinks -r
 	list_remove_package $1
 	rm -rf $PDIR/$1
 	info "Package removed.\n"
