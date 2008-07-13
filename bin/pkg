@@ -515,7 +515,7 @@ pkg_info () {
 	show_info "Local Version" $LOCAL_VERSION
 	show_info "Remote Version" $REMOTE_VERSION
 	show_info "Repository Type" $REPO_TYPE
-	show_info "Repostiry Size" $SIZE
+	show_info "Repository Size" $SIZE
 	show_info "Depends" $DEPENDENCIES
 	show_info "Tags" $TAGS
 	show_info "Hooks" $HOOKS
