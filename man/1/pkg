@@ -6,7 +6,7 @@ pkg - Package maintenance utility
 
 =head1 SYNOPSIS
 
-B<pkg> I<action> [ I<arguments> ]
+B<pkg> B<->I<action> [ I<arguments> ]
 
 =head1 DESCRIPTION
 
