@@ -548,7 +548,7 @@ pkg_doc () {
 ## Now what shall we do...
 ##
 
-case $1 in
+case ${1:s/-/} in
 	add) pkg_add $2 ;;
 	changelog) pkg_changelog $2 ;;
 	changeroot) pkg_changesrc $2 ;;
