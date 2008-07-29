@@ -12,6 +12,9 @@
     <note priority="low" time="1213441632" done="1215791073">
         bin/pkg: pkg_remove: Also remove symlinks from other places (~/.foo and such)
     </note>
+    <note priority="medium" time="1217354434">
+        bin/pkg: Dependencies fuer Systemzeugs (binaries / perllibs / debianpakete ...)
+    </note>
     <note priority="low" time="1213441687">
         bin/pkg: pkg_update: Remove symlinks that break due to the update
     </note>

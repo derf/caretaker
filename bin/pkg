@@ -145,6 +145,10 @@ vcs_upgrade () {
 	[[ -d .git  ]] && {git pull           ; return}
 }
 
+vcs_status () {
+	$(list_type $1) status
+}
+
 ## List stuff
 
 list_is_installed () {
@@ -437,9 +441,8 @@ pkg_list_available () {
 pkg_status () {
 	check_installed $1
 	cd $PDIR/$1
-	check_deps $1
-	check_conflicts $1
-	checklinks $CL_OPTIONS
+	info "$1:\n"
+	PAGER='' vcs_status $1
 }
 
 # Same as with update - if no package is specified, check all
