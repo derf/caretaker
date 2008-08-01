@@ -59,6 +59,11 @@ Update the local package list
 
 Show commit history for package
 
+=item B<push> [ I<package> ]
+
+push new local versions to PKG_ROOT.
+If no argument is given, pushes all installed packes
+
 =item B<remote-update>
 
 Update remote package list
