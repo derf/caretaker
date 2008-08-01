@@ -471,8 +471,15 @@ pkg_list_available () {
 pkg_status () {
 	check_installed $1
 	cd $PDIR/$1
-	info "$1:\n"
-	PAGER='' vcs_status $1
+	info "Checking status: $1"
+	vcs_status=$(PAGER='' vcs_status $1)
+	if [[ -n $vcs_status && $(echo $vcs_status | tail -n 1) != 'nothing to commit (working directory clean)' ]] {
+		clear_line
+		info "$1:\n"
+		echo $vcs_status
+	} else {
+		clear_line
+	}
 }
 
 # Same as with update - if no package is specified, check all
