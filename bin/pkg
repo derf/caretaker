@@ -26,7 +26,7 @@ die () {
 }
 
 check_installed () {
-	[[ -n "$1" && -d $PDIR/$1 ]] || die "Not installed: $1\n"
+	[[ -n "$1" && -d $PDIR/$1 ]] || die "Not installed: '$1'\n"
 }
 
 check_valid () {
@@ -136,13 +136,18 @@ vcs_add () {
 }
 
 vcs_log () {
-	[[ -d .hg   ]] && {hg glog | less      ; return}
+	[[ -d .hg   ]] && {hg glog | less     ; return}
 	[[ -d .git  ]] && {git log            ; return}
 }
 
 vcs_upgrade () {
 	[[ -d .hg   ]] && {hg pull --update   ; return}
 	[[ -d .git  ]] && {git pull           ; return}
+}
+
+vcs_push () {
+	[[ -d .hg   ]] && {hg push            ; return}
+	[[ -d .git  ]] && {git push           ; return}
 }
 
 vcs_status () {
@@ -366,6 +371,32 @@ pkg_add () {
 	list_update_package $1
 }
 
+pkg_push () {
+	check_installed $1
+	check_valid $1
+	cd $PDIR/$1
+	info "Processing $1"
+	list_incoming $1
+	if [[ $? = 0 ]] {
+		clear_line
+		info "Pushing $1\n"
+		vcs_push
+	} else {
+		clear_line
+	}
+}
+
+pkg_push_wrapper () {
+	if [[ -n $1 ]] {
+		pkg_push $1
+	} else {
+		cd $PDIR
+		for i in *(/); {
+			pkg_push $i
+		}
+	}
+}
+
 pkg_remove () {
 	check_installed $1
 	check_valid $1
@@ -385,10 +416,10 @@ pkg_remove () {
 
 pkg_upgrade () {
 	check_installed $1
+	check_valid $1
 	cd $PDIR/$1
 	info "Looking for updates: $1"
-	# TODO remove legacy
-	NEW=$(list_incoming $1)
+	list_incoming $1
 	if [[ $? = 0 ]] {
 		clear_line
 		info "Updating $1 to $(list_remote_version $1)\n"
@@ -405,7 +436,6 @@ pkg_upgrade () {
 	} else {
 		clear_line
 	}
-	cd $PDIR
 }
 
 # If no package was specified, update everything
@@ -563,6 +593,7 @@ case $1 in
 	list-all) pkg_list_available ;;
 	local-update) pkg_update_local ;;
 	log) pkg_log $2 ;;
+	push) pkg_push_wrapper $2 ;;
 	remote-update) pkg_update_remote ;;
 	remove) pkg_remove $2 ;;
 	status) pkg_status_wrapper $2 ;;
