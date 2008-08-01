@@ -65,7 +65,6 @@ Update remote package list
 
 =item B<status> [ I<package> ]
 
-
 Check for local changes to the I<package>'s files.
 If no arguments is given, checks all installed packages
 
