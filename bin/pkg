@@ -509,7 +509,7 @@ pkg_status_wrapper () {
 
 pkg_update () {
 	cd $PDIR
-	info "Updating package list..."
+	info "Updating package lists..."
 	list_update_remote
 	list_update_local
 	clear_line
@@ -517,11 +517,15 @@ pkg_update () {
 
 pkg_update_remote () {
 	cd $PDIR
+	info "Updating remote package list..."
 	list_update_remote
+	clear_line
 }
 
 pkg_update_local () {
+	info "Updating local package list..."
 	list_update_local
+	clear_line
 }
 
 # Various information related to a package
