@@ -6,7 +6,7 @@
 ##
 
 info () {
-	echo -ne "${info}$*${reset}"
+	[[ $SILENT = 1 ]] || echo -ne "${info}$*${reset}"
 }
 
 warn () {
@@ -44,6 +44,7 @@ if [[ -f $HOME/.pkg.conf ]] {
 [[ -n $PDIR       ]] || PDIR="$HOME/packages"
 [[ -n $PKG_ROOT   ]] || PKG_ROOT="ssh://derf.homelinux.org/~/var/packages_root"
 [[ -n $CL_OPTIONS ]] || CL_OPTIONS=(-q)
+[[ -n $SILENT     ]] || SILENT=0
 info=$'\e[0;36m'
 error=$'\e[0;31m'
 reset=$'\e[0m'
@@ -128,7 +129,7 @@ progress () {
 	desc2=$4
 	currentper=$[$[$current*100]/$max]
 	say () {
-		echo -ne $*
+		[[ $SILENT = 1 ]] || echo -ne $*
 	}
 	item () {
 		for j in {0..$1}; {
@@ -391,19 +392,21 @@ update_provides () {
 
 wrap () {
 	function=$1
+	arg=$2
+	progress=$3
 
 	if [[ -n $2 ]] {
 		$function $2
 	} else {
 		cd $PDIR
-		[[ -n $3 ]] && all=$(wc -l < $PDIR/.list)
-		[[ -n $3 ]] && current=0
+		[[ -n $progress ]] && all=$(wc -l < $PDIR/.list)
+		[[ -n $progress ]] && current=0
 		for i in *(/); {
 			current=$[$current+1]
-			[[ -n $3 ]] && progress $current $all $3 $i
+			[[ -n $progress ]] && progress $current $all $progress $i
 			$function $i
 		}
-		[[ -n $3 ]] && clear_line
+		[[ -n $progress ]] && clear_line
 	}
 }
 
