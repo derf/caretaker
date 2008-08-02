@@ -212,9 +212,9 @@ list_update_remote () {
 list_update_local () {
 	cd $PDIR
 	rm -f .list
-	all=$(ls -1d $PDIR/*(@,/) | wc -l)
+	all=$(ls -1d $PDIR/*(/) | wc -l)
 	current=0
-	for i in *(@,/); {
+	for i in *(/); {
 		current=$[$current+1]
 		progress $current $all "Updating package list" $i
 		vcs_to_list $i >> .list
@@ -389,6 +389,24 @@ update_provides () {
 	}
 }
 
+wrap () {
+	function=$1
+
+	if [[ -n $2 ]] {
+		$function $2
+	} else {
+		cd $PDIR
+		[[ -n $3 ]] && all=$(wc -l < $PDIR/.list)
+		[[ -n $3 ]] && current=0
+		for i in *(/); {
+			current=$[$current+1]
+			[[ -n $3 ]] && progress $current $all $3 $i
+			$function $i
+		}
+		[[ -n $3 ]] && clear_line
+	}
+}
+
 ##
 ## Finally - the functions actually doing something
 ##
@@ -424,22 +442,6 @@ pkg_push () {
 		clear_line
 		info "Pushing $1\n"
 		vcs_push
-	}
-}
-
-pkg_push_wrapper () {
-	if [[ -n $1 ]] {
-		pkg_push $1
-	} else {
-		cd $PDIR
-		all=$(wc -l < $PDIR/.list)
-		current=0
-		for i in *(/); {
-			current=$[$current+1]
-			progress $current $all "Pushing" $i
-			pkg_push $i
-		}
-		clear_line
 	}
 }
 
@@ -483,23 +485,6 @@ pkg_upgrade () {
 	}
 }
 
-# If no package was specified, update everything
-pkg_upgrade_wrapper () {
-	if [[ -n $1 ]] {
-		pkg_upgrade $1
-	} else {
-		cd $PDIR
-		all=$(wc -l < $PDIR/.list)
-		current=0
-		for i in *(/); {
-			current=$[$current+1]
-			progress $current $all "Upgrading" $i
-			pkg_upgrade $i
-		}
-		clear_line
-	}
-}
-
 # Change the 'default' url in every package's .hgrc
 pkg_changesrc () {
 	cd $PDIR
@@ -526,23 +511,6 @@ pkg_status () {
 		clear_line
 		info "$1:\n"
 		echo $vcs_status
-	}
-}
-
-# Same as with update - if no package is specified, check all
-pkg_status_wrapper () {
-	if [[ -n $1 ]] {
-		pkg_status $1
-	} else {
-		cd $PDIR
-		all=$(wc -l < $PDIR/.list)
-		current=0
-		for i in *(/); {
-			current=$[$current+1]
-			progress $current $all "Checking package status" $i
-			pkg_status $i
-		}
-		clear_line
 	}
 }
 
@@ -653,11 +621,11 @@ case $1 in
 	list-all) pkg_list_available ;;
 	local-update) pkg_update_local ;;
 	log) pkg_log $2 ;;
-	push) pkg_push_wrapper $2 ;;
+	push) wrap pkg_push "$2" "Pushing" ;;
 	remote-update) pkg_update_remote ;;
 	remove) pkg_remove $2 ;;
-	status) pkg_status_wrapper $2 ;;
+	status) wrap pkg_status "$2" "Checking package status" ;;
 	update) pkg_update ;;
-	upgrade) pkg_upgrade_wrapper $2 ;;
+	upgrade) wrap pkg_upgrade "$2" "Looking for updates" ;;
 	*) die "wait, what?\n" ;;
 esac
