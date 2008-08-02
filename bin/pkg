@@ -127,22 +127,21 @@ progress () {
 	max=$2
 	desc=$3
 	desc2=$4
+	output=''
 	currentper=$[$[$current*100]/$max]
-	say () {
-		[[ $SILENT = 1 ]] || echo -ne $*
-	}
 	item () {
 		for j in {0..$1}; {
-			[[ $j -gt 0 ]] && say $2
+			[[ $j -gt 0 ]] && output+=$2
 		}
 	}
 	clear_line
 	c=$[$currentper/5]
 	a=$[20-$c]
-	say "${info}$desc${reset} ["
+	output+="${info}$desc${reset} ["
 	item $c '='
 	item $a ' '
-	say "] $currentper% $desc2"
+	output+="] $currentper% $desc2"
+	[[ $SILENT = 1 ]] || echo -ne $output
 }
 
 ## VCS Wrappers
