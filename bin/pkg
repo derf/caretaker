@@ -1,14 +1,6 @@
 #!/usr/bin/env zsh
 # pkg - /home package manager and zsh playground
 
-PDIR="$HOME/packages"
-PKG_ROOT="ssh://derf.homelinux.org/~/var/packages_root"
-CL_OPTIONS=(-q)
-info=$'\e[0;36m'
-error=$'\e[0;31m'
-reset=$'\e[0m'
-
-
 ##
 ## Internal functions for displaying stuff
 ##
@@ -47,6 +39,14 @@ clear_line () {
 if [[ -f $HOME/.pkg.conf ]] {
 	. $HOME/.pkg.conf
 }
+
+# Default values
+[[ -n $PDIR       ]] || PDIR="$HOME/packages"
+[[ -n $PKG_ROOT   ]] || PKG_ROOT="ssh://derf.homelinux.org/~/var/packages_root"
+[[ -n $CL_OPTIONS ]] || CL_OPTIONS=(-q)
+info=$'\e[0;36m'
+error=$'\e[0;31m'
+reset=$'\e[0m'
 
 export PDIR
 export PKG_ROOT
