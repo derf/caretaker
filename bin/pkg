@@ -419,14 +419,11 @@ pkg_push () {
 	check_installed $1
 	check_valid $1
 	cd $PDIR/$1
-	info "Processing $1"
 	list_incoming $1
 	if [[ $? = 0 ]] {
 		clear_line
 		info "Pushing $1\n"
 		vcs_push
-	} else {
-		clear_line
 	}
 }
 
@@ -435,9 +432,14 @@ pkg_push_wrapper () {
 		pkg_push $1
 	} else {
 		cd $PDIR
+		all=$(wc -l < $PDIR/.list)
+		current=0
 		for i in *(/); {
+			current=$[$current+1]
+			progress $current $all "Pushing" $i
 			pkg_push $i
 		}
+		clear_line
 	}
 }
 
@@ -463,7 +465,6 @@ pkg_upgrade () {
 	check_installed $1
 	check_valid $1
 	cd $PDIR/$1
-	info "Looking for updates: $1"
 	list_incoming $1
 	if [[ $? = 0 ]] {
 		clear_line
@@ -479,8 +480,6 @@ pkg_upgrade () {
 		populate_collected $1
 		update_provides $1
 		list_update_package $1
-	} else {
-		clear_line
 	}
 }
 
@@ -490,9 +489,14 @@ pkg_upgrade_wrapper () {
 		pkg_upgrade $1
 	} else {
 		cd $PDIR
+		all=$(wc -l < $PDIR/.list)
+		current=0
 		for i in *(/); {
+			current=$[$current+1]
+			progress $current $all "Upgrading" $i
 			pkg_upgrade $i
 		}
+		clear_line
 	}
 }
 
