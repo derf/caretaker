@@ -212,7 +212,11 @@ list_update_remote () {
 list_update_local () {
 	cd $PDIR
 	rm -f .list
+	all=$(ls -1d $PDIR/*(@,/) | wc -l)
+	current=0
 	for i in *(@,/); {
+		current=$[$current+1]
+		progress $current $all "Updating package list" $i
 		vcs_to_list $i >> .list
 	}
 }
@@ -539,11 +543,8 @@ pkg_status_wrapper () {
 }
 
 pkg_update () {
-	cd $PDIR
-	info "Updating package lists..."
-	list_update_remote
-	list_update_local
-	clear_line
+	pkg_update_remote
+	pkg_update_local
 }
 
 pkg_update_remote () {
