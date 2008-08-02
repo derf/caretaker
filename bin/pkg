@@ -1,5 +1,6 @@
 #!/usr/bin/env zsh
-# Recommended: hg >= 1.0
+# pkg - /home package manager and zsh playground
+
 PDIR="$HOME/packages"
 PKG_ROOT="ssh://derf.homelinux.org/~/var/packages_root"
 CL_OPTIONS=(-q)
@@ -34,7 +35,11 @@ check_valid () {
 }
 
 clear_line () {
-	echo -ne "\r                                                          \r"
+	echo -ne "\r"
+	for char in {0..80}; {
+		echo -ne " "
+	}
+	echo -ne "\r"
 }
 
 # Read local configuration
@@ -114,6 +119,29 @@ confirm_no () {
 ##
 ## Major internal functions
 ##
+
+progress () {
+	current=$1
+	max=$2
+	desc=$3
+	desc2=$4
+	currentper=$[$[$current*100]/$max]
+	say () {
+		echo -ne $*
+	}
+	item () {
+		for j in {0..$1}; {
+			[[ $j -gt 0 ]] && say $2
+		}
+	}
+	clear_line
+	c=$[$currentper/5]
+	a=$[20-$c]
+	say "$desc ["
+	item $c '='
+	item $a ' '
+	say "] $currentper% $desc2"
+}
 
 ## VCS Wrappers
 vcs_to_list () {
@@ -484,14 +512,11 @@ pkg_list_available () {
 pkg_status () {
 	check_installed $1
 	cd $PDIR/$1
-	info "Checking status: $1"
 	vcs_status=$(PAGER='' vcs_status $1)
 	if [[ -n $vcs_status && $(echo $vcs_status | tail -n 1) != 'nothing to commit (working directory clean)' ]] {
 		clear_line
 		info "$1:\n"
 		echo $vcs_status
-	} else {
-		clear_line
 	}
 }
 
@@ -501,9 +526,14 @@ pkg_status_wrapper () {
 		pkg_status $1
 	} else {
 		cd $PDIR
+		all=$(wc -l < $PDIR/.list)
+		current=0
 		for i in *(/); {
+			current=$[$current+1]
+			progress $current $all "Checking package status" $i
 			pkg_status $i
 		}
+		clear_line
 	}
 }
 
