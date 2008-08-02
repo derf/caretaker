@@ -228,7 +228,7 @@ exec_hook () {
 	package=$1
 	hook=$2
 	if [[ -r $PDIR/$package/hooks/$hook ]] {
-		info "Executing $hook hook\n"
+		info "Executing $package $hook hook\n"
 		cd $PDIR/$package
 		. hooks/$hook
 	}
@@ -345,6 +345,16 @@ genocide_collected () {
 	}
 }
 
+update_provides () {
+	[[ -d $PDIR/$1/provides ]] || return
+	cd $PDIR/$1/provides
+	for package in *; {
+		if [[ -d $PDIR/$package ]] {
+			[[ $2 = 'remove' ]] && rm -r $package
+			exec_hook $package 'post-update'
+		}
+	}
+}
 
 ##
 ## Finally - the functions actually doing something
@@ -368,6 +378,7 @@ pkg_add () {
 	check_conflicts $1
 	checklinks $CL_OPTIONS
 	populate_collected $1
+	update_provides $1
 	list_update_package $1
 }
 
@@ -410,6 +421,7 @@ pkg_remove () {
 	genocide_collected $1
 	checklinks -r
 	list_remove_package $1
+	update_provides $1 'remove'
 	rm -rf $PDIR/$1
 	info "Package removed.\n"
 }
@@ -432,6 +444,7 @@ pkg_upgrade () {
 		exec_hook $1 "post-update"
 		checklinks $CL_OPTIONS
 		populate_collected $1
+		update_provides $1
 		list_update_package $1
 	} else {
 		clear_line
