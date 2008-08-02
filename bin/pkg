@@ -35,11 +35,12 @@ check_valid () {
 }
 
 clear_line () {
-	echo -ne "\r"
+	string="\r"
 	for char in {0..80}; {
-		echo -ne " "
+		string+=" "
 	}
-	echo -ne "\r"
+	string+="\r"
+	echo -ne $string
 }
 
 # Read local configuration
@@ -137,7 +138,7 @@ progress () {
 	clear_line
 	c=$[$currentper/5]
 	a=$[20-$c]
-	say "$desc ["
+	say "${info}$desc${reset} ["
 	item $c '='
 	item $a ' '
 	say "] $currentper% $desc2"
