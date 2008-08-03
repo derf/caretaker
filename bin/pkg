@@ -272,17 +272,27 @@ check_path_dep () {
 	which $1 > /dev/null
 }
 
+check_perl_dep () {
+	perl -M$1 < /dev/null 2> /dev/null
+}
+
 check_deps () {
 	[[ -r $PDIR/$1/dependencies ]] || return 0
 	dependencies=($(cat $PDIR/$1/dependencies))
 	install=()
 	path_install=()
+	perl_install=()
 
 	for dep in $dependencies; {
 		pathdep=${dep#=}
+		perldep=${dep#perl=}
 		if [[ $dep != $pathdep ]] {
 			if (! check_path_dep $pathdep) {
 				path_install+=$pathdep
+			}
+		} elif [[ $dep != $perldep ]] {
+			if (! check_perl_dep $perldep) {
+				perl_install+=$perldep
 			}
 		} else {
 			if [[ ! -d $PDIR/$dep ]] {
@@ -303,9 +313,15 @@ check_deps () {
 	}
 	if [[ -n $path_install ]] {
 		clear_line
-		info "$1 has unmet dependencies: "
+		info "$1 requires the following executables: "
 		echo $path_install
 		echo 'Please make sure these files are within $PATH'
+	}
+	if [[ -n $perl_install ]] {
+		clear_line
+		info "$1 requires the following perl libraries: "
+		echo $perl_install
+		echo 'Please make sure they are installed correctly'
 	}
 }
 
