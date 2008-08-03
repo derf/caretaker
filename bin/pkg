@@ -194,7 +194,7 @@ list_exists () {
 }
 
 list_incoming () {
-	[ "$(list_local_version $1)" != "$(list_remote_version $1)" ]
+	[[ "$(list_local_version $1)" != "$(list_remote_version $1)" ]]
 }
 
 list_type () {
