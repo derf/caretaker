@@ -31,10 +31,14 @@ Change the default source on all packages to I<source>
 Example: `changeroot ssh://kraftwerk/var/packages_root` will change
 the source of core to 'ssh://kraftwerk/var/packages_root/core'
 
+=item B<check> [ I<pacjage> ]
+
+Check dependencies, conflicts and symlinks of I<package>.
+If no argument is given, checks all installed packages
+
 =item B<delete>|B<remove> I<package>
 
 Remove I<package> from the local packages tree
-Note: This does not yet remove the symlinks
 
 =item B<info> I<package>
 
