@@ -411,12 +411,12 @@ pkg_add () {
 	cd $PDIR   || return 255
 	vcs_add $1 || return 255
 	cd $1      || return 255
+	check_prereqs $1
 	if [[ -r $PDIR/$1/Makefile ]] {
 		info "Building binaries\n"
 		make
 	}
 	exec_hook $1 "post-add"
-	check_prereqs $1
 	checklinks $CL_OPTIONS
 	populate_collected $1
 	update_provides $1
