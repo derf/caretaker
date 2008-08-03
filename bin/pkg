@@ -263,87 +263,38 @@ exec_hook () {
 	if [[ -r $PDIR/$package/hooks/$hook ]] {
 		info "Executing $package $hook hook\n"
 		cd $PDIR/$package
-		. hooks/$hook
+		source hooks/$hook
 	}
 }
 
-# Check dependencies and offer to install them
-check_path_dep () {
-	which $1 > /dev/null
-}
-
-check_perl_dep () {
-	perl -M$1 < /dev/null 2> /dev/null
-}
-
-check_deps () {
-	[[ -r $PDIR/$1/dependencies ]] || return 0
-	dependencies=($(cat $PDIR/$1/dependencies))
+# Check dependencies, conflicts etc.
+check_prereqs () {
+	package=$1
+	[[ -r $PDIR/$package/prereqs ]] || return 0
+	info "checking prerequisites\n"
 	install=()
-	path_install=()
-	perl_install=()
 
-	for dep in $dependencies; {
-		pathdep=${dep#=}
-		perldep=${dep#perl=}
-		if [[ $dep != $pathdep ]] {
-			if (! check_path_dep $pathdep) {
-				path_install+=$pathdep
-			}
-		} elif [[ $dep != $perldep ]] {
-			if (! check_perl_dep $perldep) {
-				perl_install+=$perldep
-			}
-		} else {
-			if [[ ! -d $PDIR/$dep ]] {
-				install+=$dep
-			}
-		}
+	is_installed () {
+		[[ -d $PDIR/$1 ]]
 	}
+	perlmodule () {
+		perl -M$1 < /dev/null 2> /dev/null
+	}
+	file_in_path () {
+		which $1 > /dev/null
+	}
+	offer_install () {
+		install+=$1
+	}
+
+	source prereqs
 
 	if [[ -n $install ]] {
-		clear_line
-		info "$1 has unmet dependencies: "
-		echo $install
-		if (confirm_yes "Install dependencies?") {
-			for pkg in $install; {
-				pkg_add $pkg
+		info "$1 requires the following packages: $install\n"
+		if (confirm_yes "Install them?") {
+			for i in $install; {
+				pkg_add $i
 			}
-		}
-	}
-	if [[ -n $path_install ]] {
-		clear_line
-		info "$1 requires the following executables: "
-		echo $path_install
-		echo 'Please make sure these files are within $PATH'
-	}
-	if [[ -n $perl_install ]] {
-		clear_line
-		info "$1 requires the following perl libraries: "
-		echo $perl_install
-		echo 'Please make sure they are installed correctly'
-	}
-}
-
-check_conflicts () {
-	[[ -r $PDIR/$1/conflicts ]] || return 0
-	CONFLICTS=($(cat $PDIR/$1/conflicts))
-	REMOVE=()
-	for conflict in $CONFLICTS; {
-		if [[ -d $PDIR/$conflict ]] {
-			REMOVE+=$conflict
-		}
-	}
-	if [[ -n $REMOVE ]] {
-		clear_line
-		info "$1 conflicts with the following packages: "
-		echo $REMOVE
-		if (confirm_no "Remove conflicting packages and proceed with installation?") {
-			for pkg in $REMOVE; {
-				pkg_remove $pkg
-			}
-		} else {
-			die "Installation aborted\n"
 		}
 	}
 }
@@ -465,8 +416,7 @@ pkg_add () {
 		make
 	}
 	exec_hook $1 "post-add"
-	check_deps $1
-	check_conflicts $1
+	check_prereqs $1
 	checklinks $CL_OPTIONS
 	populate_collected $1
 	update_provides $1
@@ -512,7 +462,7 @@ pkg_upgrade () {
 		clear_line
 		info "Updating $1 to $(list_remote_version $1)\n"
 		vcs_upgrade
-		check_deps $1
+		check_prereqs $1
 		if [[ -r Makefile ]] {
 			info "Building binaries\n"
 			make
@@ -557,8 +507,7 @@ pkg_status () {
 pkg_check () {
 	check_installed $1
 	cd $PDIR/$1
-	check_deps $1
-	check_conflicts $1
+	check_prereqs $1
 	checklinks $CL_OPTIONS
 }
 
@@ -595,9 +544,6 @@ pkg_info () {
 			PRIORITY=$(cat priority)
 			PRIORITY_NAME=$(real_priority "$PRIORITY")
 		}
-		if [[ -r dependencies ]] {
-			DEPENDENCIES=$(cat dependencies | tr "\n" " " | sed 's/ /, /g' | sed 's/, $//')
-		}
 		if [[ -r tags ]] {
 			TAGS=$(cat tags | tr "\n" " " | sed 's/ /, /g' | sed 's/, $//')
 		}
@@ -625,7 +571,6 @@ pkg_info () {
 	show_info "Remote Version" $REMOTE_VERSION
 	show_info "Repository Type" $REPO_TYPE
 	show_info "Repository Size" $SIZE
-	show_info "Depends" $DEPENDENCIES
 	show_info "Tags" $TAGS
 	show_info "Hooks" $HOOKS
 	show_info "Description" $DESCRIPTION
