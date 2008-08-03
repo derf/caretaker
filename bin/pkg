@@ -507,7 +507,6 @@ pkg_status () {
 pkg_check () {
 	check_installed $1
 	cd $PDIR/$1
-	check_prereqs $1
 	checklinks $CL_OPTIONS
 }
 
