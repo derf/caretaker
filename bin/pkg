@@ -268,23 +268,44 @@ exec_hook () {
 }
 
 # Check dependencies and offer to install them
+check_path_dep () {
+	which $1 > /dev/null
+}
+
 check_deps () {
 	[[ -r $PDIR/$1/dependencies ]] || return 0
-	DEPS=($(cat $PDIR/$1/dependencies))
-	INSTALL=()
-	for dep in $DEPS; {
-		if [[ ! -d $PDIR/$dep ]] {
-			INSTALL+="$dep"
+	dependencies=($(cat $PDIR/$1/dependencies))
+	install=()
+	path_install=()
+
+	for dep in $dependencies; {
+		pathdep=${dep#=}
+		if [[ $dep != $pathdep ]] {
+			if (! check_path_dep $pathdep) {
+				path_install+=$pathdep
+			}
+		} else {
+			if [[ ! -d $PDIR/$dep ]] {
+				install+=$dep
+			}
 		}
 	}
-	if [[ -n "$INSTALL" ]] {
+
+	if [[ -n $install ]] {
+		clear_line
 		info "$1 has unmet dependencies: "
-		echo $INSTALL
+		echo $install
 		if (confirm_yes "Install dependencies?") {
-			for pkg in $INSTALL; {
+			for pkg in $install; {
 				pkg_add $pkg
 			}
 		}
+	}
+	if [[ -n $path_install ]] {
+		clear_line
+		info "$1 has unmet dependencies: "
+		echo $path_install
+		echo 'Please make sure these files are within $PATH'
 	}
 }
 
@@ -298,6 +319,7 @@ check_conflicts () {
 		}
 	}
 	if [[ -n $REMOVE ]] {
+		clear_line
 		info "$1 conflicts with the following packages: "
 		echo $REMOVE
 		if (confirm_no "Remove conflicting packages and proceed with installation?") {
@@ -305,7 +327,7 @@ check_conflicts () {
 				pkg_remove $pkg
 			}
 		} else {
-			die "Installation aborted"
+			die "Installation aborted\n"
 		}
 	}
 }
