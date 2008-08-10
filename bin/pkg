@@ -263,7 +263,7 @@ exec_hook () {
 	if [[ -r $PDIR/$package/hooks/$hook ]] {
 		info "Executing $package $hook hook\n"
 		cd $PDIR/$package
-		source hooks/$hook
+		(source hooks/$hook)
 	}
 }
 
@@ -287,7 +287,7 @@ check_prereqs () {
 		install+=$1
 	}
 
-	source prereqs
+	(source prereqs)
 
 	if [[ -n $install ]] {
 		info "$1 requires the following packages: $install\n"
