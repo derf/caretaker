@@ -1,0 +1,36 @@
+#compdef pkg
+## vim:ft=zsh
+## pkg completion
+## Daniel Friesel <derf@derf.homelinux.org>
+## https://derf.homelinux.org/~derf/dotfiles/zsh/completions/_pkg
+## see also: https://derf.homelinux.org/~derf/code/lighty-stats
+
+local arguments_action arguments_list arguments_listall
+local all installed
+
+all='pkg list-all'
+installed='pkg list'
+notinstalled='diff <(eval $installed) <(eval $all) | grep "^>" | cut -d " " -f 2'
+
+arguments_action=(
+	'1:action:(add install changelog changeroot check delete remove info list list-all local-update log push remote-update status update upgrade)'
+)
+arguments_list=(
+	'2:package:($(eval $installed))'
+)
+arguments_listall=(
+	'2:package:($(eval $all))'
+)
+arguments_notinstalled=(
+	'2:package:($(eval $notinstalled))'
+)
+
+if [[ $CURRENT -ge 3 ]] {
+	case ${words[2]} in
+		changelog|check|delete|log|push|remove|status|upgrade) _arguments -s $arguments_list ;;
+		info) _arguments -s $arguments_listall ;;
+		add|install) _arguments -s $arguments_notinstalled ;;
+	esac
+} else {
+	_arguments -s $arguments_action
+}
