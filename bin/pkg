@@ -475,7 +475,7 @@ pkg_upgrade () {
 			info "Building binaries\n"
 			make
 		}
-		exec_hook $1 "post-update"
+		triggers+=$1
 		checklinks $CL_OPTIONS
 		populate_collected $1
 		update_provides $1
