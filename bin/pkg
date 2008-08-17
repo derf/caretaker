@@ -1,6 +1,8 @@
 #!/usr/bin/env zsh
 # pkg - /home package manager and zsh playground
 
+typeset -a -U triggers
+
 ##
 ## Internal functions for displaying stuff
 ##
@@ -373,8 +375,14 @@ update_provides () {
 	for package in *; {
 		if [[ -d $PDIR/$package ]] {
 			[[ $2 = 'remove' ]] && rm -r $package
-			exec_hook $package 'post-update'
+			triggers+=$package
 		}
+	}
+}
+
+apply_triggers () {
+	for package in $triggers; {
+		exec_hook $package 'post-update'
 	}
 }
 
@@ -622,3 +630,5 @@ case $1 in
 	upgrade) wrap pkg_upgrade "$2" "Looking for updates" ;;
 	*) die "wait, what?\n" ;;
 esac
+
+apply_triggers
