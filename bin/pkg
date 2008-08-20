@@ -203,6 +203,10 @@ list_type () {
 	grep ^"$1 " $PDIR/.list-remote | cut -d ' ' -f 2
 }
 
+list_type_local () {
+	grep ^"$1 " $PDIR/.list | cut -d ' ' -f 2
+}
+
 list_update_remote () {
 	if [[ "$PKG_PROTO" = 'ssh' ]] {
 		scp -q $PKG_HOST:$(echo $PKG_ROOT | cut -d / -f 4- | sed 's!~/!!')/.list .list-remote
@@ -465,8 +469,12 @@ pkg_upgrade () {
 	check_installed $1
 	check_valid $1
 	cd $PDIR/$1
-	list_incoming $1
-	if [[ $? = 0 ]] {
+	if [[ $(list_type $1) != $(list_type_local $1) ]] {
+		clear_line
+		warn "Incompatible systems. Please reinstall: $1\n"
+		return 9
+	}
+	if {list_incoming $1} {
 		clear_line
 		info "Updating $1 to $(list_remote_version $1)\n"
 		vcs_upgrade
