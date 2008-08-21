@@ -6,19 +6,19 @@
             Now I just need to wait some time and then I can make ~/bin point to packages/.collected/bin
         </comment>
     </note>
+    <note priority="medium" time="1217354434" done="1219317085">
+        bin/pkg: Dependencies fuer Systemzeugs (binaries / perllibs / debianpakete ...)
+    </note>
     <note priority="low" time="1213221704" done="1213257550">
         implement package conflicts
     </note>
     <note priority="low" time="1213441632" done="1215791073">
         bin/pkg: pkg_remove: Also remove symlinks from other places (~/.foo and such)
     </note>
-    <note priority="medium" time="1217354434">
-        bin/pkg: Dependencies fuer Systemzeugs (binaries / perllibs / debianpakete ...)
-    </note>
     <note priority="low" time="1213441687">
         bin/pkg: pkg_update: Remove symlinks that break due to the update
     </note>
-    <note priority="low" time="1214002909">
+    <note priority="low" time="1214002909" done="1219317091">
         bin/pkg: Add 'triggers' (a package provides it's own crontab/zsh config etc, it is no longer in the package cron/zsh)
     </note>
     <note priority="low" time="1214166094">
