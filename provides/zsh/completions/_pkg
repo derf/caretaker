@@ -5,32 +5,36 @@
 ## https://derf.homelinux.org/~derf/dotfiles/zsh/completions/_pkg
 ## see also: https://derf.homelinux.org/~derf/code/lighty-stats
 
-local arguments_action arguments_list arguments_listall
-local all installed
+typeset expl
 
-all='pkg list-all'
-installed='pkg list'
-notinstalled='diff <(eval $installed) <(eval $all) | grep "^>" | cut -d " " -f 2'
+function _pkg_action () {
+	_wanted action expl 'action' \
+	compadd add install changelog changeroot check delete remove info \
+	list list-all local-update log push remote-update status update upgrade
+}
 
-arguments_action=(
-	'1:action:(add install changelog changeroot check delete remove info list list-all local-update log push remote-update status update upgrade)'
-)
-arguments_list=(
-	'2:package:($(eval $installed))'
-)
-arguments_listall=(
-	'2:package:($(eval $all))'
-)
-arguments_notinstalled=(
-	'2:package:($(eval $notinstalled))'
-)
+function _pkg_installed () {
+	_wanted package expl 'local package' \
+	compadd $(pkg list)
+}
 
-if [[ $CURRENT -ge 3 ]] {
+function _pkg_all () {
+	_wanted package expl 'package' \
+	compadd $(pkg list-all)
+}
+
+function _pkg_notinstalled () {
+	_wanted package expl 'remote package' \
+	compadd $(diff <(pkg list) <(pkg list-all) | grep "^>" | cut -d " " -f 2)
+}
+
+if (( CURRENT >= 3 )) {
 	case ${words[2]} in
-		changelog|check|delete|log|push|remove|status|upgrade) _arguments -s $arguments_list ;;
-		info) _arguments -s $arguments_listall ;;
-		add|install) _arguments -s $arguments_notinstalled ;;
+		changelog|check|delete|log|push|remove|status|upgrade)
+			_arguments -s '2: :_pkg_installed' ;;
+		info) _arguments -s '2: :_pkg_all' ;;
+		add|install) _arguments -s '2: :_pkg_notinstalled' ;;
 	esac
 } else {
-	_arguments -s $arguments_action
+	_arguments -s '1: :_pkg_action'
 }
