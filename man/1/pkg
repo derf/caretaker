@@ -40,6 +40,10 @@ If no argument is given, checks all installed packages
 
 Remove I<package> from the local packages tree
 
+=imen B<eval> I<expression>
+
+Evauluate I<expression>, e.g. to manually execute a hook
+
 =item B<info> I<package>
 
 Show information on I<package>, like dependencies, version, etc

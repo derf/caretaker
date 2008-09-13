@@ -9,7 +9,7 @@ typeset expl
 
 function _pkg_action () {
 	_wanted action expl 'action' \
-	compadd add install changelog changeroot check delete remove info \
+	compadd add install changelog changeroot check delete eval remove info \
 	list list-all local-update log push remote-update status update upgrade
 }
 
@@ -36,5 +36,5 @@ if (( CURRENT >= 3 )) {
 		add|install) _arguments -s '2: :_pkg_notinstalled' ;;
 	esac
 } else {
-	_arguments -s '1: :_pkg_action'
+	_pkg_action
 }

@@ -636,6 +636,7 @@ case $1 in
 	status) wrap pkg_status "$2" "Checking package status" ;;
 	update) pkg_update ;;
 	upgrade) wrap pkg_upgrade "$2" "Looking for updates" ;;
+	eval) eval $2 ;;
 	*) die "wait, what?\n" ;;
 esac
 
