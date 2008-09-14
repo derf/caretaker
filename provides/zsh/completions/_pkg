@@ -43,11 +43,29 @@ if (( CURRENT == 2 )) {
 		;;
 		eval)
 			_message 'shell code for evaluation'
+			_wanted function expl 'internal function' \
+			compadd $(grep -E '^\S*\s*\(\)\s*{' ~/bin/pkg | cut -d ' ' -f 1)
 		;;
 		*)
 			_message 'no more arguments'
 		;;
 	esac
+} elif [[ ${words[2]} = 'eval' ]] {
+	_message 'shell code for evaluation'
+	if (( CURRENT == 4 )) {
+		case ${words[3]} in
+			exec_hook|check_prereqs|*_collected|)
+				_pkg_installed
+			;;
+		esac
+	} elif (( CURRENT == 5 )) {
+		case ${words[3]} in
+			exec_hook)
+				_wanted hook expl 'package hook' \
+				compadd $(ls -1 ~/packages/${words[4]}/hooks 2> /dev/null)
+			;;
+		esac
+	}
 } else {
 	_message 'no more arguments'
 }
