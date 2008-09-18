@@ -8,7 +8,7 @@ typeset -a -U triggers
 ##
 
 info () {
-	[[ $SILENT = 1 ]] || echo -ne "${info}$*${reset}"
+	(( SILENT )) || echo -ne "${info}$*${reset}"
 }
 
 warn () {
@@ -21,7 +21,7 @@ die () {
 }
 
 check_installed () {
-	[[ -n "$1" && -d $PDIR/$1 ]] || die "Not installed: '$1'\n"
+	[[ -n $1 && -d $PDIR/$1 ]] || die "Not installed: '$1'\n"
 }
 
 check_valid () {
@@ -31,7 +31,7 @@ check_valid () {
 clear_line () {
 	string="\r"
 	for char in {0..80}; {
-		string+=" "
+		string+=' '
 	}
 	string+="\r"
 	echo -ne $string
@@ -61,8 +61,8 @@ export PKG_ROOT
 ##
 
 # we need sed -r (and sed -i, but not checking for that here)
-QUUX=$(echo foox | sed -r 's/^fo{2}(.)$/quu\1/' 2> /dev/null)
-if [[ "$QUUX" != 'quux' ]] {
+QUUX=$(sed -r 's/^fo{2}(.)$/quu\1/' <<< foox 2> /dev/null)
+if [[ $QUUX != 'quux' ]] {
 	warn "sed is not working properly. This may produce unexpected behaviour.\n"
 }
 
@@ -76,24 +76,24 @@ if [[ ! -d $PDIR ]] {
 ##
 
 # Protocol
-if (echo "$PKG_ROOT" | grep "^ssh" &> /dev/null) {
+if (grep '^ssh' <<< $PKG_ROOT &> /dev/null) {
 	PKG_PROTO='ssh'
-	} elif (echo "$PKG_ROOT" | grep "^/" &> /dev/null) {
+	} elif (grep '^/' <<< $PKG_ROOT &> /dev/null) {
 	PKG_PROTO='file'
 } else {
 	false
 }
 
 # Host
-if [[ "$PKG_PROTO" = "ssh" ]] {
-	PKG_HOST=$(echo "$PKG_ROOT" | sed 's!^ssh://!!' | sed -r 's!^([^/]*)/.*$!\1!')
+if [[ $PKG_PROTO = 'ssh' ]] {
+	PKG_HOST=$(sed 's!^ssh://!!' <<< $PKG_ROOT | sed -r 's!^([^/]*)/.*$!\1!')
 }
 
 # Remote path
-if [[ "$PKG_PROTO" = "ssh" ]] {
-	PKG_PATH=$(echo "$PKG_ROOT" | sed 's!^ssh://'"$PKG_HOST"'/!!')
-} elif [[ "$PKG_PROTO" = "file" ]] {
-	PKG_PATH="$PKG_ROOT"
+if [[ $PKG_PROTO = 'ssh' ]] {
+	PKG_PATH=$(sed 's!^ssh://'"$PKG_HOST"'/!!' <<< $PKG_ROOT)
+} elif [[ $PKG_PROTO = 'file' ]] {
+	PKG_PATH=$PKG_ROOT
 }
 
 
@@ -130,20 +130,20 @@ progress () {
 	desc=$3
 	desc2=$4
 	output=''
-	currentper=$[$[$current*100]/$max]
+	currentper=$(( (current*100)/max ))
 	item () {
 		for j in {0..$1}; {
-			[[ $j -gt 0 ]] && output+=$2
+			(( j > 0 )) && output+=$2
 		}
 	}
 	clear_line
-	c=$[$currentper/5]
-	a=$[20-$c]
+	c=$(( currentper/5 ))
+	a=$(( 20-c ))
 	output+="${info}$desc${reset} ["
 	item $c '='
 	item $a ' '
 	output+="] $currentper% $desc2"
-	[[ $SILENT = 1 ]] || echo -ne $output
+	(( SILENT )) || echo -ne $output
 }
 
 ## VCS Wrappers
@@ -158,8 +158,8 @@ vcs_to_list () {
 }
 
 vcs_add () {
-	cd "$PDIR"
-	case $(list_type "$1") in
+	cd $PDIR
+	case $(list_type $1) in
 		git)   git clone "$PKG_ROOT/$1" ;;
 		hg)    hg clone "$PKG_ROOT/$1"  ;;
 		*)     die "Cannot handle repository format '$1'\n" ;;
@@ -196,7 +196,7 @@ list_exists () {
 }
 
 list_incoming () {
-	[[ "$(list_local_version $1)" != "$(list_remote_version $1)" ]]
+	[[ $(list_local_version $1) != $(list_remote_version $1) ]]
 }
 
 list_type () {
@@ -208,9 +208,9 @@ list_type_local () {
 }
 
 list_update_remote () {
-	if [[ "$PKG_PROTO" = 'ssh' ]] {
-		scp -q $PKG_HOST:$(echo $PKG_ROOT | cut -d / -f 4- | sed 's!~/!!')/.list .list-remote
-	} elif [[ "$PKG_PROTO" = 'file' ]] {
+	if [[ $PKG_PROTO = 'ssh' ]] {
+		scp -q $PKG_HOST:$(cut -d / -f 4- <<< $PKG_ROOT | sed 's!~/!!')/.list .list-remote
+	} elif [[ $PKG_PROTO = 'file' ]] {
 		cp $PKG_ROOT/.list .list-remote
 	}
 }
@@ -218,34 +218,34 @@ list_update_remote () {
 list_update_local () {
 	cd $PDIR
 	rm -f .list
-	all=$(ls -1d $PDIR/*(/) | wc -l)
+	all=${#$(echo $PDIR/*(/))}
 	current=0
 	for i in *(/); {
-		current=$[$current+1]
-		progress $current $all "Updating package list" $i
+		(( current++ ))
+		progress $current $all 'Updating package list' $i
 		vcs_to_list $i >> .list
 	}
 }
 
 list_update_package () {
 	cd $PDIR
-	LIST=$(cat .list | grep -v ^"$1 ")
+	LIST=$(grep -v "^$1 " .list)
 	echo $LIST > .list
 	vcs_to_list $1 >> .list
 }
 
 list_remove_package () {
 	cd $PDIR
-	LIST=$(cat .list | grep -v ^"$1 ")
+	LIST=$(grep -v "^$1 " .list)
 	echo $LIST > .list
 }
 
 list_local_version () {
-	grep ^"$1 " $PDIR/.list | cut -d ' ' -f 3
+	grep "^$1 " $PDIR/.list | cut -d ' ' -f 3
 }
 
 list_remote_version () {
-	grep ^"$1 " $PDIR/.list-remote | cut -d ' ' -f 3
+	grep "^$1 " $PDIR/.list-remote | cut -d ' ' -f 3
 }
 
 
@@ -278,7 +278,7 @@ check_prereqs () {
 	package=$1
 	[[ -r $PDIR/$package/prereqs ]] || return 0
 	info "checking prerequisites\n"
-	install=()
+	typeset -a install
 
 	is_installed () {
 		[[ -d $PDIR/$1 ]]
@@ -335,7 +335,7 @@ populate_collected () {
 	clear_line
 	if [[ -d bin ]] {
 		for i in bin/*(*); {
-			if [[ "$(readlink $HOME/$i)" != "../$1/$i" ]] {
+			if [[ $(readlink $HOME/$i) != "../$1/$i" ]] {
 				rm -f $HOME/$i
 				ln -s ../${PDIR//$HOME\/}/$1/$i $HOME/$i
 			}
@@ -366,7 +366,7 @@ genocide_collected () {
 	clear_line
 	if [[ -d bin ]] {
 		for i in bin/*(*); {
-			if [[ "$(readlink $HOME/$i)" = "../${PDIR//$HOME\/}/$1/$i" ]] {
+			if [[ $(readlink $HOME/$i) = "../${PDIR//$HOME\/}/$1/$i" ]] {
 				rm -f $HOME/$i
 			}
 		}
@@ -402,7 +402,7 @@ wrap () {
 		[[ -n $progress ]] && all=$(wc -l < $PDIR/.list)
 		[[ -n $progress ]] && current=0
 		for i in *(/); {
-			current=$[$current+1]
+			(( current++ ))
 			[[ -n $progress ]] && progress $current $all $progress $i
 			$function $i
 		}
@@ -428,7 +428,7 @@ pkg_add () {
 		info "Building binaries\n"
 		make
 	}
-	exec_hook $1 "post-add"
+	exec_hook $1 'post-add'
 	checklinks $CL_OPTIONS
 	populate_collected $1
 	update_provides $1
@@ -452,7 +452,7 @@ pkg_remove () {
 	check_valid $1
 	cd $PDIR/$1
 	if [[ -r priority ]] {
-		if [[ $(cat priority) -gt 3 ]] {
+		if (( $(cat priority) > 3 )) {
 			confirm_no "Package '$1' is $(real_priority $(cat priority)). Really remove?" || return
 		}
 	}
