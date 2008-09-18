@@ -76,9 +76,9 @@ if [[ ! -d $PDIR ]] {
 ##
 
 # Protocol
-if (grep '^ssh' <<< $PKG_ROOT &> /dev/null) {
+if [[ ${PKG_ROOT#ssh} != $PKG_ROOT ]] {
 	PKG_PROTO='ssh'
-	} elif (grep '^/' <<< $PKG_ROOT &> /dev/null) {
+} elif [[ ${PKG_ROOT#'/'} != $PKG_ROOT ]] {
 	PKG_PROTO='file'
 } else {
 	false
@@ -86,12 +86,12 @@ if (grep '^ssh' <<< $PKG_ROOT &> /dev/null) {
 
 # Host
 if [[ $PKG_PROTO = 'ssh' ]] {
-	PKG_HOST=$(sed 's!^ssh://!!' <<< $PKG_ROOT | sed -r 's!^([^/]*)/.*$!\1!')
+	PKG_HOST=$(sed -r 's!^([^/]*)/.*$!\1!' <<< ${PKG_ROOT#'ssh://'})
 }
 
 # Remote path
 if [[ $PKG_PROTO = 'ssh' ]] {
-	PKG_PATH=$(sed 's!^ssh://'"$PKG_HOST"'/!!' <<< $PKG_ROOT)
+	PKG_PATH=${PKG_ROOT#"ssh://$PKG_HOST"}
 } elif [[ $PKG_PROTO = 'file' ]] {
 	PKG_PATH=$PKG_ROOT
 }
@@ -209,7 +209,7 @@ list_type_local () {
 
 list_update_remote () {
 	if [[ $PKG_PROTO = 'ssh' ]] {
-		scp -q $PKG_HOST:$(cut -d / -f 4- <<< $PKG_ROOT | sed 's!~/!!')/.list .list-remote
+		scp -q $PKG_HOST:${$(cut -d / -f 4- <<< $PKG_ROOT)/'~/'}/.list .list-remote
 	} elif [[ $PKG_PROTO = 'file' ]] {
 		cp $PKG_ROOT/.list .list-remote
 	}
