@@ -517,6 +517,10 @@ pkg_status () {
 		clear_line
 		info "$1:\n"
 		echo $vcs_status
+		if [[ -r .autocommit ]] {
+			git add .
+			git commit -m 'autocommit by pkg'
+		}
 	}
 }
 
