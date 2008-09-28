@@ -154,6 +154,9 @@ vcs_to_list () {
 	} elif [[ -d $1/.git ]] {
 		echo -n "$1 git "
 		git --git-dir=$1/.git log | fgrep commit | head -n 1 | cut -d ' ' -f 2
+	} else {
+		echo -n "$i plain " >> .list
+		ls -ablR $i | md5sum | cut -d ' ' -f 1 >> .list
 	}
 }
 

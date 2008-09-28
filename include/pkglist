@@ -5,11 +5,14 @@ cd $1 || exit 100
 rm .list
 
 for i in *(/,@); {
-	if ([ -d $i/.hg ]) {
+	if [[ -d $i/.hg ]] {
 		echo -n "$i hg " >> .list
 		hg -R $i log | fgrep changeset | head -n 1 | cut -d ' ' -f 4 >> .list
-	} elif ([ -d $i/.git ]) {
+	} elif [[ -d $i/.git ]] {
 		echo -n "$i git " >> .list
 		git --git-dir=$i/.git log | fgrep commit | head -n 1 | cut -d ' ' -f 2 >> .list
+	} else {
+		echo -n "$i plain " >> .list
+		ls -ablR $i | md5sum | cut -d ' ' -f 1 >> .list
 	}
 }
