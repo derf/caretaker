@@ -9,8 +9,8 @@ typeset expl
 
 function _pkg_action () {
 	_wanted action expl 'action' \
-	compadd add install changelog changeroot check delete eval remove info \
-	list list-all local-update log push remote-update status update upgrade
+	compadd add install changelog check delete eval remove info list \
+	list-all local-update log push remote-update status update upgrade
 }
 
 function _pkg_installed () {

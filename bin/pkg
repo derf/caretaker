@@ -490,16 +490,6 @@ pkg_upgrade () {
 	}
 }
 
-# Change the 'default' url in every package's .hgrc
-pkg_changesrc () {
-	cd $PDIR
-	for i in *(/); {
-		if [[ -f $i/.hg/hgrc ]] {
-			sed -i "s!default = [^:]*://.*\$!default = $1/$i!" $i/.hg/hgrc
-		}
-	}
-}
-
 pkg_list_installed () {
 	cut -d ' ' -f 1 $PDIR/.list
 }
@@ -623,7 +613,6 @@ pkg_doc () {
 case $1 in
 	add) pkg_add $2 ;;
 	changelog) pkg_changelog $2 ;;
-	changeroot) pkg_changesrc $2 ;;
 	check) wrap pkg_check "$2" "Checking" ;;
 	delete) pkg_remove $2 ;;
 	doc) pkg_doc $2 ;;

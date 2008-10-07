@@ -24,13 +24,6 @@ fetch given I<package> from the package_root and install it
 
 Show I<package>'s changelog (if available)
 
-=item B<changeroot> I<source>
-
-Change the default source on all packages to I<source>
-
-Example: `changeroot ssh://kraftwerk/var/packages_root` will change
-the source of core to 'ssh://kraftwerk/var/packages_root/core'
-
 =item B<check> [ I<package> ]
 
 Check dependencies, conflicts and symlinks of I<package>.
