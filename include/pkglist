@@ -2,7 +2,7 @@
 
 cd $1 || exit 100
 
-rm .list
+rm -f .list
 
 for i in *(/,@); {
 	if [[ -d $i/.hg ]] {
@@ -12,7 +12,6 @@ for i in *(/,@); {
 		echo -n "$i git " >> .list
 		git --git-dir=$i/.git log | fgrep commit | head -n 1 | cut -d ' ' -f 2 >> .list
 	} else {
-		echo -n "$i plain " >> .list
-		ls -ablR $i | md5sum | cut -d ' ' -f 1 >> .list
+		echo "Unsupported package: $i" >&2
 	}
 }
