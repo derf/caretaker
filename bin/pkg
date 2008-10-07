@@ -176,12 +176,12 @@ vcs_log () {
 
 vcs_upgrade () {
 	[[ -d .hg   ]] && {hg pull --update $PKG_ROOT/$PWD:t; return}
-	[[ -d .git  ]] && {git pull $PKG_ROOT/$PWD:t        ; return}
+	[[ -d .git  ]] && {git pull $PKG_ROOT/$PWD:t master ; return}
 }
 
 vcs_push () {
 	[[ -d .hg   ]] && {hg push $PKG_ROOT/$PWD:t ; return}
-	[[ -d .git  ]] && {git push $PKG_ROOT/$PWD:t; return}
+	[[ -d .git  ]] && {git push $PKG_ROOT/$PWD:t master; return}
 }
 
 vcs_status () {
