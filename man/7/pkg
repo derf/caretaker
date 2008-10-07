@@ -64,13 +64,13 @@ The following pkg-related functions are available:
 
 Returns true if I<package> is installed, otherwise false
 
-* B<perlmodule> I<perl module>
+* B<perlmodule> I<perlmodule>
 
-Returns true if I<perl module> can be used by perl, otherwise false
+Returns true if I<perlmodule> can be used by perl, otherwise false
 
-* B<file_in_path> I<commend name>
+* B<file_in_path> I<commendname>
 
-Returns true if I<command name> was found in the users PATH, otherwise false
+Returns true if I<commandname> was found in the users PATH, otherwise false
 
 * B<offer_install> I<package>
 

@@ -31,7 +31,7 @@ Change the default source on all packages to I<source>
 Example: `changeroot ssh://kraftwerk/var/packages_root` will change
 the source of core to 'ssh://kraftwerk/var/packages_root/core'
 
-=item B<check> [ I<pacjage> ]
+=item B<check> [ I<package> ]
 
 Check dependencies, conflicts and symlinks of I<package>.
 If no argument is given, checks all installed packages
@@ -70,7 +70,7 @@ Show commit history for package
 =item B<push> [ I<package> ]
 
 push new local versions to PKG_ROOT.
-If no argument is given, pushes all installed packes
+If no argument is given, pushes all installed packages
 
 =item B<remote-update>
 
@@ -99,6 +99,31 @@ If no argument is given, updates all installed packages
 =item F<~/.pkg.conf>
 
 Contains configuration vars
+
+=back
+
+=head1 CAVEATS
+
+On the server holding the PKG_ROOT, core/include/pkglist must be executed for
+pkg upgrade and pkg push to work properly. It's recommended to execute it as
+cronjob. A concept to execute it 'on demand' is planned.
+
+=head1 EXAMPLES
+
+=over
+
+=item * B<pkg remote-update; pkg upgrade>
+
+Get new stuff from the packages_root
+
+=item * B<pkg local-update; pkg push>
+
+Push local changes to the packages_root
+
+=item * B<pkg eval exec_hook core post-update; pkg eval populate_collected core>
+
+Update the core package after local changes.
+(Yeah, this sucks. I'm working out a better way)
 
 =back
 
