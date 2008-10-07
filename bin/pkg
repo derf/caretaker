@@ -297,7 +297,7 @@ check_prereqs () {
 		install+=$1
 	}
 
-	(source prereqs)
+	source prereqs
 
 	if [[ -n $install ]] {
 		info "$1 requires the following packages: $install\n"
