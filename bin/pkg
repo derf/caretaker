@@ -280,6 +280,7 @@ exec_hook () {
 check_prereqs () {
 	package=$1
 	[[ -r $PDIR/$package/prereqs ]] || return 0
+	cd $PDIR/$package
 	info "checking prerequisites\n"
 	typeset -a install
 
