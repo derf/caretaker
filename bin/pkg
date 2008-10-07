@@ -29,12 +29,7 @@ check_valid () {
 }
 
 clear_line () {
-	string="\r"
-	for char in {0..80}; {
-		string+=' '
-	}
-	string+="\r"
-	echo -ne $string
+	echo -ne "\r\e[2K"
 }
 
 # Read local configuration
