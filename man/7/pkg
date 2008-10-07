@@ -1,0 +1,117 @@
+=pod
+
+=head1 NAME
+
+pkg - Package maintenance utility, package format
+
+=head1 PACKAGE STRUCTURE
+
+Special (as in, mostly handled by pkg) directories and files in a package.
+
+Unless marked with [*], all files and directories are optional
+
+=over
+
+=item bin/
+
+The place for executables to be in the user's PATH. For their processing, see B<populate_collected>
+
+=item etc/
+
+Configuration files, not threated specially though
+
+=item include/
+
+Scripts used by the package that don't belong into B<bin/>. Not threated specially
+
+=item man/
+
+Manual files in POD format, separated by section (like man/7/pkg)
+
+=item provides/
+
+Files for inclusion into other packages
+
+=item description
+
+Package description for B<pkg info>
+
+=item .links
+
+Sym- and hardlink descriptions. See checklinks(1)
+
+=item prereqs
+
+The package's prerequisites, mainly dependencies. See B<check_prereqs>
+
+=item priority
+
+Package priority as an [1;6] interval of integer numbers.
+
+=back
+
+=head1 MAJOR INTERNAL FUNCTIONS
+
+=over
+
+=item B<check_prereqs> I<package>
+
+Checks a package's prerequisites as defined in B<prereqs>.
+The prereqs file is a zsh script which is sourced by pkg.
+The following pkg-related functions are available:
+
+* B<is_installed> I<package>
+
+Returns true if I<package> is installed, otherwise false
+
+* B<perlmodule> I<perl module>
+
+Returns true if I<perl module> can be used by perl, otherwise false
+
+* B<file_in_path> I<commend name>
+
+Returns true if I<command name> was found in the users PATH, otherwise false
+
+* B<offer_install> I<package>
+
+After completing the execution of B<prereqs>,
+pkg will offer to install all the packages added by this command.
+Use in conjunction with B<is_installed>, like
+  is_installed brain || offer_install brain
+
+=item B<populate_collected> I<package>
+
+This command does two things.
+First, it creates the appropiate symlinks in F<~/bin> to the files in B<bin/>.
+Second, it runs podchecker(1) over the files in B<bin/> and B<man/> and
+uses pod2man(1) to create man pages from them, which will then be stored in
+.collected (like .collected/man/man7/pkg.7).
+
+The commend is invoked with pkg upgrade and pkg add
+
+=item B<genocide_collected> I<package>
+
+Revert the actions of populate_collected. Called with pkg delete.
+
+=item B<update_provides> I<package>
+
+Walks through the directories in B<provides> and executes the post-update hooks
+of the corresponding packages.
+
+=back
+
+=head1 AUTHOR
+
+Daniel Friesel <derf@derf.homelinux.org>
+
+=head1 LICENSE
+
+  0. You just DO WHAT THE FUCK YOU WANT TO.
+
+=head1 SEE ALSO
+
+checklinks(1), pkg(1)
+
+=cut
+
+vim:ft=pod
