@@ -44,7 +44,7 @@ if [[ -f $HOME/.pkg.conf ]] {
 
 # Default values
 [[ -n $PDIR       ]] || PDIR="$HOME/packages"
-[[ -n $PKG_ROOT   ]] || PKG_ROOT="ssh://derf.homelinux.org/~/var/packages_root"
+[[ -n $PKG_ROOT   ]] || PKG_ROOT="ssh://derf.homelinux.org/home/derf/var/packages_root"
 [[ -n $CL_OPTIONS ]] || CL_OPTIONS=(-q)
 [[ -n $SILENT     ]] || SILENT=0
 info=$'\e[0;36m'
@@ -212,7 +212,7 @@ list_type_local () {
 
 list_update_remote () {
 	if [[ $PKG_PROTO = 'ssh' ]] {
-		scp -q $PKG_HOST:${$(cut -d / -f 4- <<< $PKG_ROOT)/'~/'}/.list .list-remote
+		scp -q $PKG_HOST:$PKG_PATH/.list .list-remote
 	} elif [[ $PKG_PROTO = 'file' ]] {
 		cp $PKG_ROOT/.list .list-remote
 	}
