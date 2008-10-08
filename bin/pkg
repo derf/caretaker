@@ -144,7 +144,7 @@ progress () {
 vcs_to_list () {
 	if [[ -d $1/.git ]] {
 		echo -n "$1 git "
-		git --git-dir=$1/.git log | fgrep commit | head -n 1 | cut -d ' ' -f 2
+		git --git-dir=$1/.git log -n 1 | fgrep commit | cut -d ' ' -f 2
 	} else {
 		warn "Unsupported or no repository: $1\n"
 	}
