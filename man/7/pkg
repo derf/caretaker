@@ -44,6 +44,18 @@ All directories in $PDIR must be valid git repositories which are not in the
 state of 'initial commit'. Dotfiles (directories starting with a .) are exempt
 from this, they will be ignored by pkg.
 
+=head1 THE PACKAGES ROOT
+
+The packages_root, in pkg referred to as $PKG_ROOT, is structured just like
+the packages directory $PDIR, except that it neither contains .list nor
+.list-remote. The packages root is the central point where pkg fetches
+packages from and pushes packages to.
+
+=head2 CAUTION
+
+The file $PKG_ROOT/core/include/pkglist is used by pkg, so make sure the git
+rupo is checked out. A regular 'git checkout -f' in the core repo is recommended.
+
 =head1 WHAT IS A PACKAGE?
 
 Anything tracked with git can be used as package. However, as the purpose of pkg
