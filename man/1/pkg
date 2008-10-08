@@ -20,10 +20,6 @@ I<action> may be one of:
 
 fetch given I<package> from the package_root and install it
 
-=item B<changelog> I<package>
-
-Show I<package>'s changelog (if available)
-
 =item B<check> [ I<package> ]
 
 Check dependencies, conflicts and symlinks of I<package>.
@@ -115,8 +111,11 @@ Push local changes to the packages_root
 
 =item * B<pkg eval exec_hook core post-update; pkg eval populate_collected core>
 
-Update the core package after local changes.
-(Yeah, this sucks. I'm working out a better way)
+Update the core package after local changes ('fake' an update, since this is
+normally done with pkg upgrade and pkg push).
+
+NOTE: As of Wed Oct 8 10:48:22 2008 +0200, this should be done automatically
+whenever neccessary. You probably won't need to do this manually.
 
 =back
 

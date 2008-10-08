@@ -85,9 +85,9 @@ This command does two things.
 First, it creates the appropiate symlinks in F<~/bin> to the files in B<bin/>.
 Second, it runs podchecker(1) over the files in B<bin/> and B<man/> and
 uses pod2man(1) to create man pages from them, which will then be stored in
-.collected (like .collected/man/man7/pkg.7).
+B<.collected> (like .collected/man/man7/pkg.7).
 
-The commend is invoked with pkg upgrade and pkg add
+The command is invoked with pkg upgrade, pkg add and pkg push
 
 =item B<genocide_collected> I<package>
 
