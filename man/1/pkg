@@ -97,6 +97,9 @@ On the server holding the PKG_ROOT, core/include/pkglist must be executed for
 pkg upgrade and pkg push to work properly. It's recommended to execute it as
 cronjob. A concept to execute it 'on demand' is planned.
 
+Also, this is early-beta software. No backwards compatibility guaranteed.
+Please refer to pkg(7)
+
 =head1 EXAMPLES
 
 =over
@@ -139,7 +142,7 @@ many ideas and suggestions
 
 =head1 SEE ALSO
 
-L<pkg.conf>(5)
+L<pkg.conf>(5), pkg(7)
 
 =cut
 
