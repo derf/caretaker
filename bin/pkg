@@ -435,16 +435,16 @@ pkg_push () {
 		clear_line
 		info "Pushing $1\n"
 		vcs_push
+		check_prereqs $1
+		if [[ -r Makefile ]] {
+			info "Building binaries\n"
+			make
+		}
+		triggers+=$1
+		checklinks $CL_OPTIONS
+		populate_collected $1
+		update_provides $1
 	}
-	check_prereqs $1
-	if [[ -r Makefile ]] {
-		info "Building binaries\n"
-		make
-	}
-	triggers+=$1
-	checklinks $CL_OPTIONS
-	populate_collected $1
-	update_provides $1
 }
 
 pkg_remove () {
