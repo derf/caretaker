@@ -591,21 +591,6 @@ pkg_log () {
 	vcs_log
 }
 
-pkg_changelog () {
-	[[ -r $PDIR/$1/changelog ]] && view $PDIR/$1/changelog
-}
-
-# Almost obsoleted by the bin/* -> man/ stuff
-pkg_doc () {
-	if [[ -r $PDIR/.collected/man/$1 ]] {
-		man $PDIR/.collected/man/$1
-	} elif [[ -r $PDIR/.collected/doc/$1 ]] {
-		less $PDIR/.collected/doc/$1
-	} else {
-		echo "No documentation found"
-	}
-}
-
 
 ##
 ## Now what shall we do...
@@ -613,10 +598,8 @@ pkg_doc () {
 
 case $1 in
 	add) pkg_add $2 ;;
-	changelog) pkg_changelog $2 ;;
 	check) wrap pkg_check "$2" "Checking" ;;
 	delete) pkg_remove $2 ;;
-	doc) pkg_doc $2 ;;
 	info) pkg_info $2 ;;
 	install) pkg_add $2 ;;
 	list) pkg_list_installed ;;
@@ -630,7 +613,7 @@ case $1 in
 	update) pkg_update ;;
 	upgrade) wrap pkg_upgrade "$2" "Looking for updates" ;;
 	eval) shift; eval $* ;;
-	*) die "wait, what?\n" ;;
+	*) die "wait, what?\npkg: unknown action: '$1'\n" ;;
 esac
 
 apply_triggers
