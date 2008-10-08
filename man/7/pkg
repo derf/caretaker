@@ -4,6 +4,52 @@
 
 pkg - Package maintenance utility, package format
 
+=head1 INTRO
+
+(if you prefer technical infos over historical blah-blah, skip this section)
+
+Actually, pkg is just a pimped dotfile manager, which just happens to support
+a sort of packages, version control, automatic sym- and hardlinking, and which
+can also handle scripts and binaries. Oh, and it can cause serious brain damage.
+
+It evolved from two hg repos for ~/bin and ~/etc and some management scripts,
+and now it can handle as many git repos as you want, which may contain
+basically anything you can think of - you can even store movies in them.
+(Of course that would be completely braindead, but hey -
+you could, if you wanted to)
+
+Currently, pkg should be considered early-beta software. It already works quite
+well and does not have many known bugs, however some concepts are really stupid
+and are subject to change. Be warned that backwards compatibility can NOT be
+guaranteed, though I will do my best.
+
+=head1 THE BASICS
+
+B<pkg> requires two directories in you home directory. B<~/bin> contains
+symlinks to the executables shipped with your packages, and $PDIR
+(B<~/packages> by default, but *theoretically* configurable) contains the
+packages themselves. B<~/bin> may also contain normal executables, just make
+sure they don't conflict with a package's ones.
+
+=head1 THE PACKAGES DIRECTORY
+
+$PDIR is the core of all this stuff. It's main use is storing the packages.
+There is one directory for each installed package, as created by B<git clone>.
+Additionally, $PDIR holds two speciel files: B<.list> and B<.list-remote>. For
+an explanation about these files, refer to the section 'the package list' below.
+
+=head2 NOTE
+
+All directories in $PDIR must be valid git repositories which are not in the
+state of 'initial commit'. Dotfiles (directories starting with a .) are exempt
+from this, they will be ignored by pkg.
+
+=head1 WHAT IS A PACKAGE?
+
+Anything tracked with git can be used as package. However, as the purpose of pkg
+is not to do your version control, you probably want to have at least one of the
+files and directories described below in it.
+
 =head1 PACKAGE STRUCTURE
 
 Special (as in, mostly handled by pkg) directories and files in a package.
