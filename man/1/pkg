@@ -123,6 +123,20 @@ whenever neccessary. You probably won't need to do this manually.
 
 Daniel Friesel <derf@derf.homelinux.org>
 
+=head1 CREDITS
+
+=over
+
+=item * Lars Stoltenow (penma)
+
+for pointing out various bugs and design mistakes
+
+=item * Maximilian Gass (mxey)
+
+many ideas and suggestions
+
+=back
+
 =head1 SEE ALSO
 
 L<pkg.conf>(5)
