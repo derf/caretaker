@@ -2,52 +2,31 @@
 # bootstrap - populate a home with the most necessary scripts
 # After running this, other packages can be installed using 'pkg'
 
-HG=hg
+typeset -i rcempty=0
 
 # zsh keeps complaining about not having a configuration,
 # so let's be kind and give it an empty one.
-if ! [[ -e $HOME/.zshrc ]] {
-	RCEMPTY=yes
-	touch $HOME/.zshrc
+if ! [[ -e ~/.zshrc ]] {
+	rcempty=1
+	touch ~/.zshrc
 }
 
 # Make basic dirctories
 mkdir -p ~/bin
-mkdir -p ~/lib
-mkdir -p ~/packages/.collected/{bin,doc,man/man{1..8},etc,include}
-mkdir -p ~/var/tmp/incoming
+mkdir -p ~/packages/.collected/man/man{1..8}
 
-if ( ! which python &> /dev/null ) {
-	echo "No Python found. Sorry."
+if ! which git &> /dev/null; then
+	echo "git not found. Sorry."
 	exit 200
-}
-
-if ( ! which hg &> /dev/null) {
-	echo 'Mercurial not found, installing...'
-	cd ~/packages
-	ssh derf.homelinux.org 'tar cz -C ~/var/packages_root .mercurial-bin' | tar xz
-	HG="$HOME/packages/.mercurial-bin/mercurial-1.0.1/hg"
-}
+fi
 
 cd ~/packages
-echo "fetching core"
-$HG clone ssh://derf.homelinux.org/var/packages_root/core
+echo "fetching core..."
+git clone ssh://derf.homelinux.org/var/packages_root/core
 
 cd core
 bin/checklinks
-for i in bin/*(*); {
-	ln -s ../packages/core/$i $HOME/$i
-}
+bin/pkg eval populate_collected core
+bin/pkg eval exec_hook core post-add
 
-if ([ -d $HOME/packages/.mercurial-bin ]) {
-	cd ~/packages/.mercurial-bin
-	~/bin/checklinks
-}
-
-[ "$RCEMPTY" = yes ] && rm $HOME/.zshrc
-
-PATH=$HOME/bin:$PATH
-
-rehash
-
-pkg add zsh
+(( rcempty )) && rm ~/.zshrc
