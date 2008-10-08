@@ -1,14 +1,28 @@
 #!/usr/bin/env zsh
 
-cd $1 || exit 100
+# Some backwards-compatibility foobar...
+# XXX: Remove this as soon as everyone should have the new version
+typeset -g -i newmode=0
+[[ -n $PDIR ]] && newmode=1
+(( newmode )) || cd $1 || exit 100
+(( newmode )) && cd /${(j:/:)${(s:/:)0}[1,-4]}
 
-rm -f .list
+(( newmode )) || rm -f .list
 
 for i in *(/,@); {
 	if [[ -d $i/.git ]] {
-		echo -n "$i git " >> .list
-		git --git-dir=$i/.git log | fgrep commit | head -n 1 | cut -d ' ' -f 2 >> .list
+		if (( newmode )) {
+			echo -n "$i git "
+			git --git-dir=$i/.git log | fgrep commit | head -n 1 | cut -d ' ' -f 2
+		} else {
+			echo -n "$i git " >> .list
+			git --git-dir=$i/.git log | fgrep commit | head -n 1 | cut -d ' ' -f 2 >> .list
+		}
 	} else {
-		echo "Unsupported package: $i" >&2
+		echo "$i: Unsupported or no repository" >&2
 	}
+}
+
+if (( newmode == 0 )) {
+	echo "Running pkglist manually or via cron is no longer neccessary and therefore depracated" >&2
 }
