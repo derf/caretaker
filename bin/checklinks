@@ -138,8 +138,8 @@ quiet. Hide unchanged symlinks
 
 =head1 FILES
 
-The symlink definitions are read from the file F<.links> in the current working
-directory. Each line contains, separated by spaces:
+The symlink definitions are read from the file F<.links> or F<links> in the
+current working directory. Each line contains, separated by spaces:
 
 =over
 

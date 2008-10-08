@@ -82,7 +82,7 @@ Files for inclusion into other packages
 
 Package description for B<pkg info>
 
-=item .links
+=item links
 
 Sym- and hardlink descriptions. See checklinks(1)
 
