@@ -197,6 +197,7 @@ list_type_local () {
 }
 
 list_update_remote () {
+	export PDIR
 	if [[ $PKG_PROTO = 'ssh' ]] {
 		ssh $PKG_HOST "$PKG_PATH/core/include/pkglist $PKG_PATH" > .list-remote
 		if (( newmode == 0 )) {
