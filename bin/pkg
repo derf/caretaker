@@ -522,10 +522,12 @@ pkg_status () {
 	}
 }
 
-pkg_check () {
+pkg_refresh () {
 	check_installed $1
 	cd $PDIR/$1
+	populate_collected $1
 	checklinks $CL_OPTIONS
+	triggers+=$1
 }
 
 pkg_update () {
@@ -606,7 +608,6 @@ pkg_log () {
 
 case $1 in
 	add) pkg_add $2 ;;
-	check) wrap pkg_check "$2" "Checking" ;;
 	delete) pkg_remove $2 ;;
 	info) pkg_info $2 ;;
 	install) pkg_add $2 ;;
@@ -615,6 +616,7 @@ case $1 in
 	local-update) pkg_update_local ;;
 	log) pkg_log $2 ;;
 	push) wrap pkg_push "$2" "Pushing" ;;
+	refresh) wrap pkg_refresh "$2" "Refreshing" ;;
 	remote-update) pkg_update_remote ;;
 	remove) pkg_remove $2 ;;
 	status) wrap pkg_status "$2" "Checking package status" ;;

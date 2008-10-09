@@ -20,11 +20,6 @@ I<action> may be one of:
 
 fetch given I<package> from the package_root and install it
 
-=item B<check> [ I<package> ]
-
-Check dependencies, conflicts and symlinks of I<package>.
-If no argument is given, checks all installed packages
-
 =item B<delete>|B<remove> I<package>
 
 Remove I<package> from the local packages tree
@@ -60,6 +55,11 @@ Show commit history for package
 
 push new local versions to PKG_ROOT.
 If no argument is given, pushes all installed packages
+
+=item B<refresh> [ I<package> ]
+
+Check prereqs and update symlinks of I<package>.
+If no argument is given, refreshs all installed packages
 
 =item B<remote-update>
 
@@ -108,13 +108,10 @@ Get new stuff from the packages_root
 
 Push local changes to the packages_root
 
-=item * B<pkg eval exec_hook core post-update; pkg eval populate_collected core>
+=item * B<pkg refresh core>
 
-Update the core package after local changes ('fake' an update, since this is
-normally done with pkg upgrade and pkg push).
-
-NOTE: As of Wed Oct 8 10:48:22 2008 +0200, this should be done automatically
-whenever neccessary. You probably won't need to do this manually.
+'Fake-Upgrade'. Execute the appropiate commands as if the core package had been
+upgraded (useful when you change something but don't want to commit/push yet)
 
 =back
 

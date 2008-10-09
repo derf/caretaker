@@ -54,7 +54,7 @@ packages from and pushes packages to.
 =head2 CAUTION
 
 The file $PKG_ROOT/core/include/pkglist is used by pkg, so make sure the git
-rupo is checked out. A regular 'git checkout -f' in the core repo is recommended.
+repo is checked out. A regular 'git checkout -f' in the core repo is recommended.
 
 =head1 WHAT IS A PACKAGE?
 
