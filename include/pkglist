@@ -13,10 +13,10 @@ for i in *(/,@); {
 	if [[ -d $i/.git ]] {
 		if (( newmode )) {
 			echo -n "$i git "
-			git --git-dir=$i/.git log -n 1 | fgrep commit | cut -d ' ' -f 2
+			echo ${$(git --git-dir=$i/.git log -n 1)[2]}
 		} else {
 			echo -n "$i git " >> .list
-			git --git-dir=$i/.git log -n 1 | fgrep commit | cut -d ' ' -f 2 >> .list
+			echo ${$(git --git-dir=$i/.git log -n 1)[2]} >> .list
 		}
 	} else {
 		echo "$i: Unsupported or no repository" >&2
