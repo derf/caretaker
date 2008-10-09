@@ -162,10 +162,6 @@ of the corresponding packages.
 
 Daniel Friesel <derf@derf.homelinux.org>
 
-=head1 LICENSE
-
-  0. You just DO WHAT THE FUCK YOU WANT TO.
-
 =head1 SEE ALSO
 
 checklinks(1), pkg(1)
