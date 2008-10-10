@@ -3,6 +3,14 @@
 # After running this, other packages can be installed using 'pkg'
 
 typeset -i rcempty=0
+typeset PKG_ROOT
+
+if [[ -n $1 ]] {
+	PKG_ROOT=$1
+} else {
+	echo "Usage: ./bootstrap PKG_ROOT"
+	exit 100
+}
 
 # zsh keeps complaining about not having a configuration,
 # so let's be kind and give it an empty one.
@@ -22,11 +30,13 @@ fi
 
 cd ~/packages
 echo "fetching core..."
-git clone ssh://derf.homelinux.org/var/packages_root/core
+git clone $PKG_ROOT/core
 
-cd core
+cd core || exit 1
 bin/checklinks
 bin/pkg eval populate_collected core
 bin/pkg eval exec_hook core post-add
 
 (( rcempty )) && rm ~/.zshrc
+
+echo "PKG_ROOT='$PKG_ROOT'" > .pkg.conf
