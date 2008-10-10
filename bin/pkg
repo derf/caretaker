@@ -436,6 +436,7 @@ pkg_add () {
 		make
 	}
 	exec_hook $1 'post-add'
+	exec_hook $1 'post-update'
 	checklinks $CL_OPTIONS
 	populate_collected $1
 	update_provides $1
