@@ -31,7 +31,7 @@ symlinks to the executables shipped with your packages, and $PDIR
 packages themselves. B<~/bin> may also contain normal executables, just make
 sure they don't conflict with a package's ones.
 
-=head1 THE PACKAGES DIRECTORY
+=head1 THE PACKAGE DIRECTORY
 
 $PDIR is the core of all this stuff. It's main use is storing the packages.
 There is one directory for each installed package, as created by B<git clone>.
@@ -44,7 +44,7 @@ All directories in $PDIR must be valid git repositories which are not in the
 state of 'initial commit'. Dotfiles (directories starting with a .) are exempt
 from this, they will be ignored by pkg.
 
-=head1 THE PACKAGES ROOT
+=head1 THE PACKAGE ROOT
 
 The packages_root, in pkg referred to as $PKG_ROOT, is structured just like
 the packages directory $PDIR, except that it neither contains .list nor
@@ -157,6 +157,21 @@ Walks through the directories in B<provides> and executes the post-update hooks
 of the corresponding packages.
 
 =back
+
+=head1 THE PACKAGE LIST
+
+Thi package list lives in the files B<.list> and B<.list-remote> mentioned
+above. It's used to decide whether a package needs to be pulled / pushed.
+Also, the 'pkg add' completion relies on .list-remote, and back in the days when
+pkg supported more than one DVCS, it was used to determine which DVCS to use
+for which package.
+
+It consists of one line per package, each line containing three items separated
+by a single whitespace. The first item is the package name, the second one the
+repository type (DVCS), the third the current revision. Example:
+
+  core git 82d716d01dee0329af7df5e67b55558fe3ff1466
+
 
 =head1 AUTHOR
 
