@@ -102,11 +102,13 @@ Please refer to pkg(7)
 
 =item * B<pkg remote-update; pkg upgrade>
 
-Get new stuff from the packages_root
+Get new stuff from the packages_root.
+Note: If you haven't disabled AUTOUPDATE, B<pkg upgrade> will suffice here
 
 =item * B<pkg local-update; pkg push>
 
-Push local changes to the packages_root
+Push local changes to the packages_root.
+Note: If you haven't disabled AUTOUPDATE, B<pkg push> will suffice here
 
 =item * B<pkg refresh core>
 

@@ -55,6 +55,7 @@ if [[ -f $HOME/.pkg.conf ]] {
 [[ -n $PKG_ROOT   ]] || PKG_ROOT="ssh://derf.homelinux.org/home/derf/var/packages_root"
 [[ -n $CL_OPTIONS ]] || CL_OPTIONS=(-q)
 [[ -n $SILENT     ]] || SILENT=0
+[[ -n $AUTOUPDATE ]] || AUTOUPDATE=1
 info=$'\e[0;36m'
 error=$'\e[0;31m'
 reset=$'\e[0m'
@@ -624,13 +625,19 @@ case $1 in
 	list-all) pkg_list_available ;;
 	local-update) pkg_update_local ;;
 	log) pkg_log $2 ;;
-	push) wrap pkg_push "$2" "Pushing" ;;
+	push)
+		(( AUTOUPDATE )) && pkg_update
+		wrap pkg_push "$2" "Pushing"
+	;;
 	refresh) wrap pkg_refresh "$2" "Refreshing" ;;
 	remote-update) pkg_update_remote ;;
 	remove) pkg_remove $2 ;;
 	status) wrap pkg_status "$2" "Checking package status" ;;
 	update) pkg_update ;;
-	upgrade) wrap pkg_upgrade "$2" "Looking for updates" ;;
+	upgrade)
+		(( AUTOUPDATE )) && pkg_update_remote
+		wrap pkg_upgrade "$2" "Looking for updates"
+	;;
 	eval) shift; eval $* ;;
 	*) die "wait, what?\npkg: unknown action: '$1'\n" ;;
 esac
