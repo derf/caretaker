@@ -39,4 +39,4 @@ bin/pkg eval exec_hook core post-add
 
 (( rcempty )) && rm ~/.zshrc
 
-echo "PKG_ROOT='$PKG_ROOT'" > .pkg.conf
+echo "PKG_ROOT='$PKG_ROOT'" > ~/.pkg.conf
