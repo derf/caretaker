@@ -20,6 +20,10 @@ typeset -a -U triggers
 ## Internal functions for displaying stuff
 ##
 
+info=$'\e[0;36m'
+error=$'\e[0;31m'
+reset=$'\e[0m'
+
 info () {
 	(( SILENT )) || echo -ne "${info}$*${reset}"
 }
@@ -50,15 +54,12 @@ if [[ -f $HOME/.pkg.conf ]] {
 	. $HOME/.pkg.conf
 }
 
-# Default values
+# Default values... or not
 [[ -n $PDIR       ]] || PDIR="$HOME/packages"
-[[ -n $PKG_ROOT   ]] || PKG_ROOT="ssh://derf.homelinux.org/home/derf/var/packages_root"
+[[ -n $PKG_ROOT   ]] || die "No PKG_ROOT specified. Please edit ~/.pkg.conf\n"
 [[ -n $CL_OPTIONS ]] || CL_OPTIONS=(-q)
 [[ -n $SILENT     ]] || SILENT=0
 [[ -n $AUTOUPDATE ]] || AUTOUPDATE=1
-info=$'\e[0;36m'
-error=$'\e[0;31m'
-reset=$'\e[0m'
 
 export PDIR
 export PKG_ROOT
