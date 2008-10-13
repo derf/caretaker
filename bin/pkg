@@ -324,7 +324,7 @@ populate_collected () {
 			section=${i:h:t}
 			manpage=${i:t}
 			if (podchecker man/$section/$manpage &> /dev/null) {
-				pod2man -s $section -c "$1 package" -r "/home/derf" man/$section/$manpage > $PDIR/.collected/man/man$section/$manpage.$section
+				pod2man -s $section -c "$1 package" -r $HOME man/$section/$manpage > $PDIR/.collected/man/man$section/$manpage.$section
 				echo -n "+"
 			} else {
 				echo -n "."
