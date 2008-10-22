@@ -44,7 +44,8 @@ if (( CURRENT == 2 )) {
 		eval)
 			_message 'shell code for evaluation'
 			_wanted function expl 'internal function' \
-			compadd $(grep -E '^\S*\s*\(\)\s*{' ~/bin/pkg | cut -d ' ' -f 1)
+			compadd $(grep -E '^\S*\s*\(\)\s*{' =pkg | cut -d ' ' -f 1) \
+			        $(grep -E 'function \S* (\(\) )?{' =pkg | cut -d ' ' -f 2)
 		;;
 		*)
 			_message 'no more arguments'

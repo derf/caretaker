@@ -24,32 +24,32 @@ info=$'\e[0;36m'
 error=$'\e[0;31m'
 reset=$'\e[0m'
 
-info () {
+function info {
 	(( SILENT )) || echo -ne "${info}$*${reset}"
 }
 
-warn () {
+function warn {
 	echo -ne "${error}$*${reset}" > /dev/stderr
 }
 
-die () {
+function die {
 	echo -ne "${error}$*${reset}" > /dev/stderr
 	exit 100
 }
 
-say () {
+function say {
 	(( SILENT )) || echo $*
 }
 
-check_installed () {
+function check_installed {
 	[[ -n $1 && -d $PDIR/$1 ]] || die "Not installed: '$1'\n"
 }
 
-check_valid () {
+function check_valid {
 	[[ -d $PDIR/$1/.git ]] || die "Not a valid package name: '$1'\n"
 }
 
-clear_line () {
+function clear_line {
 	echo -ne "\r\e[2K"
 }
 
@@ -110,7 +110,7 @@ if [[ $PKG_PROTO = 'ssh' ]] {
 ##
 
 # Default reply: Yes
-confirm_yes () {
+function confirm_yes {
 	echo -n "$* [Y/n] "
 	read -k 1
 	[[ $REPLY != $'\n' ]] && echo
@@ -122,7 +122,7 @@ confirm_yes () {
 }
 
 # Default reply: No
-confirm_no () {
+function confirm_no {
 	echo -n "$* [y/N] "
 	read -q
 }
@@ -132,7 +132,7 @@ confirm_no () {
 ## Major internal functions
 ##
 
-progress () {
+function progress {
 	current=$1
 	max=$2
 	desc=$3
@@ -155,7 +155,7 @@ progress () {
 }
 
 ## VCS Wrappers
-vcs_to_list () {
+function vcs_to_list {
 	if [[ -d $1/.git ]] {
 		echo -n "$1 git "
 		echo ${$(git --git-dir=$1/.git log -n 1)[2]}
@@ -164,7 +164,7 @@ vcs_to_list () {
 	}
 }
 
-vcs_add () {
+function vcs_add {
 	cd $PDIR
 	case $(list_type $1) in
 		git)   git clone "$PKG_ROOT/$1" ;;
@@ -172,45 +172,45 @@ vcs_add () {
 	esac
 }
 
-vcs_log () {
+function vcs_log {
 	git log
 }
 
-vcs_upgrade () {
+function vcs_upgrade {
 	git pull $PKG_ROOT/${PWD:t} master
 }
 
-vcs_push () {
+function vcs_push {
 	git push $PKG_ROOT/${PWD:t} master
 }
 
-vcs_status () {
+function vcs_status {
 	git status
 }
 
 ## List stuff
 
-list_is_installed () {
+function list_is_installed {
 	grep ^"$1 " $PDIR/.list
 }
 
-list_exists () {
+function list_exists {
 	grep ^"$1 " $PDIR/.list-remote
 }
 
-list_incoming () {
+function list_incoming {
 	[[ $(list_local_version $1) != $(list_remote_version $1) ]]
 }
 
-list_type () {
+function list_type {
 	echo ${$(grep ^"$1 " $PDIR/.list-remote)[2]}
 }
 
-list_type_local () {
+function list_type_local {
 	echo ${$(grep ^"$1 " $PDIR/.list)[2]}
 }
 
-list_update_remote () {
+function list_update_remote {
 	export PDIR
 	if [[ $PKG_PROTO = 'ssh' ]] {
 		ssh $PKG_HOST "PDIR='$PDIR' $PKG_PATH/core/include/pkglist $PKG_PATH" > .list-remote
@@ -227,7 +227,7 @@ list_update_remote () {
 	}
 }
 
-list_update_local () {
+function list_update_local {
 	cd $PDIR
 	rm -f .list
 	all=${#$(echo $PDIR/*(/))}
@@ -239,30 +239,30 @@ list_update_local () {
 	}
 }
 
-list_update_package () {
+function list_update_package {
 	cd $PDIR
 	LIST=$(grep -v "^$1 " .list)
 	echo $LIST > .list
 	vcs_to_list $1 >> .list
 }
 
-list_remove_package () {
+function list_remove_package {
 	cd $PDIR
 	LIST=$(grep -v "^$1 " .list)
 	echo $LIST > .list
 }
 
-list_local_version () {
+function list_local_version {
 	echo ${$(grep "^$1 " $PDIR/.list)[3]}
 }
 
-list_remote_version () {
+function list_remote_version {
 	echo ${$(grep "^$1 " $PDIR/.list-remote)[3]}
 }
 
 
 # Return an understandable priority from the numeric one
-real_priority () {
+function real_priority {
 	case $1 in
 		6) echo "essential" ;;
 		5) echo "important" ;;
@@ -275,7 +275,7 @@ real_priority () {
 }
 
 # Execute a hook
-exec_hook () {
+function exec_hook {
 	package=$1
 	hook=$2
 	if [[ -r $PDIR/$package/hooks/$hook ]] {
@@ -286,7 +286,7 @@ exec_hook () {
 }
 
 # Check dependencies, conflicts etc.
-check_prereqs () {
+function check_prereqs {
 	package=$1
 	[[ -r $PDIR/$package/prereqs ]] || return 0
 	cd $PDIR/$package
@@ -320,7 +320,7 @@ check_prereqs () {
 
 # Write a packages' files to .collected
 # Currently, this is only documentation
-populate_collected () {
+function populate_collected {
 	cd $PDIR/$1 || return
 	info "Enabling documentation "
 	if [[ -d man ]] {
@@ -359,7 +359,7 @@ populate_collected () {
 # Remove a packages' files from .collected
 # Assuming there are no packages with colliding files
 # TODO: Make sure there are none
-genocide_collected () {
+function genocide_collected {
 	cd $PDIR/$1 || return
 	info "Removing documentation"
 	if [[ -d man ]] {
@@ -386,7 +386,7 @@ genocide_collected () {
 	}
 }
 
-update_provides () {
+function update_provides {
 	[[ -d $PDIR/$1/provides ]] || return
 	cd $PDIR/$1/provides
 	for package in *; {
@@ -397,13 +397,13 @@ update_provides () {
 	}
 }
 
-apply_triggers () {
+function apply_triggers {
 	for package in $triggers; {
 		exec_hook $package 'post-update'
 	}
 }
 
-wrap () {
+function wrap {
 	function=$1
 	arg=$2
 	progress=$3
@@ -427,7 +427,7 @@ wrap () {
 ## Finally - the functions actually doing something
 ##
 
-pkg_add () {
+function pkg_add {
 	if [[ -d $PDIR/$1 ]] {
 		info "Package '$1' is already installed!\n"
 		return 100
@@ -449,7 +449,7 @@ pkg_add () {
 	list_update_package $1
 }
 
-pkg_push () {
+function pkg_push {
 	check_installed $1
 	check_valid $1
 	cd $PDIR/$1
@@ -470,7 +470,7 @@ pkg_push () {
 	}
 }
 
-pkg_remove () {
+function pkg_remove {
 	check_installed $1
 	check_valid $1
 	cd $PDIR/$1
@@ -488,7 +488,7 @@ pkg_remove () {
 	info "Package removed.\n"
 }
 
-pkg_upgrade () {
+function pkg_upgrade {
 	check_installed $1
 	check_valid $1
 	cd $PDIR/$1
@@ -514,15 +514,15 @@ pkg_upgrade () {
 	}
 }
 
-pkg_list_installed () {
+function pkg_list_installed {
 	cut -d ' ' -f 1 $PDIR/.list
 }
 
-pkg_list_available () {
+function pkg_list_available {
 	cut -d ' ' -f 1 $PDIR/.list-remote
 }
 
-pkg_status () {
+function pkg_status {
 	check_installed $1
 	cd $PDIR/$1
 	vcs_status=$(PAGER='' vcs_status $1)
@@ -537,7 +537,7 @@ pkg_status () {
 	}
 }
 
-pkg_refresh () {
+function pkg_refresh {
 	check_installed $1
 	cd $PDIR/$1
 	populate_collected $1
@@ -545,26 +545,26 @@ pkg_refresh () {
 	triggers+=$1
 }
 
-pkg_update () {
+function pkg_update {
 	pkg_update_remote
 	pkg_update_local
 }
 
-pkg_update_remote () {
+function pkg_update_remote {
 	cd $PDIR
 	info "Updating remote package list..."
 	list_update_remote
 	clear_line
 }
 
-pkg_update_local () {
+function pkg_update_local {
 	info "Updating local package list..."
 	list_update_local
 	clear_line
 }
 
 # Various information related to a package
-pkg_info () {
+function pkg_info {
 	cd $PDIR
 
 	# Fetch the infos
@@ -593,7 +593,7 @@ pkg_info () {
 		}
 	}
 
-	show_info () {
+	function show_info {
 		[[ -z $2 ]] && return
 		info "$1: "
 		echo $2
@@ -610,7 +610,7 @@ pkg_info () {
 	show_info "Description" $DESCRIPTION
 }
 
-pkg_log () {
+function pkg_log {
 	check_installed $1
 	cd $PDIR/$1
 	vcs_log
