@@ -37,6 +37,10 @@ die () {
 	exit 100
 }
 
+say () {
+	(( SILENT )) || echo $*
+}
+
 check_installed () {
 	[[ -n $1 && -d $PDIR/$1 ]] || die "Not installed: '$1'\n"
 }
@@ -325,9 +329,9 @@ populate_collected () {
 			manpage=${i:t}
 			if (podchecker man/$section/$manpage &> /dev/null) {
 				pod2man -s $section -c "$1 package" -r $HOME man/$section/$manpage > $PDIR/.collected/man/man$section/$manpage.$section
-				echo -n "+"
+				say -n "+"
 			} else {
-				echo -n "."
+				say -n "."
 			}
 		}
 	}
@@ -335,9 +339,9 @@ populate_collected () {
 		for i in bin/*; {
 			if (podchecker $i &> /dev/null) {
 				pod2man $i > $PDIR/.collected/man/man1/${i:t}.1
-				echo -n "+"
+				say -n "+"
 			} else {
-				echo -n "."
+				say -n "."
 			}
 		}
 	}
