@@ -50,7 +50,7 @@ function check_valid {
 }
 
 function clear_line {
-	echo -ne "\r\e[2K"
+	(( SILENT )) || echo -ne "\r\e[2K"
 }
 
 # Read local configuration
@@ -133,6 +133,7 @@ function confirm_no {
 ##
 
 function progress {
+	(( SILENT )) && return
 	current=$1
 	max=$2
 	desc=$3
@@ -151,7 +152,7 @@ function progress {
 	item $c '='
 	item $a ' '
 	output+="] $currentper% $desc2"
-	(( SILENT )) || echo -ne $output
+	echo -ne $output
 }
 
 ## VCS Wrappers
