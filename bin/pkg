@@ -592,6 +592,14 @@ function pkg_info {
 		if [[ -r description ]] {
 			DESCRIPTION=$(cat description)
 		}
+		state='installed'
+		if list_incoming $1; then
+			state+=', needs update'
+		else
+			state+=', up-to-date'
+		fi
+	} else {
+		state='not installed'
 	}
 
 	function show_info {
@@ -601,7 +609,8 @@ function pkg_info {
 	}
 
 	show_info "Package" $NAME
-	show_info "Priority" "$PRIORITY ($PRIORITY_NAME)"
+	show_info 'State' $state
+	[[ -n $PRIORITY ]] && show_info "Priority" "$PRIORITY ($PRIORITY_NAME)"
 	show_info "Local Version" $LOCAL_VERSION
 	show_info "Remote Version" $REMOTE_VERSION
 	show_info "Repository Type" $REPO_TYPE
