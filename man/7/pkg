@@ -145,7 +145,7 @@ Second, it runs podchecker(1) over the files in B<bin/> and B<man/> and
 uses pod2man(1) to create man pages from them, which will then be stored in
 B<.collected> (like .collected/man/man7/pkg.7).
 
-The command is invoked with pkg upgrade, pkg add and pkg push
+The command is invoked with pkg upgrade, add, push and refresh
 
 =item B<genocide_collected> I<package>
 
