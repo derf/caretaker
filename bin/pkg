@@ -475,7 +475,6 @@ function pkg_push {
 
 function pkg_remove {
 	check_installed $1
-	check_valid $1
 	cd $PDIR/$1
 	if [[ -r priority ]] {
 		if (( $(cat priority) > 3 )) {
