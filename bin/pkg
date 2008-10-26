@@ -568,6 +568,10 @@ function pkg_update_local {
 function pkg_info {
 	cd $PDIR
 
+	if [[ -z $(list_exists $1) ]] {
+		die "No suche package: '$1'\n"
+	}
+
 	# Fetch the infos
 	NAME=$1
 	LOCAL_VERSION=$(list_local_version $1)
