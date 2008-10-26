@@ -46,7 +46,9 @@ function check_installed {
 }
 
 function check_valid {
-	[[ -d $PDIR/$1/.git ]] || die "Not a valid package name: '$1'\n"
+	if [[ -z $(list_exists $1) ]] {
+		die "No suche package: '$1'\n"
+	}
 }
 
 function clear_line {
@@ -568,9 +570,7 @@ function pkg_update_local {
 function pkg_info {
 	cd $PDIR
 
-	if [[ -z $(list_exists $1) ]] {
-		die "No suche package: '$1'\n"
-	}
+	check_valid $1
 
 	# Fetch the infos
 	NAME=$1
