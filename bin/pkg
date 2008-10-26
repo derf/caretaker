@@ -321,10 +321,16 @@ function check_prereqs {
 	}
 }
 
-# Write a packages' files to .collected
+# Write a package's files to .collected
 # Currently, this is only documentation
 function populate_collected {
 	cd $PDIR/$1 || return
+	typeset -i bins=0 bino=0 mans=0 mano=0
+
+	if (( wrapped )) {
+		clear_line
+		info "$1: "
+	}
 	info "Enabling documentation "
 	if [[ -d man ]] {
 		for i in man/*/*; {
@@ -333,8 +339,10 @@ function populate_collected {
 			if (podchecker man/$section/$manpage &> /dev/null) {
 				pod2man -s $section -c "$1 package" -r $HOME man/$section/$manpage > $PDIR/.collected/man/man$section/$manpage.$section
 				say -n "+"
+				(( mans++ ))
 			} else {
 				say -n "."
+				(( mano++ ))
 			}
 		}
 	}
@@ -343,12 +351,27 @@ function populate_collected {
 			if (podchecker $i &> /dev/null) {
 				pod2man $i > $PDIR/.collected/man/man1/${i:t}.1
 				say -n "+"
+				(( bins++ ))
 			} else {
 				say -n "."
+				(( bino++ ))
 			}
 		}
 	}
 	clear_line
+	if (( bins + mans > 0 )) {
+		(( wrapped )) && info  "$1: "
+		info "Compiled documentation "
+		say -n '('
+		if (( bins + bino > 0 )) {
+			say -n "$(( bins*100/(bins+bino) ))% bin"
+			(( mans + mano > 0 )) && say -n ', '
+		}
+		if (( mans + mano > 0 )) {
+			say -n "$(( mans*100/(mans+mano) ))% man"
+		}
+		say ')'
+	}
 	if [[ -d bin ]] {
 		for i in bin/*(*); {
 			if [[ $(readlink $HOME/$i) != "../$1/$i" ]] {
@@ -359,7 +382,7 @@ function populate_collected {
 	}
 }
 
-# Remove a packages' files from .collected
+# Remove a package's files from .collected
 # Assuming there are no packages with colliding files
 # TODO: Make sure there are none
 function genocide_collected {
@@ -412,8 +435,10 @@ function wrap {
 	progress=$3
 
 	if [[ -n $2 ]] {
+		wrapped=0
 		$function $2
 	} else {
+		wrapped=1
 		cd $PDIR
 		[[ -n $progress ]] && all=$(wc -l < $PDIR/.list)
 		[[ -n $progress ]] && current=0
