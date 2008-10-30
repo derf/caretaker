@@ -295,21 +295,34 @@ function check_prereqs {
 	cd $PDIR/$package
 	info "checking prerequisites\n"
 	typeset -a install
+	typeset warn
 
-	is_installed () {
+	function is_installed {
 		[[ -d $PDIR/$1 ]]
 	}
-	perlmodule () {
+	function perlmodule {
 		perl -M$1 < /dev/null 2> /dev/null
 	}
-	file_in_path () {
+	function file_in_path {
 		which $1 > /dev/null
 	}
-	offer_install () {
+	function offer_install {
 		install+=$1
+	}
+	function require {
+		if [[ $1 == 'package' ]] {
+			is_installed $2 || offer_install $2
+		} else {
+			$* || warn+="Requirement failed: $*\n"
+		}
 	}
 
 	source prereqs
+
+	if [[ -n $warn ]] {
+		warn $warn
+		read -q
+	}
 
 	if [[ -n $install ]] {
 		info "$1 requires the following packages: $install\n"
