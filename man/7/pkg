@@ -132,10 +132,20 @@ Returns true if I<commandname> was found in the users PATH, otherwise false
 
 * B<offer_install> I<package>
 
+Mark I<package> for installation
+
+* B<require> I<expression> | B<require package> I<package>
+
+Execute expression and automatically warn if it fails.
+In case of B<require package>, automatically mark B<package> for installation
+if it isn't installed
+
+Additionally, the string parameter 'warn' can be used to soak up warnings.
+It's also used by B<require>
+
 After completing the execution of B<prereqs>,
-pkg will offer to install all the packages added by this command.
-Use in conjunction with B<is_installed>, like
-  is_installed brain || offer_install brain
+pkg will offer to install all the packages added by B<offer_install> or
+B<require package>, and will print out the text stored in $warn
 
 =item B<populate_collected> I<package>
 
