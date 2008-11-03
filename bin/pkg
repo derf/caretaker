@@ -94,20 +94,16 @@ if [[ ${PKG_ROOT#ssh} != $PKG_ROOT ]] {
 	false
 }
 
-# user@host
+# user, host, path
 if [[ $PKG_PROTO = 'ssh' ]] {
 	PKG_HOST=${${PKG_ROOT#'ssh://'}%%/*}
+	PKG_PATH=${PKG_ROOT#"ssh://$PKG_HOST"}
 	if [[ $PKG_HOST == *@* ]] {
 		PKG_USER=${PKG_HOST%%@*}
 		PKG_HOST=${PKG_HOST#*@}
 	} else {
 		PKG_USER=$USERNAME
 	}
-}
-
-# Remote path
-if [[ $PKG_PROTO = 'ssh' ]] {
-	PKG_PATH=${PKG_ROOT#"ssh://$PKG_HOST"}
 } elif [[ $PKG_PROTO = 'file' ]] {
 	PKG_PATH=$PKG_ROOT
 }
