@@ -94,9 +94,15 @@ if [[ ${PKG_ROOT#ssh} != $PKG_ROOT ]] {
 	false
 }
 
-# Host
+# user@host
 if [[ $PKG_PROTO = 'ssh' ]] {
 	PKG_HOST=${${PKG_ROOT#'ssh://'}%%/*}
+	if [[ $PKG_HOST == *@* ]] {
+		PKG_USER=${PKG_HOST%%@*}
+		PKG_HOST=${PKG_HOST#*@}
+	} else {
+		PKG_USER=$USERNAME
+	}
 }
 
 # Remote path
@@ -216,9 +222,9 @@ function list_type_local {
 function list_update_remote {
 	export PDIR
 	if [[ $PKG_PROTO = 'ssh' ]] {
-		ssh $PKG_HOST "PDIR='$PDIR' $PKG_PATH/core/include/pkglist $PKG_PATH" > .list-remote
+		ssh $PKG_USER@$PKG_HOST "PDIR='$PDIR' $PKG_PATH/core/include/pkglist $PKG_PATH" > .list-remote
 		if [[ ${#$(cat .list-remote)} == 0 ]] {
-			scp -q $PKG_HOST:$PKG_PATH/.list .list-remote
+			scp -q $PKG_USER@$PKG_HOST:$PKG_PATH/.list .list-remote
 			warn "The pkglist version on your packages_root is outdated, please update\n"
 		}
 	} elif [[ $PKG_PROTO = 'file' ]] {
