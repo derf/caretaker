@@ -61,11 +61,11 @@ if [[ -f $HOME/.pkg.conf ]] {
 }
 
 # Default values... or not
-[[ -n $PDIR       ]] || PDIR="$HOME/packages"
 [[ -n $PKG_ROOT   ]] || die "No PKG_ROOT specified. Please edit ~/.pkg.conf\n"
-[[ -n $CL_OPTIONS ]] || CL_OPTIONS=(-q)
-[[ -n $SILENT     ]] || SILENT=0
-[[ -n $AUTOUPDATE ]] || AUTOUPDATE=1
+: ${PDIR:="$HOME/packages"}
+: ${CL_OPTIONS:=-q}
+: ${SILENT=0}
+: ${AUTOUPDATE=1}
 
 export PDIR
 export PKG_ROOT
