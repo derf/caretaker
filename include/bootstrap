@@ -33,10 +33,9 @@ echo "fetching core..."
 git clone $PKG_ROOT/core
 
 cd core || exit 1
+echo "PKG_ROOT='$PKG_ROOT'" > ~/.pkg.conf
 bin/checklinks
 bin/pkg eval populate_collected core
 bin/pkg eval exec_hook core post-add
 
 (( rcempty )) && rm ~/.zshrc
-
-echo "PKG_ROOT='$PKG_ROOT'" > ~/.pkg.conf
