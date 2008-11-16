@@ -196,11 +196,11 @@ function vcs_status {
 ## List stuff
 
 function list_is_installed {
-	grep ^"$1 " $PDIR/.list
+	grep ^"$1 " $PDIR/.list &> /dev/null
 }
 
 function list_exists {
-	grep ^"$1 " $PDIR/.list-remote
+	grep ^"$1 " $PDIR/.list-remote &> /dev/null
 }
 
 function list_incoming {
