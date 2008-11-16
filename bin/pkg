@@ -46,9 +46,9 @@ function check_installed {
 }
 
 function check_valid {
-	if [[ -z $(list_exists $1) ]] {
-		die "No suche package: '$1'\n"
-	}
+	if ! list_exists $1; then
+		die "No such package: '$1'\n"
+	fi
 }
 
 function clear_line {
