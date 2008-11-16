@@ -104,7 +104,8 @@ The package's prerequisites, mainly dependencies. See B<check_prereqs>
 
 =item priority
 
-Package priority as an [1;6] interval of integer numbers.
+Package priority as an integer between 1 and 6.
+Packages with a priority above 3 require user confirmation to be removed
 
 =back
 
