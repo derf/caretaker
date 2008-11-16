@@ -165,7 +165,7 @@ function vcs_to_list {
 		echo -n "$1 git "
 		echo ${$(git --git-dir=$1/.git log -n 1)[2]}
 	} else {
-		warn "Unsupported or no repository: $1\n"
+		warn "No git repository found: $1\n"
 	}
 }
 
@@ -475,6 +475,7 @@ function pkg_add {
 		info "Package '$1' is already installed!\n"
 		return 100
 	}
+	list_exists $1 || die "No such package: $1\n"
 	info "Retrieving package $1...\n"
 	cd $PDIR   || return 255
 	vcs_add $1 || return 255
