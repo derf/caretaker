@@ -585,6 +585,7 @@ function pkg_refresh {
 	cd $PDIR/$1
 	populate_collected $1
 	checklinks $CL_OPTIONS
+	check_prereqs $1
 	triggers+=$1
 }
 
