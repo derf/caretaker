@@ -389,9 +389,13 @@ function populate_collected {
 	}
 	if [[ -d bin ]] {
 		for i in bin/*(*); {
-			if [[ $(readlink $HOME/$i) != "../$1/$i" ]] {
-				rm -f $HOME/$i
-				ln -s ../${PDIR//$HOME\/}/$1/$i $HOME/$i
+			if [[ -L $HOME/$i || ! -e $HOME/$i ]] {
+				if [[ $(readlink $HOME/$i) != "../$1/$i" ]] {
+					rm -f $HOME/$i
+					ln -s ../${PDIR//$HOME\/}/$1/$i $HOME/$i
+				}
+			} else {
+				warn "populate_collected: Not updating ~/$i since it's not a symlink\n"
 			}
 		}
 	}
