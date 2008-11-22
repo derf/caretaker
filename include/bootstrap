@@ -1,6 +1,9 @@
 #!/usr/bin/env zsh
 # bootstrap - populate a home with the most necessary scripts
 # After running this, other packages can be installed using 'pkg'
+# Note: Since pkg is written in zsh, this script also is.
+# This way, I don't have to check for zsh somewhere in the script,
+# and also have an excuse for using zsh here :P
 
 typeset -i rcempty=0
 typeset PKG_ROOT
@@ -8,34 +11,44 @@ typeset PKG_ROOT
 if [[ -n $1 ]] {
 	PKG_ROOT=$1
 } else {
-	echo "Usage: ./bootstrap PKG_ROOT"
+	echo 'Usage: ./bootstrap PKG_ROOT'
 	exit 100
 }
 
 # zsh keeps complaining about not having a configuration,
 # so let's be kind and give it an empty one.
 if ! [[ -e ~/.zshrc ]] {
+	echo 'Creating empty zshrc'
 	rcempty=1
 	touch ~/.zshrc
 }
 
 # Make basic dirctories
+echo 'Creating the basic directory structure'
 mkdir -p ~/bin
 mkdir -p ~/packages/.collected/man/man{1..8}
 
 if ! which git &> /dev/null; then
-	echo "git not found. Sorry."
+	echo 'It appears that git is not available on this system.'
+	echo 'Sadly, pkg currently can not work without it.'
+	echo '-Installation aborted-'
 	exit 200
 fi
 
+echo 'Fetching the core package...'
 cd ~/packages
-echo "fetching core..."
 git clone $PKG_ROOT/core
-
 cd core || exit 1
+
+echo 'Writing pkg.conf'
 echo "PKG_ROOT='$PKG_ROOT'" > ~/.pkg.conf
+
+echo 'Installing core package'
 bin/checklinks
 bin/pkg eval populate_collected core
 bin/pkg eval exec_hook core post-add
 
-(( rcempty )) && rm ~/.zshrc
+if (( rcempty )) {
+	echo 'Removing empty zshrc'
+	rm ~/.zshrc
+}
