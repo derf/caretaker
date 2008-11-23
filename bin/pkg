@@ -590,6 +590,12 @@ function pkg_status {
 function pkg_refresh {
 	check_installed $1
 	cd $PDIR/$1
+	if [[ -r Makefile ]] {
+		clear_line
+		info "$1: re-building with make\n"
+		make clean
+		make
+	}
 	populate_collected $1
 	checklinks $CL_OPTIONS
 	check_prereqs $1
