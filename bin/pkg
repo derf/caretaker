@@ -61,7 +61,7 @@ if [[ -f $HOME/.pkg.conf ]] {
 }
 
 # Default values... or not
-[[ -n $PKG_ROOT   ]] || die "No PKG_ROOT specified. Please edit ~/.pkg.conf\n"
+[[ -n $PKG_ROOT ]] || die "No PKG_ROOT specified. Please edit ~/.pkg.conf\n"
 : ${PDIR:="$HOME/packages"}
 : ${CL_OPTIONS:=-q}
 : ${SILENT=0}
@@ -77,7 +77,7 @@ export PKG_ROOT
 ##
 
 if [[ ! -d $PDIR ]] {
-	die "$PDIR not found!!\n"
+	die "Error: Package directory '$PDIR' not found\n"
 }
 
 
@@ -91,11 +91,11 @@ if [[ ${PKG_ROOT#ssh} != $PKG_ROOT ]] {
 } elif [[ ${PKG_ROOT#'/'} != $PKG_ROOT ]] {
 	PKG_PROTO='file'
 } else {
-	false
+	die "Error: Unknown protocol in PKG_ROOT '$PKG_ROOT'"
 }
 
 # user, host, path
-if [[ $PKG_PROTO = 'ssh' ]] {
+if [[ $PKG_PROTO == 'ssh' ]] {
 	PKG_HOST=${${PKG_ROOT#'ssh://'}%%/*}
 	PKG_PATH=${PKG_ROOT#"ssh://$PKG_HOST"}
 	if [[ $PKG_HOST == *@* ]] {
@@ -104,7 +104,7 @@ if [[ $PKG_PROTO = 'ssh' ]] {
 	} else {
 		PKG_USER=$USERNAME
 	}
-} elif [[ $PKG_PROTO = 'file' ]] {
+} elif [[ $PKG_PROTO == 'file' ]] {
 	PKG_PATH=$PKG_ROOT
 }
 
@@ -118,7 +118,7 @@ function confirm_yes {
 	echo -n "$* [Y/n] "
 	read -k 1
 	[[ $REPLY != $'\n' ]] && echo
-	if [[ $REPLY = 'y' || $REPLY = 'Y' || $REPLY = $'\n' ]] {
+	if [[ $REPLY == 'y' || $REPLY == 'Y' || $REPLY == $'\n' ]] {
 		true
 	} else {
 		false
@@ -144,7 +144,7 @@ function progress {
 	desc2=$4
 	output=''
 	currentper=$(( (current*100)/max ))
-	item () {
+	function item {
 		for j in {0..$1}; {
 			(( j > 0 )) && output+=$2
 		}
@@ -196,11 +196,11 @@ function vcs_status {
 ## List stuff
 
 function list_is_installed {
-	grep ^"$1 " $PDIR/.list &> /dev/null
+	grep "^$1 " $PDIR/.list &> /dev/null
 }
 
 function list_exists {
-	grep ^"$1 " $PDIR/.list-remote &> /dev/null
+	grep "^$1 " $PDIR/.list-remote &> /dev/null
 }
 
 function list_incoming {
@@ -208,22 +208,22 @@ function list_incoming {
 }
 
 function list_type {
-	echo ${$(grep ^"$1 " $PDIR/.list-remote)[2]}
+	echo ${$(grep "^$1 " $PDIR/.list-remote)[2]}
 }
 
 function list_type_local {
-	echo ${$(grep ^"$1 " $PDIR/.list)[2]}
+	echo ${$(grep "^$1 " $PDIR/.list)[2]}
 }
 
 function list_update_remote {
 	export PDIR
-	if [[ $PKG_PROTO = 'ssh' ]] {
+	if [[ $PKG_PROTO == 'ssh' ]] {
 		ssh $PKG_USER@$PKG_HOST "PDIR='$PDIR' $PKG_PATH/core/include/pkglist $PKG_PATH" > .list-remote
 		if [[ ${#$(cat .list-remote)} == 0 ]] {
 			scp -q $PKG_USER@$PKG_HOST:$PKG_PATH/.list .list-remote
 			warn "The pkglist version on your packages_root is outdated, please update\n"
 		}
-	} elif [[ $PKG_PROTO = 'file' ]] {
+	} elif [[ $PKG_PROTO == 'file' ]] {
 		$PKG_PATH/core/include/pkglist $PKG_PATH > .list-remote
 		if [[ ${#$(cat .list-remote)} == 0 ]] {
 			cp $PKG_ROOT/.list .list-remote
@@ -246,15 +246,15 @@ function list_update_local {
 
 function list_update_package {
 	cd $PDIR
-	LIST=$(grep -v "^$1 " .list)
-	echo $LIST > .list
+	list=$(grep -v "^$1 " .list)
+	echo $list > .list
 	vcs_to_list $1 >> .list
 }
 
 function list_remove_package {
 	cd $PDIR
-	LIST=$(grep -v "^$1 " .list)
-	echo $LIST > .list
+	list=$(grep -v "^$1 " .list)
+	echo $list > .list
 }
 
 function list_local_version {
@@ -269,12 +269,12 @@ function list_remote_version {
 # Return an understandable priority from the numeric one
 function real_priority {
 	case $1 in
-		6) echo "essential" ;;
-		5) echo "important" ;;
-		4) echo "required" ;;
-		3) echo "standard" ;;
-		2) echo "optional" ;;
-		1) echo "extra" ;;
+		6) echo 'essential' ;;
+		5) echo 'important' ;;
+		4) echo 'required' ;;
+		3) echo 'standard' ;;
+		2) echo 'optional' ;;
+		1) echo 'extra' ;;
 		*) echo ;;
 	esac
 }
@@ -284,7 +284,7 @@ function exec_hook {
 	package=$1
 	hook=$2
 	if [[ -r $PDIR/$package/hooks/$hook ]] {
-		info "Executing $package $hook hook\n"
+		info "$package: executing hook $hook\n"
 		cd $PDIR/$package
 		(source hooks/$hook)
 	}
@@ -295,7 +295,7 @@ function check_prereqs {
 	package=$1
 	[[ -r $PDIR/$package/prereqs ]] || return 0
 	cd $PDIR/$package
-	info "checking prerequisites\n"
+	info "$package: checking prerequisites\n"
 	typeset -a install
 	typeset warn
 
@@ -319,7 +319,14 @@ function check_prereqs {
 		}
 	}
 
-	source prereqs
+	{
+		source prereqs
+	} always {
+		if (( TRY_BLOCK_ERROR )) {
+			warn 'Error in prereqs script'
+			TRY_BLOCK_ERROR=0
+		}
+	}
 
 	if [[ -n $warn ]] {
 		warn $warn
@@ -486,7 +493,7 @@ function pkg_add {
 	cd $1      || return 255
 	check_prereqs $1
 	if [[ -r $PDIR/$1/Makefile ]] {
-		info "Building binaries\n"
+		info "Running make\n"
 		make
 	}
 	exec_hook $1 'post-add'
@@ -508,7 +515,7 @@ function pkg_push {
 		vcs_push
 		check_prereqs $1
 		if [[ -r Makefile ]] {
-			info "Building binaries\n"
+			info "Running make\n"
 			make
 		}
 		triggers+=$1
@@ -544,7 +551,7 @@ function pkg_upgrade {
 		warn "Incompatible systems. Please reinstall: $1\n"
 		return 9
 	}
-	if {list_incoming $1} {
+	if list_incoming $1; then
 		clear_line
 		info "Updating $1 to $(list_remote_version $1)\n"
 		vcs_upgrade
@@ -558,7 +565,7 @@ function pkg_upgrade {
 		populate_collected $1
 		update_provides $1
 		list_update_package $1
-	}
+	fi
 }
 
 function pkg_list_installed {
@@ -577,10 +584,6 @@ function pkg_status {
 		clear_line
 		info "$1:\n"
 		echo $vcs_status
-		if [[ -r .autocommit ]] {
-			git add .
-			git commit -m 'autocommit by pkg'
-		}
 	}
 }
 
