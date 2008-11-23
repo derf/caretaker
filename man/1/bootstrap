@@ -16,12 +16,9 @@ bootstrap will, in this order, do the following:
 
 =item * create a basic directory structure
 
-=item * Check whether python is installed on the machine
+=item * Check whether git is installed on the machine
 
-=item * Check whether mercurial is install on the machine.
-If not, fetches a pre-built one via ssh/tar
-
-=item * Clone and then install the core repository
+=item * Clone and install the core repository
 
 =back
 
