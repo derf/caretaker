@@ -689,27 +689,32 @@ function pkg_log {
 ## Now what shall we do...
 ##
 
-case $1 in
-	add) pkg_add $2 ;;
-	delete) pkg_remove $2 ;;
-	info) pkg_info $2 ;;
-	install) pkg_add $2 ;;
-	list) pkg_list_installed ;;
-	list-all) pkg_list_available ;;
-	local-update) pkg_update_local ;;
-	log) pkg_log $2 ;;
+# Note:
+# wrap foobar "$1" <- the "" are neccessary here, since $1 is optional (and therefore may be empty)
+
+action=$1
+shift
+case $action in
+	add) pkg_add $* ;;
+	delete) pkg_remove $* ;;
+	info) pkg_info $* ;;
+	install) pkg_add $* ;;
+	list) pkg_list_installed $* ;;
+	list-all) pkg_list_available $* ;;
+	local-update) pkg_update_local $* ;;
+	log) pkg_log $* ;;
 	push)
 		(( AUTOUPDATE )) && pkg_update
-		wrap pkg_push "$2" "Pushing"
+		wrap pkg_push "$1" 'Pushing'
 	;;
-	refresh) wrap pkg_refresh "$2" "Refreshing" ;;
-	remote-update) pkg_update_remote ;;
-	remove) pkg_remove $2 ;;
-	status) wrap pkg_status "$2" "Checking package status" ;;
-	update) pkg_update ;;
+	refresh) wrap pkg_refresh "$1" 'Refreshing' ;;
+	remote-update) pkg_update_remote $* ;;
+	remove) pkg_remove $* ;;
+	status) wrap pkg_status "$1" 'Checking package status' ;;
+	update) pkg_update $* ;;
 	upgrade)
 		(( AUTOUPDATE )) && pkg_update_remote
-		wrap pkg_upgrade "$2" "Looking for updates"
+		wrap pkg_upgrade "$1" 'Looking for updates'
 	;;
 	eval) shift; eval $* ;;
 	*) die "wait, what?\npkg: unknown action: '$1'\n" ;;
