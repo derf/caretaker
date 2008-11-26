@@ -70,6 +70,26 @@ if [[ -f $HOME/.pkg.conf ]] {
 export PDIR
 export PKG_ROOT
 
+##
+## commandline parsing
+##
+
+# commandline options override everything else
+while [[ $1 == [-+]* ]] {
+	case $1 in
+		-q|--quiet) SILENT=1 ;;
+		+q|--no-quiiet) SILENT=0 ;;
+		-au|--auto-update) AUTOUPDATE=1 ;;
+		+au|--no-auto-update) AUTOUPDATE=0 ;;
+		-co|--checklinks-options) CL_OPTIONS+=$1; shift ;;
+		-p|--packagedir) PDIR=$1; shift ;;
+		*) die "Unknown argument: '$1'\n" ;;
+	esac
+	shift
+}
+
+action=$1
+shift
 
 ##
 ## Make sure everything's sane
@@ -691,9 +711,6 @@ function pkg_log {
 
 # Note:
 # wrap foobar "$1" <- the "" are neccessary here, since $1 is optional (and therefore may be empty)
-
-action=$1
-shift
 case $action in
 	add) pkg_add $* ;;
 	delete) pkg_remove $* ;;

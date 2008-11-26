@@ -6,7 +6,7 @@ pkg - Package maintenance utility
 
 =head1 SYNOPSIS
 
-B<pkg> I<action> [ I<arguments> ]
+B<pkg> [I<options>] I<action> [I<arguments>]
 
 =head1 DESCRIPTION
 
@@ -78,6 +78,36 @@ Update local and remote package list
 
 retrieve and install newest available version of I<package>.
 If no argument is given, updates all installed packages
+
+=back
+
+=head1 OPTIONS
+
+B<pkg> accepts both long and short options.
+Options marked as [boolean] may be negated,
+the short options by using '+' instead of '-' as prefix (like '+au'),
+the long options by prepending a 'no', like '--no-auto-update'.
+
+Options always override the configuration file and the environment variables.
+
+=over
+
+=item B<-q>, B<--quiet>  [boolean]
+
+Enable quiet mode, don't print progress. Useful for scripting
+
+=item B<-au>, B<--auto-update>  [boolean]
+
+Automatically update the package list before doing certain actions
+
+=item B<-co>, B<--checklinks-options> I<option>
+
+Append I<option> to the options checklinks is invoked with.
+Only one option is allowed. To append more options, repeat the argument
+
+=item B<-p>, B<--package-dir> I<directory>
+
+Use I<directory> as local package directory
 
 =back
 
