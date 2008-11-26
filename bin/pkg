@@ -25,7 +25,6 @@ error=$'\e[0;31m'
 reset=$'\e[0m'
 
 function debug {
-	(( DEBUG )) || return
 	typeset func line
 	if [[ ${#*} -ge 3 ]] {
 		func=$1
@@ -109,6 +108,12 @@ while [[ $1 == [-+]* ]] {
 action=$1
 shift
 
+# Avoid calling debug without debug mode... just in case one needs more speed
+if (( !DEBUG )) {
+	unalias debug
+	function debug {}
+}
+
 ##
 ## Make sure everything's sane
 ## Warn otherwise
@@ -120,7 +125,7 @@ if [[ ! -d $PDIR ]] {
 
 
 ##
-## Some additional variables related to PKG_ROOT
+## Setup some additional variables related to PKG_ROOT
 ##
 
 # Protocol
