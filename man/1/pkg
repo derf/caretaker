@@ -96,6 +96,10 @@ Options always override the configuration file and the environment variables.
 
 Enable quiet mode, don't print progress. Useful for scripting
 
+=item B<-d>, B<--debug>  [boolean]
+
+Enable debug mode
+
 =item B<-au>, B<--auto-update>  [boolean]
 
 Automatically update the package list before doing certain actions
