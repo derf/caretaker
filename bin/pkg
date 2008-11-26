@@ -151,6 +151,10 @@ if [[ $PKG_PROTO == 'ssh' ]] {
 	PKG_PATH=$PKG_ROOT
 }
 
+debug "PKG_ROOT: '$PKG_ROOT'"
+debug "PKG_PROTO: '$PKG_PROTO'"
+debug "PKG_USER: '$PKG_USER'"
+debug "PKG_HOST: '$PKG_HOST'"
 
 ##
 ## Ask the user for confirmation
