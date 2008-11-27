@@ -760,7 +760,7 @@ case $action in
 		(( AUTOUPDATE )) && pkg_update_remote
 		wrap pkg_upgrade "$1" 'Looking for updates'
 	;;
-	eval) shift; eval $* ;;
+	eval) eval $* ;;
 	*) die "wait, what?\npkg: unknown action: '$1'\n" ;;
 esac
 
