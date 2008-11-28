@@ -266,16 +266,8 @@ function list_update_remote {
 	export PDIR
 	if [[ $PKG_PROTO == 'ssh' ]] {
 		ssh $PKG_USER@$PKG_HOST "PDIR='$PDIR' $PKG_PATH/core/include/pkglist $PKG_PATH" > .list-remote
-		if [[ ${#$(cat .list-remote)} == 0 ]] {
-			scp -q $PKG_USER@$PKG_HOST:$PKG_PATH/.list .list-remote
-			warn "The pkglist version on your packages_root is outdated, please update\n"
-		}
 	} elif [[ $PKG_PROTO == 'file' ]] {
 		$PKG_PATH/core/include/pkglist $PKG_PATH > .list-remote
-		if [[ ${#$(cat .list-remote)} == 0 ]] {
-			cp $PKG_ROOT/.list .list-remote
-			warn "The pkglist version on your packages_root is outdated, please update\n"
-		}
 	}
 }
 
