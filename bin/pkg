@@ -390,8 +390,8 @@ function check_prereqs {
 	}
 }
 
-# Write a package's files to .collected
-# Currently, this is only documentation
+# Write a package's documentation to .collected
+# and symlink it's binaries from ~/bin
 function populate_collected {
 	cd $PDIR/$1 || return
 	typeset -i bins=0 bino=0 mans=0 mano=0
@@ -502,6 +502,7 @@ function apply_triggers {
 	}
 }
 
+# Iterate a function over every installed package
 function wrap {
 	function=$1
 	arg=$2
@@ -596,6 +597,7 @@ function pkg_upgrade {
 	if [[ $(list_type $1) != $(list_type_local $1) ]] {
 		clear_line
 		warn "Incompatible systems. Please reinstall: $1\n"
+		warn "  remote '$(list_type $1)' <-> local '$(list_type_local)'\n"
 		return 9
 	}
 	if list_incoming $1; then
