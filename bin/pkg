@@ -682,7 +682,7 @@ function pkg_info {
 			TAGS=$(cat tags | tr "\n" " " | sed 's/ /, /g' | sed 's/, $//')
 		}
 		if [[ -d hooks ]] {
-			HOOKS=$(ls hooks)
+			HOOKS=$(ls -m hooks)
 		}
 		if [[ -r Makefile ]] {
 			MAKEFILE=1
