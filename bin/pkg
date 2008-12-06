@@ -750,7 +750,7 @@ case $action in
 	remove) pkg_remove $* ;;
 	status) wrap pkg_status "$1" 'Checking package status' ;;
 	update) pkg_update $* ;;
-	upgrade)
+	upgrade|pull)
 		(( AUTOUPDATE )) && pkg_update_remote
 		wrap pkg_upgrade "$1" 'Looking for updates'
 	;;

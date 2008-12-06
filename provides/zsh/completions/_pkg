@@ -10,7 +10,7 @@ typeset expl
 function _pkg_action () {
 	_wanted action expl 'action' \
 	compadd add install delete eval remove info list{,-all} \
-	local-update log push remote-update refresh status update upgrade
+	local-update log pull push remote-update refresh status update upgrade
 }
 
 function _pkg_installed () {
@@ -32,7 +32,7 @@ if (( CURRENT == 2 )) {
 	_pkg_action
 } elif (( CURRENT == 3 )) {
 	case ${words[2]} in
-		changelog|check|delete|log|push|refresh|remove|status|upgrade)
+		changelog|check|delete|log|pull|push|refresh|remove|status|upgrade)
 			_pkg_installed
 		;;
 		info)
