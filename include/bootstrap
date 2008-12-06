@@ -14,7 +14,7 @@ if [[ -n $1 ]] {
 } else {
 	cat <<- meow
 		Usage: ./bootstrap PKG_ROOT [PKG_PATH]
-		PKG_ROOT is an URL, either of the form proto://host/path, or just /path
+		PKG_ROOT is an URI, either of the form proto://host/path, or just /path
 		PKG_PATH is the path where pkg and all further packages will be installed,
 		by default $default_path
 	meow
@@ -36,7 +36,6 @@ mkdir -p $PKG_PATH/.collected/man/man{1..8}
 
 if ! which git &> /dev/null; then
 	echo 'It appears that git is not available on this system.'
-	echo 'Sadly, pkg currently can not work without it.'
 	echo '-Installation aborted-'
 	exit 200
 fi
