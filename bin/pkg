@@ -755,7 +755,7 @@ case $action in
 		wrap pkg_upgrade "$1" 'Looking for updates'
 	;;
 	eval) eval $* ;;
-	*) die "wait, what?\npkg: unknown action: '$1'\n" ;;
+	*) die "wait, what?\npkg: unknown action: '$action'\n" ;;
 esac
 
 apply_triggers
