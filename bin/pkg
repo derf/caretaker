@@ -36,7 +36,7 @@ function debug {
 
 # I need function name and line number of the function _calling_ debug,
 # so I can't get them from inside the debug function.
-alias debug='debug ${(%)$(echo %N)} ${(%)$(echo %i)}'
+alias debug='debug ${(%):-%N} ${(%):-%i}'
 
 function info {
 	(( SILENT )) || echo -ne "${info}$*${reset}"
