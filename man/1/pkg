@@ -74,7 +74,7 @@ If no arguments is given, checks all installed packages
 
 Update local and remote package list
 
-=item B<pull> / B<upgrade> [ I<package> ]
+=item B<upgrade>|B<pull> [ I<package> ]
 
 retrieve and install newest available version of I<package>.
 If no argument is given, updates all installed packages
