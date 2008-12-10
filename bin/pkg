@@ -210,7 +210,7 @@ function progress {
 function vcs_to_list {
 	if [[ -d $1/.git ]] {
 		echo -n "$1 git "
-		echo ${$(git --git-dir=$1/.git log -n 1)[2]}
+		echo ${$(git --git-dir=$1/.git log -n 1 master)[2]}
 	} else {
 		warn "No git repository found: $1\n"
 	}
