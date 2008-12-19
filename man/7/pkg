@@ -78,6 +78,10 @@ The place for executables to be in the user's PATH. For their processing, see B<
 
 Configuration files, not threated specially though
 
+=item hooks/
+
+Package hooks, see L</"HOOKS">
+
 =item include/
 
 Scripts used by the package that don't belong into B<bin/>. Not threated specially
@@ -183,6 +187,30 @@ repository type (DVCS), the third the current revision. Example:
 
   core git 82d716d01dee0329af7df5e67b55558fe3ff1466
 
+=head1 HOOKS
+
+Hooks are little zsh-snippets residing in $PDIR/hooks
+which are sourced from within pkg whenever needed.
+
+Currently, the following hooks exist:
+
+=over
+
+=item post-add
+
+Sourced after a package was installed (e.g. with pkg add/pkg install)
+
+=item post-update
+
+Sourced after a package was updated (pkg upgrade/pkg pull).
+It is also sourced when adding a package (after post-add) and
+when calling pkg refresh.
+
+=item pre-remove
+
+Sourced before a package is removed (pkg remove/pkg delete)
+
+=back
 
 =head1 AUTHOR
 
