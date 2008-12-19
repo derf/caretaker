@@ -120,7 +120,8 @@ Packages with a priority above 3 require user confirmation to be removed
 =item B<check_prereqs> I<package>
 
 Checks a package's prerequisites as defined in B<prereqs>.
-The prereqs file is a zsh script which is sourced by pkg.
+The prereqs file is a zsh script which is sourced by pkg when
+adding/updating a package.
 The following pkg-related functions are available:
 
 * B<is_installed> I<package>
