@@ -229,11 +229,11 @@ function vcs_log {
 }
 
 function vcs_upgrade {
-	git pull $PKG_ROOT/${PWD:t} master
+	git pull $PKG_ROOT/${PWD:t}
 }
 
 function vcs_push {
-	git push $PKG_ROOT/${PWD:t} master
+	git push $PKG_ROOT/${PWD:t}
 }
 
 function vcs_status {
