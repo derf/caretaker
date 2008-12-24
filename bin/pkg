@@ -329,6 +329,38 @@ function exec_hook {
 	}
 }
 
+function global_hook {
+	cd $PDIR/$1
+	case $2 in
+		post-add)
+			exec_hook $1 post-add
+			global_hook $1 post-update
+		;;
+		pre-update)
+		;;
+		post-update)
+			triggers+=$1
+			check_prereqs $1
+			if [[ -r Makefile ]] {
+				info "Running make\n"
+				make
+			}
+			checklinks $CL_OPTIONS
+			populate_collected $1
+			update_provides $1
+			fix_origin $1
+			list_update_package $1
+		;;
+		pre-remove)
+			exec_hook $1 pre-remove
+			genocide_collected $1
+			checklinks -r
+			list_remove_package $1
+			update_provides $1 'remove'
+		;;
+	esac
+}
+
 # Set the correct origin
 function fix_origin {
 	cd $PDIR/$1
@@ -540,18 +572,7 @@ function pkg_add {
 	cd $PDIR   || return 255
 	vcs_add $1 || return 255
 	cd $1      || return 255
-	check_prereqs $1
-	if [[ -r $PDIR/$1/Makefile ]] {
-		info "Running make\n"
-		make
-	}
-	exec_hook $1 'post-add'
-	exec_hook $1 'post-update'
-	checklinks $CL_OPTIONS
-	populate_collected $1
-	update_provides $1
-	list_update_package $1
-	fix_origin $1
+	global_hook $1 post-add
 }
 
 function pkg_push {
@@ -562,17 +583,9 @@ function pkg_push {
 	if [[ $? = 0 ]] {
 		clear_line
 		info "Pushing $1\n"
+		global_hook $1 pre-update
 		vcs_push
-		check_prereqs $1
-		if [[ -r Makefile ]] {
-			info "Running make\n"
-			make
-		}
-		triggers+=$1
-		checklinks $CL_OPTIONS
-		populate_collected $1
-		update_provides $1
-		fix_origin $1
+		global_hook $1 post-update
 	}
 }
 
@@ -584,11 +597,7 @@ function pkg_remove {
 			confirm_no "Package '$1' is $(real_priority $(cat priority)). Really remove?" || return
 		}
 	}
-	exec_hook $1 "pre-remove"
-	genocide_collected $1
-	checklinks -r
-	list_remove_package $1
-	update_provides $1 'remove'
+	global_hook $1 pre-remove
 	rm -rf $PDIR/$1
 	info "Package removed.\n"
 }
@@ -606,18 +615,9 @@ function pkg_upgrade {
 	if list_incoming $1; then
 		clear_line
 		info "Updating $1 to $(list_remote_version $1)\n"
+		global_hook $1 pre-update
 		vcs_upgrade
-		check_prereqs $1
-		if [[ -r Makefile ]] {
-			info "Building binaries\n"
-			make
-		}
-		triggers+=$1
-		checklinks $CL_OPTIONS
-		populate_collected $1
-		update_provides $1
-		list_update_package $1
-		fix_origin $1
+		global_hook $1 post-update
 	fi
 }
 
