@@ -645,15 +645,10 @@ function pkg_refresh {
 	cd $PDIR/$1
 	if [[ -r Makefile ]] {
 		clear_line
-		info "$1: re-building with make\n"
+		info "Cleaning build diroctery\n"
 		make clean
-		make
 	}
-	populate_collected $1
-	checklinks $CL_OPTIONS
-	check_prereqs $1
-	triggers+=$1
-	fix_origin $1
+	global_hook $1 post-update
 }
 
 function pkg_update {
