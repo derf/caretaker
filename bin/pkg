@@ -331,6 +331,14 @@ function exec_hook {
 	}
 }
 
+# Set the correct origin
+function fix_origin {
+	if ! git remote | grep -F origin &> /dev/null; then
+		git remote add origin $PKG_ROOT/$1
+	fi
+	git remote update
+}
+
 # Check dependencies, conflicts etc.
 function check_prereqs {
 	package=$1
@@ -544,6 +552,7 @@ function pkg_add {
 	populate_collected $1
 	update_provides $1
 	list_update_package $1
+	fix_origin $1
 }
 
 function pkg_push {
@@ -564,6 +573,7 @@ function pkg_push {
 		checklinks $CL_OPTIONS
 		populate_collected $1
 		update_provides $1
+		fix_origin $1
 	}
 }
 
@@ -608,6 +618,7 @@ function pkg_upgrade {
 		populate_collected $1
 		update_provides $1
 		list_update_package $1
+		fix_origin $1
 	fi
 }
 
@@ -643,6 +654,7 @@ function pkg_refresh {
 	checklinks $CL_OPTIONS
 	check_prereqs $1
 	triggers+=$1
+	fix_origin $1
 }
 
 function pkg_update {
