@@ -32,6 +32,7 @@ if ! [[ -e ~/.zshrc ]] {
 # Make basic dirctories
 echo 'Creating the basic directory structure'
 mkdir -p ~/bin
+path=(~/bin $path)
 mkdir -p $PKG_PATH/.collected/man/man{1..8}
 
 if ! which git &> /dev/null; then
@@ -50,6 +51,7 @@ echo "PKG_ROOT='$PKG_ROOT'" > ~/.pkg.conf
 echo "PKG_PATH=\"${PKG_PATH/$HOME/\$HOME}\"" >> ~/.pkg.conf
 
 echo 'Installing core package'
+rehash
 bin/checklinks
 bin/pkg eval populate_collected core
 bin/pkg eval exec_hook core post-add
