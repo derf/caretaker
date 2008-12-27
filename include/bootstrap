@@ -56,6 +56,8 @@ bin/checklinks
 bin/pkg eval populate_collected core
 bin/pkg eval exec_hook core post-add
 
+bin/pkg update
+
 if (( rcempty )) {
 	echo 'Removing empty zshrc'
 	rm ~/.zshrc
