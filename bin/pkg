@@ -231,7 +231,7 @@ function vcs_log {
 function vcs_upgrade {
 	typeset IFS=$'\n' line
 	typeset -i merge_ok=0
-	for line in $(git branch) {
+	for line in $(git branch); {
 		[[ $line == '* master' ]] && ok=1
 	}
 	if ((ok)) {
