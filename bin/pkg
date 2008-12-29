@@ -229,7 +229,16 @@ function vcs_log {
 }
 
 function vcs_upgrade {
-	git pull $PKG_ROOT/${PWD:t} master
+	typeset IFS=$'\n' line
+	typeset -i merge_ok=0
+	for line in $(git branch) {
+		[[ $line == '* master' ]] && ok=1
+	}
+	if ((ok)) {
+		git pull $PKG_ROOT/${PWD:t} master
+	} else {
+		git fetch $PKG_rOOT/${PWD:t} master
+	}
 }
 
 function vcs_push {
