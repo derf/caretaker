@@ -40,7 +40,7 @@ List all installed packages
 
 List all available (both installed and not installed packages
 
-Hint: `diff <(pkg list) <(pkg list-all)` will show all packages
+Hint: C<diff <(pkg list) <(pkg list-all)> will show all packages
 that are currently not installed
 
 =item B<local-update>
