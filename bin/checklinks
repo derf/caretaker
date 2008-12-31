@@ -1,4 +1,6 @@
 #!/usr/bin/env perl
+## Copyright (C) 2008 by Daniel Friesel <derf@derf.homelinux.org>
+## License: WTFPL <http://sam.zoy.org/wtfpl>
 use strict;
 use warnings;
 use Term::ANSIColor;
