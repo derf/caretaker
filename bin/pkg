@@ -183,6 +183,8 @@ function confirm_no {
 ## Major internal functions
 ##
 
+function wrap_info {}
+
 function progress {
 	(( SILENT )) && return
 	current=$1
@@ -351,6 +353,7 @@ function global_hook {
 			triggers+=$1
 			check_prereqs $1
 			if [[ -r Makefile ]] {
+				wrap_info $1
 				info "Running make\n"
 				make
 			}
@@ -384,7 +387,8 @@ function check_prereqs {
 	package=$1
 	[[ -r $PDIR/$package/prereqs ]] || return 0
 	cd $PDIR/$package
-	info "$package: checking prerequisites\n"
+	wrap_info $1
+	info "checking prerequisites\n"
 	typeset -a install
 	typeset warn
 
@@ -438,10 +442,7 @@ function populate_collected {
 	cd $PDIR/$1 || return
 	typeset -i bins=0 bino=0 mans=0 mano=0
 
-	if (( wrapped )) {
-		clear_line
-		info "$1: "
-	}
+	wrap_info $1
 	info "Enabling documentation "
 	if [[ -d man ]] {
 		for i in man/*/*; {
@@ -471,7 +472,7 @@ function populate_collected {
 	}
 	clear_line
 	if (( bins + mans > 0 )) {
-		(( wrapped )) && info  "$1: "
+		wrap_info $1
 		info "Compiled documentation "
 		say -n '('
 		if (( bins + bino > 0 )) {
@@ -502,6 +503,7 @@ function populate_collected {
 # TODO: Make sure there are none
 function genocide_collected {
 	cd $PDIR/$1 || return
+	wrap_info $1
 	info "Removing documentation"
 	if [[ -d man ]] {
 		for i in man/*/*; {
@@ -555,6 +557,10 @@ function wrap {
 		$function $2
 	} else {
 		wrapped=1
+		function wrap_info {
+			clear_line
+			info "$1: "
+		}
 		cd $PDIR
 		[[ -n $progress ]] && all=$(wc -l < $PDIR/.list)
 		[[ -n $progress ]] && current=0
@@ -653,7 +659,7 @@ function pkg_refresh {
 	check_installed $1
 	cd $PDIR/$1
 	if [[ -r Makefile ]] {
-		clear_line
+		wrap_info
 		info "Cleaning build diroctery\n"
 		make clean
 	}
