@@ -232,9 +232,9 @@ function vcs_upgrade {
 	typeset IFS=$'\n' line
 	typeset -i merge_ok=0
 	for line in $(git branch); {
-		[[ $line == '* master' ]] && ok=1
+		[[ $line == '* master' ]] && merge_ok=1
 	}
-	if ((ok)) {
+	if ((merge_ok)) {
 		git pull $PKG_ROOT/${PWD:t} master
 	} else {
 		git fetch $PKG_rOOT/${PWD:t} master
