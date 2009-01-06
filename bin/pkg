@@ -658,8 +658,9 @@ function pkg_status {
 function pkg_refresh {
 	check_installed $1
 	cd $PDIR/$1
+	global_hook $1 pre-update
 	if [[ -r Makefile ]] {
-		wrap_info
+		wrap_info $1
 		info "Cleaning build diroctery\n"
 		make clean
 	}
