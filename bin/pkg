@@ -232,15 +232,16 @@ function vcs_log {
 
 function vcs_upgrade {
 	typeset IFS=$'\n' line
-	typeset -i merge_ok=0
+	typeset branch
 	for line in $(git branch); {
-		[[ $line == '* master' ]] && merge_ok=1
+		[[ $line == \*\ * ]] && branch=${line#* }
 	}
-	if ((merge_ok)) {
-		git pull $PKG_ROOT/${PWD:t} master
-	} else {
-		git fetch $PKG_rOOT/${PWD:t} master
+	debug "branch = $branch"
+	if [[ -z $branch ]] {
+		warn "vcs_upgrade: $PWD: cannot determine current branch, not pulling"
+		return 1
 	}
+	git pull $PKG_ROOT/${PWD:t} $branch
 }
 
 function vcs_push {
