@@ -114,6 +114,12 @@ if (( !DEBUG )) {
 	function debug {}
 }
 
+if (( SILENT )) {
+	# The goal is not to override anything set by the user...
+	# So, an alias should be safer than fiddling with $MAKEFLAGS
+	alias make='make -s'
+}
+
 ##
 ## Make sure everything's sane
 ## Warn otherwise
