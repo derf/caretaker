@@ -15,6 +15,7 @@ if [[ -n $1 ]] {
 	cat <<- meow
 		Usage: ./bootstrap PKG_ROOT [PKG_PATH]
 		PKG_ROOT is an URI, either of the form proto://host/path, or just /path
+		         Note: The path must be absolute, it may not contain a literal ~
 		PKG_PATH is the path where pkg and all further packages will be installed,
 		by default $default_path
 	meow
