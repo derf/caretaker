@@ -1,3 +1,2 @@
 The core package
 Contains the 'pkg' utility itself, 'checklinks' and the 'bootstrap' script.
-Also contains a .hgrc
