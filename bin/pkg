@@ -455,19 +455,19 @@ function check_prereqs {
 
 	if [[ -n $install ]] {
 		info "$1 requires the following packages: ${(j:, :)install}\n"
-		if (confirm_yes "Install them?") {
+		if confirm_yes "Install them?"; then
 			for i in $install; {
 				pkg_add $i
 			}
-		}
+		fi
 	}
 	if [[ -n $maybe_install ]] {
 		info "$1 recommends the following packages: ${(j:, :)maybe_install}\n"
-		if (confirm_no "Install them?") {
+		if confirm_no "Install them?"; then
 			for i in $maybe_install; {
 				pkg_add $i
 			}
-		}
+		fi
 	}
 }
 
