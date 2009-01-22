@@ -144,7 +144,14 @@ Mark I<package> for installation
 
 Execute expression and automatically warn if it fails.
 In case of B<require package>, automatically mark B<package> for installation
-if it isn't installed
+if it isn't installedx.
+'depend' is the same as require
+
+* B<recommend> I<...>, B<suggest> I<...>
+
+Take the same arguments as B<require>, but are of lower priority.
+recommend only causes "info" messages, and suggest does not interrupt pkg
+to make sure it's read by the user
 
 Additionally, the string parameter 'warn' can be used to soak up warnings.
 It's also used by B<require>
