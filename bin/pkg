@@ -396,8 +396,8 @@ function check_prereqs {
 	cd $PDIR/$package
 	wrap_info $1
 	info "checking prerequisites\n"
-	typeset -a install
-	typeset warn
+	typeset -a -U install maybe_install
+	typeset warn info
 
 	function is_installed {
 		[[ -d $PDIR/$1 ]]
@@ -418,25 +418,53 @@ function check_prereqs {
 			$* || warn+="Requirement failed: $*\n"
 		}
 	}
+	function depend {
+		require $*
+	}
+
+	function suggest {
+		if [[ $1 == 'package' ]] {
+			is_installed $2 || info "$package suggests package $2\n"
+		} else {
+			$* || info "Suggest failed: $*\n"
+		}
+	}
+
+	function recommend {
+		if [[ $1 == 'package' ]] {
+			is_installed $2 || maybe_install+=$2
+		} else {
+			$* || info+="Suggest failed: $*\n"
+		}
+	}
 
 	{
 		source prereqs
 	} always {
 		if (( TRY_BLOCK_ERROR )) {
-			warn 'Error in prereqs script'
+			warn "Error in prereqs script\n"
 			TRY_BLOCK_ERROR=0
 		}
 	}
 
-	if [[ -n $warn ]] {
+	if [[ -n $warn || -n $info ]] {
 		warn $warn
+		info $info
 		read -q
 	}
 
 	if [[ -n $install ]] {
-		info "$1 requires the following packages: $install\n"
+		info "$1 requires the following packages: ${(j:, :)install}\n"
 		if (confirm_yes "Install them?") {
 			for i in $install; {
+				pkg_add $i
+			}
+		}
+	}
+	if [[ -n $maybe_install ]] {
+		info "$1 recommends the following packages: ${(j:, :)maybe_install}\n"
+		if (confirm_no "Install them?") {
+			for i in $maybe_install; {
 				pkg_add $i
 			}
 		}
