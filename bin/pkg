@@ -378,6 +378,7 @@ function global_hook {
 			update_provides $1 'remove'
 		;;
 	esac
+	(( $+functions[pkg_hook_$2] )) && pkg_hook_$2 $1
 }
 
 # Set the correct origin
