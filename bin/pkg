@@ -435,7 +435,7 @@ function check_prereqs {
 		if [[ $1 == 'package' ]] {
 			is_installed $2 || maybe_install+=$2
 		} else {
-			$* || info+="Suggest failed: $*\n"
+			$* || info+="Recommend failed: $*\n"
 		}
 	}
 
