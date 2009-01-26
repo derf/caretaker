@@ -105,8 +105,11 @@ sub check_hardlink {
 sub mkdirs {
 	my $source = shift;
 	my $path = $base;
-	$source =~ s/\/[^\/]+$//;
-	foreach(split(/\//, $source)) {
+	my @dirs = split(/\//, $source);
+
+	# the last element is the file
+	pop(@dirs);
+	foreach(@dirs) {
 		unless(-d "$path/$_") {
 			mkdir("$path/$_") or die("Can't create $path/$_: $!");
 		}
