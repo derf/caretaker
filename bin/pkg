@@ -248,10 +248,12 @@ function vcs_upgrade {
 		return 1
 	}
 	git pull $PKG_ROOT/${PWD:t} $branch
+	fix_origin
 }
 
 function vcs_push {
 	git push $PKG_ROOT/${PWD:t} master
+	fix_origin
 }
 
 function vcs_status {
@@ -367,7 +369,6 @@ function global_hook {
 			checklinks $CL_OPTIONS
 			populate_collected $1
 			update_provides $1
-			fix_origin $1
 			list_update_package $1
 		;;
 		pre-remove)
