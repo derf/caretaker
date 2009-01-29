@@ -248,17 +248,27 @@ function vcs_upgrade {
 		return 1
 	}
 	git pull $PKG_ROOT/${PWD:t} $branch
-	fix_origin
+	vcs_fix_origin
 }
 
 function vcs_push {
 	git push $PKG_ROOT/${PWD:t} master
-	fix_origin
+	vcs_fix_origin
 }
 
 function vcs_status {
 	git status
 }
+
+# Set the correct origin
+function vcs_fix_origin {
+	cd $PDIR/$1
+	if ! git remote | grep -F origin &> /dev/null; then
+		git remote add origin $PKG_ROOT/$1
+	fi
+	git remote update &> /dev/null
+}
+
 
 ## List stuff
 
@@ -380,15 +390,6 @@ function global_hook {
 		;;
 	esac
 	(( $+functions[pkg_hook_$2] )) && pkg_hook_$2 $1
-}
-
-# Set the correct origin
-function fix_origin {
-	cd $PDIR/$1
-	if ! git remote | grep -F origin &> /dev/null; then
-		git remote add origin $PKG_ROOT/$1
-	fi
-	git remote update &> /dev/null
 }
 
 # Check dependencies, conflicts etc.
