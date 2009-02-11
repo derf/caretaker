@@ -537,7 +537,6 @@ function populate_collected {
 
 # Remove a package's files from .collected
 # Assuming there are no packages with colliding files
-# TODO: Make sure there are none
 function genocide_collected {
 	cd $PDIR/$1 || return
 	wrap_info $1
