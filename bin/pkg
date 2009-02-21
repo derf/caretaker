@@ -135,9 +135,9 @@ if [[ ! -d $PDIR ]] {
 ##
 
 # Protocol
-if [[ ${PKG_ROOT#ssh} != $PKG_ROOT ]] {
+if [[ $PKG_ROOT == ssh://* ]] {
 	PKG_PROTO='ssh'
-} elif [[ ${PKG_ROOT#'/'} != $PKG_ROOT ]] {
+} elif [[ $PKG_ROOT == /* ]] {
 	PKG_PROTO='file'
 } else {
 	die "Error: Unknown protocol in PKG_ROOT '$PKG_ROOT'"
