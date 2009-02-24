@@ -20,9 +20,9 @@ typeset -a -U triggers
 ## Internal functions for displaying stuff
 ##
 
-info=$'\e[0;36m'
-error=$'\e[0;31m'
-reset=$'\e[0m'
+c_info=$'\e[0;36m'
+c_error=$'\e[0;31m'
+c_reset=$'\e[0m'
 
 function debug {
 	typeset func line
@@ -39,15 +39,15 @@ function debug {
 alias debug='debug ${(%):-%N} ${(%):-%i}'
 
 function info {
-	(( SILENT )) || echo -ne "${info}$*${reset}"
+	(( SILENT )) || echo -ne "${c_info}$*${c_reset}"
 }
 
 function warn {
-	echo -ne "${error}$*${reset}" > /dev/stderr
+	echo -ne "${c_error}$*${c_reset}" > /dev/stderr
 }
 
 function die {
-	echo -ne "${error}$*${reset}" > /dev/stderr
+	echo -ne "${c_error}$*${c_reset}" > /dev/stderr
 	exit 100
 }
 
@@ -207,7 +207,7 @@ function progress {
 	clear_line
 	c=$(( currentper/5 ))
 	a=$(( 20-c ))
-	output+="${info}$desc${reset} ["
+	output+="${c_info}$desc${c_reset} ["
 	item $c '='
 	item $a ' '
 	output+="] $currentper% $desc2"
@@ -428,7 +428,7 @@ function check_prereqs {
 		if [[ $1 == 'package' ]] {
 			is_installed $2 || info "$package suggests package $2\n"
 		} else {
-			$* || info "Suggest failed: $*\n"
+			$* || echo "Suggest failed: $*\n"
 		}
 	}
 
@@ -450,8 +450,8 @@ function check_prereqs {
 	}
 
 	if [[ -n $warn || -n $info ]] {
-		warn $warn
-		info $info
+		[[ -n $warn ]] && warn $warn
+		[[ -n $info ]] && echo -n $info
 		read -q
 	}
 
