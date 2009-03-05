@@ -263,7 +263,8 @@ function vcs_status {
 # Set the correct origin
 function vcs_fix_origin {
 	if [[ ! -r .git/remotes/origin && ! -r .git/refs/remotes/origin ]] {
-		git remote add origin $PKG_ROOT/$1
+		fgrep '[remote "origin"]' .git/config ||
+			git remote add origin $PKG_ROOT/$1
 	}
 	git remote update &> /dev/null
 }
