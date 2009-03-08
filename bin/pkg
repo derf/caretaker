@@ -237,17 +237,7 @@ function vcs_log {
 }
 
 function vcs_upgrade {
-	typeset IFS=$'\n' line
-	typeset branch
-	for line in $(git branch); {
-		[[ $line == \*\ * ]] && branch=${line#* }
-	}
-	debug "branch = $branch"
-	if [[ -z $branch ]] {
-		warn "vcs_upgrade: $PWD: cannot determine current branch, not pulling"
-		return 1
-	}
-	git pull $PKG_ROOT/${PWD:t} $branch
+	git pull
 	vcs_fix_origin
 }
 
