@@ -102,6 +102,10 @@ Package description for B<pkg info>
 
 Sym- and hardlink descriptions. See checklinks(1)
 
+=item Makefile
+
+If a Makefile is available, C<make> will be executed.
+
 =item prereqs
 
 The package's prerequisites, mainly dependencies. See B<check_prereqs>
