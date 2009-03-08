@@ -150,7 +150,7 @@ checklinks - create/update symlinks
 
 =head1 SYNOPSIS
 
-B<checklinks> [ B<-q> ]
+B<checklinks> [ I<options> ]
 
 =head1 DESCRIPTION
 
@@ -160,9 +160,20 @@ Create or update symlinks based on a file
 
 =over
 
-=item B<-q>
+=item B<-q>, B<--quiet>
 
 quiet. Hide unchanged symlinks
+
+=item B<-r>, B<--remove>
+
+remove all symlinks
+
+=item B<-p>, B<--parameter> I<parameter>=I<value>
+
+While reading the links file, eplace $I<parameter> with I<value>.
+When used in conjuction with pkg(1), $package will be set to the current
+package's relative path (as seen from $HOME, like C<packages/core>),
+and $etc will be set to $package/etc .
 
 =back
 
