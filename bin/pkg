@@ -487,7 +487,7 @@ function populate_collected {
 			section=${i:h:t}
 			manpage=${i:t}
 			if (podchecker man/$section/$manpage &> /dev/null) {
-				pod2man -s $section -c "$1 package" -r $HOME man/$section/$manpage > $PDIR/.collected/man/man$section/$manpage.$section
+				pod2man -u -s $section -c "$1 package" -r $HOME man/$section/$manpage > $PDIR/.collected/man/man$section/$manpage.$section
 				say -n "+"
 				(( mans++ ))
 			} else {
@@ -499,7 +499,7 @@ function populate_collected {
 	if [[ -d bin ]] {
 		for i in bin/*; {
 			if (podchecker $i &> /dev/null) {
-				pod2man $i > $PDIR/.collected/man/man1/${i:t}.1
+				pod2man -u $i > $PDIR/.collected/man/man1/${i:t}.1
 				say -n "+"
 				(( bins++ ))
 			} else {
