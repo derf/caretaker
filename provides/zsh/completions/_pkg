@@ -28,45 +28,52 @@ function _pkg_notinstalled () {
 	compadd $(diff <(pkg list) <(pkg list-all) | grep "^>" | cut -d " " -f 2)
 }
 
-if (( CURRENT == 2 )) {
-	_pkg_action
-} elif (( CURRENT == 3 )) {
-	case ${words[2]} in
-		changelog|check|delete|log|pull|push|refresh|remove|status|upgrade)
-			_pkg_installed
-		;;
-		info)
-			_pkg_all 
-		;;
-		add|install)
-			_pkg_notinstalled
-		;;
-		eval)
-			_message 'shell code for evaluation'
-			_wanted function expl 'internal function' \
-			compadd $(grep -E '^\S*\s*\(\)\s*{' =pkg | cut -d ' ' -f 1) \
-			        $(grep -E 'function \S* (\(\) )?{' =pkg | cut -d ' ' -f 2)
-		;;
-		*)
-			_message 'no more arguments'
-		;;
-	esac
-} elif [[ ${words[2]} = 'eval' ]] {
-	_message 'shell code for evaluation'
-	if (( CURRENT == 4 )) {
-		case ${words[3]} in
-			exec_hook|check_prereqs|*_collected|)
+function _pkg_args {
+	if (( CURRENT == 2 )) {
+		case ${words[1]} in
+			changelog|check|delete|log|pull|push|refresh|remove|status|upgrade)
 				_pkg_installed
 			;;
-		esac
-	} elif (( CURRENT == 5 )) {
-		case ${words[3]} in
-			exec_hook)
-				_wanted hook expl 'package hook' \
-				compadd $(ls -1 ~/packages/${words[4]}/hooks 2> /dev/null)
+			info)
+				_pkg_all 
+			;;
+			add|install)
+				_pkg_notinstalled
+			;;
+			eval)
+				_message 'shell code for evaluation'
+				_wanted function expl 'internal function' \
+				compadd $(grep -E '^\S*\s*\(\)\s*{' =pkg | cut -d ' ' -f 1) \
+					$(grep -E 'function \S* (\(\) )?{' =pkg | cut -d ' ' -f 2)
+			;;
+			*)
+				_message 'no more arguments'
 			;;
 		esac
+	} elif [[ ${words[1]} = 'eval' ]] {
+		_message 'shell code for evaluation'
+		if (( CURRENT == 3 )) {
+			case ${words[2]} in
+				exec_hook|check_prereqs|*_collected|)
+					_pkg_installed
+				;;
+			esac
+		} elif (( CURRENT == 4 )) {
+			case ${words[2]} in
+				exec_hook)
+					_wanted hook expl 'package hook' \
+					compadd $(ls -1 ~/packages/${words[3]}/hooks 2> /dev/null)
+				;;
+			esac
+		}
 	}
-} else {
-	_message 'no more arguments'
 }
+
+_arguments \
+	{-q,--quiet}'[quiet mode]' \
+	{-d,--debug}'[debugmode]' \
+	{-au,--auto-update}'[automatically update package list]' \
+	'*'{-co,--checklinks-options}'[options for checklinks]:option' \
+	{-p,--packagedir}'[package directory]:directory:_files -/' \
+	':action:_pkg_action' \
+	'*::arguments:_pkg_args'

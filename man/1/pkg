@@ -109,7 +109,7 @@ Automatically update the package list before doing certain actions
 Append I<option> to the options checklinks is invoked with.
 Only one option is allowed. To append more options, repeat the argument
 
-=item B<-p>, B<--package-dir> I<directory>
+=item B<-p>, B<--packagedir> I<directory>
 
 Use I<directory> as local package directory
 
