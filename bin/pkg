@@ -14,6 +14,7 @@
 ## ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 ## OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
+setopt extended_glob
 typeset -a -U triggers
 
 ##
@@ -366,7 +367,11 @@ function global_hook {
 				info "Running make\n"
 				make
 			}
-			checklinks $CL_OPTIONS
+			# TODO: cover cases where $HOME ends in a /
+			# (just to be on the safe side)
+			checklinks $CL_OPTIONS \
+				--parameter package=${PWD#$HOME/} \
+				--parameter etc=${PWD#$HOME/}/etc
 			populate_collected $1
 			update_provides $1
 			list_update_package $1
