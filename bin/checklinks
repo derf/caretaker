@@ -161,10 +161,10 @@ remove all symlinks
 
 =item B<-p>, B<--parameter> I<parameter>=I<value>
 
-While reading the links file, eplace $I<parameter> with I<value>.
+While reading the links file, replace $I<parameter> with I<value>.
 When used in conjuction with pkg(1), $package will be set to the current
 package's relative path (as seen from $HOME, like C<packages/core>),
-and $etc will be set to $package/etc (like C<packages/core/etc>).
+and $etc will be set to $package/etc (like C<packages/core/etc>)
 
 =back
 
@@ -179,7 +179,7 @@ current working directory. Each line contains, separated by spaces:
 
 This may be one of 'soft' or 'hard', indicating either a symlink or a hardlink.
 Note: The use of hardlinks is discouraged and not documented. The following
-definitions only apply to symlinks. For hardlinks, may the source be with you.
+definitions only apply to symlinks. For hardlinks, may the source be with you
 
 =item the source
 
@@ -188,7 +188,7 @@ path of the source, i.e. the symlink. Relative to $HOME
 =item the target
 
 path of the target, i.e. the symlink's destination.
-This is relativ to the source. See L<path_resolution>(7)
+This is relative to the source. See L<path_resolution>(7)
 
 =back
 
@@ -196,4 +196,4 @@ Lines beginning with an invalid symlink type will be ignored.
 
 =head1 BUGS
 
-There are no checks whether the symlink target actually exists
+There are no checks whether the symlink target actually exists.
