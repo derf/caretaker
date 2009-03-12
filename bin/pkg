@@ -257,6 +257,8 @@ function vcs_fix_origin {
 	if [[ ! -r .git/remotes/origin && ! -r .git/refs/remotes/origin/HEAD ]] {
 		fgrep '[remote "origin"]' .git/config &> /dev/null ||
 			git remote add origin $PKG_ROOT/${PWD:t}
+			git config branch.master.remote origin
+			git config branch.master.merge refs/heads/master
 	}
 	git remote update &> /dev/null
 }
