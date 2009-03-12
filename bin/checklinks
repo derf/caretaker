@@ -27,15 +27,6 @@ GetOptions(
 	'p|parameter=s' => \%substitute,
 );
 
-if (defined($ARGV[0])) {
-	if ($ARGV[0] eq '-q') {
-		$quiet = 1;
-	}
-	if ($ARGV[0] eq '-r') {
-		$remove = 1;
-	}
-}
-
 open(LINKS, '<', $linkfile) or die($!);
 while(<LINKS>) {
 	chomp;
