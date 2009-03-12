@@ -1,0 +1,29 @@
+#!/usr/bin/env zsh
+## Set up a new package in the package_root
+setopt err_exit
+typeset package=$1
+typeset -i bare=0
+
+while [[ $1 == --* ]] {
+	case $1 in
+		--bare) bare=1
+	esac
+	shift
+}
+
+[[ -r ~/.pkg.conf ]] && source ~/.pkg.conf
+[[ -d $PKG_ROOT ]] || exit 1
+
+cd $PKG_ROOT
+if [[ -d $package ]] {
+	echo "Package $package already exists" >&2
+	exit 2
+}
+mkdir $package
+cd $package
+if ((bare)) {
+	git --bare init
+} else {
+	git init
+	git config receive.denyCurrentBranch ignore
+}
