@@ -164,7 +164,7 @@ remove all symlinks
 While reading the links file, eplace $I<parameter> with I<value>.
 When used in conjuction with pkg(1), $package will be set to the current
 package's relative path (as seen from $HOME, like C<packages/core>),
-and $etc will be set to $package/etc .
+and $etc will be set to $package/etc (like C<packages/core/etc>).
 
 =back
 
