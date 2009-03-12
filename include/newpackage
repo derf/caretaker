@@ -27,3 +27,8 @@ if ((bare)) {
 	git init
 	git config receive.denyCurrentBranch ignore
 }
+
+cd ${PDIR-~/packages}
+mkdir $package
+cd $package
+git init
