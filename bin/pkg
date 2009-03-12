@@ -253,7 +253,8 @@ function vcs_status {
 
 # Set the correct origin
 function vcs_fix_origin {
-	if [[ ! -r .git/remotes/origin && ! -r .git/refs/remotes/origin ]] {
+	[[ $1 == rewrite ]] && git remote rm origin
+	if [[ ! -r .git/remotes/origin && ! -r .git/refs/remotes/origin/HEAD ]] {
 		fgrep '[remote "origin"]' .git/config &> /dev/null ||
 			git remote add origin $PKG_ROOT/$1
 	}
@@ -694,6 +695,7 @@ function pkg_refresh {
 		info "Cleaning build diroctery\n"
 		make clean
 	}
+	vcs_fix_origin rewrite
 	global_hook $1 post-update
 }
 
