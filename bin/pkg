@@ -367,11 +367,9 @@ function global_hook {
 				info "Running make\n"
 				make
 			}
-			# TODO: cover cases where $HOME ends in a /
-			# (just to be on the safe side)
 			checklinks $CL_OPTIONS \
-				--parameter package=${PWD#$HOME/} \
-				--parameter etc=${PWD#$HOME/}/etc
+				--parameter package=${${PWD#$HOME}#/##} \
+				--parameter etc=${${PWD#$HOME}#/##}/etc
 			populate_collected $1
 			update_provides $1
 			list_update_package $1
