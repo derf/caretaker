@@ -697,7 +697,7 @@ function pkg_refresh {
 		info "Cleaning build diroctery\n"
 		make clean
 	}
-	vcs_fix_origin rewrite
+	vcs_fix_origin
 	global_hook $1 post-update
 }
 
