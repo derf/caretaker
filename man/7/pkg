@@ -33,7 +33,7 @@ sure they don't conflict with a package's ones.
 
 =head1 THE PACKAGE DIRECTORY
 
-$PDIR is the core of all this stuff. It's main use is storing the packages.
+$PDIR is the core of all this stuff. Its main use is storing the packages.
 There is one directory for each installed package, as created by B<git clone>.
 Additionally, $PDIR holds two speciel files: B<.list> and B<.list-remote>. For
 an explanation about these files, refer to the section 'the package list' below.
