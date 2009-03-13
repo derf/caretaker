@@ -224,6 +224,13 @@ Sourced before a package is removed (pkg remove/pkg delete)
 
 =back
 
+=head1 GIT
+
+B<pkg> uses git(1) as backend for storing and syncing package information.
+Currently it can only operate on the master branch, so it is strongly
+recommended not to use any other branches, or you might end up with unwanted
+merges.
+
 =head1 AUTHOR
 
 Daniel Friesel <derf@derf.homelinux.org>
