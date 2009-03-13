@@ -238,7 +238,18 @@ function vcs_log {
 }
 
 function vcs_upgrade {
-	git pull
+	typeset IFS=$'\n' line
+	typeset branch
+	for line in $(git branch); {
+		[[ $line == \*\ * ]] && branch=${line#* }
+	}
+	if [[ $branch != master ]] {
+		warn "$1: The currently checked out branch is not master, but '$branch'" \
+			"Currently, pkg can only operate on the branch master" \
+			" -> skipping repo, please fix manually or report a bug"
+		return 1
+	}
+	git pull $PKG_ROOT/${PWD:t} master
 	vcs_fix_origin
 }
 
@@ -257,8 +268,6 @@ function vcs_fix_origin {
 	if [[ ! -r .git/remotes/origin && ! -r .git/refs/remotes/origin/HEAD ]] {
 		fgrep '[remote "origin"]' .git/config &> /dev/null ||
 			git remote add origin $PKG_ROOT/${PWD:t}
-			git config branch.master.remote origin
-			git config branch.master.merge refs/heads/master
 	}
 	git remote update &> /dev/null
 }
