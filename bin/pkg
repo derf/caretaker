@@ -752,7 +752,9 @@ function pkg_info {
 			PRIORITY_NAME=$(real_priority "$PRIORITY")
 		}
 		if [[ -r tags ]] {
-			TAGS=$(cat tags | tr "\n" " " | sed 's/ /, /g' | sed 's/, $//')
+			TAGS=($(cat tags))
+			TAGS=$TAGS
+			TAGS=${TAGS//[[:space:]]/, }
 		}
 		if [[ -d hooks ]] {
 			HOOKS=$(ls -m hooks)
