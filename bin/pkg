@@ -486,7 +486,7 @@ function check_prereqs {
 }
 
 # Write a package's documentation to .collected
-# and symlink it's binaries from ~/bin
+# and symlink its binaries from ~/bin
 function populate_collected {
 	cd $PDIR/$1 || return
 	typeset -i bins=0 bino=0 mans=0 mano=0
