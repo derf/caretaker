@@ -82,6 +82,7 @@ if [[ -f $HOME/.pkg.conf ]] {
 : ${SILENT=0}
 : ${DEBUG=0}
 : ${AUTOUPDATE=1}
+: ${GIT_USE_ORIGIN=1}
 
 export PDIR
 export PKG_ROOT
@@ -251,13 +252,23 @@ function vcs_upgrade {
 			" -> skipping repo, please fix manually or report a bug"
 		return 1
 	}
-	git pull $PKG_ROOT/${PWD:t} master
-	vcs_fix_origin
+	if ((GIT_USE_ORIGIN)) {
+		# the package might be newly created and not have an origin yet
+		vcs_fix_origin
+		git pull
+	} else {
+		git pull $PKG_ROOT/${PWD:t} master
+	}
 }
 
 function vcs_push {
-	git push $PKG_ROOT/${PWD:t} master
-	vcs_fix_origin
+	if ((GIT_USE_ORIGIN)) {
+		# see above
+		vcs_fix_origin
+		git push
+	} else {
+		git push $PKG_ROOT/${PWD:t} master
+	}
 }
 
 function vcs_status {
@@ -266,12 +277,10 @@ function vcs_status {
 
 # Set the correct origin
 function vcs_fix_origin {
-	[[ $1 == rewrite ]] && git remote rm origin
 	if [[ ! -r .git/remotes/origin && ! -r .git/refs/remotes/origin/HEAD ]] {
 		fgrep '[remote "origin"]' .git/config &> /dev/null ||
 			git remote add origin $PKG_ROOT/${PWD:t}
 	}
-	git remote update &> /dev/null
 }
 
 
@@ -714,7 +723,6 @@ function pkg_refresh {
 		info "Cleaning build diroctery\n"
 		make clean
 	}
-	vcs_fix_origin
 	global_hook $1 post-update
 }
 
