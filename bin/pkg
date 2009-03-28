@@ -100,8 +100,8 @@ while [[ $1 == [-+]* ]] {
 		+d|--no-debug) DEBUG=0 ;;
 		-au|--auto-update) AUTOUPDATE=1 ;;
 		+au|--no-auto-update) AUTOUPDATE=0 ;;
-		-co|--checklinks-options) CL_OPTIONS+=$1; shift ;;
-		-p|--packagedir) PDIR=$1; shift ;;
+		-co|--checklinks-options) CL_OPTIONS+=$2; shift ;;
+		-p|--packagedir) PDIR=$2; shift ;;
 		*) die "Unknown argument: '$1'\n" ;;
 	esac
 	shift
