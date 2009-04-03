@@ -1,5 +1,8 @@
 #!/usr/bin/env zsh
+## on the PKG_HOST: list available packages
+## used by pkg remote-update
 
+# change into package root directory
 cd /${(j:/:)${(s:/:)0}[1,-4]}
 
 for i in *(/,@); {
