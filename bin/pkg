@@ -240,7 +240,7 @@ function vcs_log {
 	git log
 }
 
-function vcs_upgrade {
+function vcs_pull {
 	typeset IFS=$'\n' line
 	typeset branch
 	for line in $(git branch); {
@@ -690,7 +690,7 @@ function pkg_upgrade {
 		clear_line
 		info "Updating $1 to $(list_remote_version $1)\n"
 		global_hook $1 pre-update
-		vcs_upgrade
+		vcs_pull
 		global_hook $1 post-update
 	fi
 }
