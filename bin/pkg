@@ -246,17 +246,17 @@ function vcs_upgrade {
 	for line in $(git branch); {
 		[[ $line == \*\ * ]] && branch=${line#* }
 	}
-	if [[ $branch != master ]] {
-		warn "$1: The currently checked out branch is not master, but '$branch'" \
-			"Currently, pkg can only operate on the branch master" \
-			" -> skipping repo, please fix manually or report a bug"
-		return 1
-	}
 	if ((GIT_USE_ORIGIN)) {
 		# the package might be newly created and not have an origin yet
 		vcs_fix_origin
 		git pull
 	} else {
+		if [[ $branch != master ]] {
+			warn "$1: The currently checked out branch is not master, but '$branch'" \
+				"Currently, pkg can only operate on the branch master" \
+				" -> skipping repo, please fix manually or report a bug"
+			return 1
+		}
 		git pull $PKG_ROOT/${PWD:t} master
 	}
 }
