@@ -2,10 +2,10 @@
 ## on the PKG_HOST: list available packages
 ## used by pkg remote-update
 
-# change into package root directory
-cd /${(j:/:)${(s:/:)0}[1,-4]}
+# change into package root directory (first argument)
+cd $1
 
-for i in *(/,@); {
+for i in *(-/); {
 	if [[ -d $i/.git ]] {
 		echo -n "$i git "
 		echo ${$(git --git-dir=$i/.git log -n 1)[2]}
