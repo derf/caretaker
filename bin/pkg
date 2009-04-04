@@ -317,6 +317,8 @@ function list_update_remote {
 	}
 	if (( ret == 0 )) {
 		cp $tmpfile .list-remote
+	} else {
+		die "remote list update failed\n"
 	}
 	rm $tmpfile
 }
