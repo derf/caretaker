@@ -1,6 +1,12 @@
 #!/usr/bin/env zsh
 ## on the PKG_HOST: list available packages
 ## used by pkg remote-update
+# the PKG_PATH (package root path) is given as first argument ($1)
+
+if [[ ! -d $1 ]] {
+	echo "$0: package root directory '$1' does not exist!" >&2
+	exit 1
+}
 
 # change into package root directory (first argument)
 cd $1
