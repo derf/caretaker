@@ -255,9 +255,9 @@ function vcs_pull {
 		git pull
 	} else {
 		if [[ $branch != master ]] {
-			warn "$1: The currently checked out branch is not master, but '$branch'" \
-				"Currently, pkg can only operate on the branch master" \
-				" -> skipping repo, please fix manually or report a bug"
+			warn "$1: The currently checked out branch is not master, but '$branch'\n" \
+				"Currently, pkg can only operate on the branch master\n" \
+				" -> skipping repo, please fix manually or report a bug\n"
 			return 1
 		}
 		git pull $PKG_ROOT/${PWD:t} master
