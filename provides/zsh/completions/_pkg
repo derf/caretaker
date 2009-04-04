@@ -9,23 +9,23 @@ typeset expl
 
 function _pkg_action () {
 	_wanted action expl 'action' \
-	compadd add install delete eval remove info list{,-all} \
+	compadd add install delete eval remove info list \
 	local-update log pull push remote-update refresh status update upgrade
 }
 
 function _pkg_installed () {
 	_wanted package expl 'local package' \
-	compadd $(pkg list)
+	compadd $(pkg list local)
 }
 
 function _pkg_all () {
 	_wanted package expl 'package' \
-	compadd $(pkg list-all)
+	compadd $(pkg list all)
 }
 
 function _pkg_notinstalled () {
 	_wanted package expl 'remote package' \
-	compadd $(diff <(pkg list) <(pkg list-all) | grep "^>" | cut -d " " -f 2)
+	compadd $(pkg list remote)
 }
 
 function _pkg_args {
@@ -45,6 +45,10 @@ function _pkg_args {
 				_wanted function expl 'internal function' \
 				compadd $(grep -E '^\S*\s*\(\)\s*{' =pkg | cut -d ' ' -f 1) \
 					$(grep -E 'function \S* (\(\) )?{' =pkg | cut -d ' ' -f 2)
+			;;
+			list)
+				_wanted something expl 'list mode' \
+				compadd all local remote
 			;;
 			*)
 				_message 'no more arguments'

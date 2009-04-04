@@ -706,8 +706,20 @@ function pkg_upgrade {
 	fi
 }
 
-function pkg_list_installed {
-	cut -d ' ' -f 1 $PDIR/.list
+function pkg_list {
+	case $1 in
+		''|local)
+			cut -d ' ' -f 1 $PDIR/.list
+		;;
+		all|remote)
+			cut -d ' ' -f 1 $PDIR/.list-remote
+		;;
+		not-installed)
+			while read package crap; do
+				grep "^$package" $PDIR/.list &> /dev/null || echo $package
+			done < $PDIR/.list-remote
+		;;
+	esac
 }
 
 function pkg_list_available {
@@ -833,8 +845,7 @@ case $action in
 	delete) pkg_remove $* ;;
 	info) pkg_info $* ;;
 	install) pkg_add $* ;;
-	list) pkg_list_installed $* ;;
-	list-all) pkg_list_available $* ;;
+	list) pkg_list $* ;;
 	local-update) pkg_update_local $* ;;
 	log) pkg_log $* ;;
 	push)

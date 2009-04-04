@@ -32,16 +32,25 @@ Evauluate I<expression>. See the 'Examples' section and pkg(7)
 
 Show information on I<package>, like dependencies, version, etc
 
-=item B<list>
+=item B<list> [I<filter>]
 
-List all installed packages
+List packages depending on I<filter>:
 
-=item B<list-all>
+=over
 
-List all available (both installed and not installed packages
+=item * B<all>
 
-Hint: C<diff <(pkg list) <(pkg list-all)> will show all packages
-that are currently not installed
+show all packages
+
+=item * B<local>
+
+show currently installed packages (default)
+
+=item * B<not-installed>
+
+show remote packages which are not installed
+
+=back
 
 =item B<local-update>
 
