@@ -51,6 +51,10 @@ the packages directory $PDIR, except that it neither contains .list nor
 .list-remote. The packages root is the central point where pkg fetches
 packages from and pushes packages to.
 
+The package root should contain the pkglist script shipped in include/.
+If it doesn't, PKGLIST_PATH in .pkg.conf must be set to the appropiate
+location on the package root host.
+
 =head2 CAUTION
 
 The file $PKG_ROOT/core/include/pkglist is used by pkg, so make sure the git

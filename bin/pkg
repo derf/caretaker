@@ -159,10 +159,13 @@ if [[ $PKG_PROTO == 'ssh' ]] {
 	PKG_PATH=$PKG_ROOT
 }
 
+: ${PKGLIST_PATH:=$PKG_PATH/pkglist}
+
 debug "PKG_ROOT: '$PKG_ROOT'"
 debug "PKG_PROTO: '$PKG_PROTO'"
 debug "PKG_USER: '$PKG_USER'"
 debug "PKG_HOST: '$PKG_HOST'"
+debug "PKGLIST_PATH: '$PKGLIST_PATH'"
 
 ##
 ## Ask the user for confirmation
@@ -311,14 +314,19 @@ function list_update_remote {
 	typeset -i ret=0
 	export PDIR
 	if [[ $PKG_PROTO == 'ssh' ]] {
-		ssh $PKG_USER@$PKG_HOST "PDIR='$PDIR' $PKG_PATH/core/include/pkglist $PKG_PATH" > $tmpfile || ret=$?
+		ssh $PKG_USER@$PKG_HOST "PDIR='$PDIR' $PKGLIST_PATH $PKG_PATH" > $tmpfile || ret=$?
 	} elif [[ $PKG_PROTO == 'file' ]] {
-		$PKG_PATH/core/include/pkglist $PKG_PATH > $tmpfile || ret=$?
+		$PKGLIST_PATH $PKG_PATH > $tmpfile || ret=$?
 	}
 	if (( ret == 0 )) {
 		cp $tmpfile .list-remote
 	} else {
-		die "remote list update failed\n"
+		die "remote list update failed\n" \
+			" -- note --\n" \
+			"There were recent changes in pkg involving the package root\n\n" \
+			"You might have to copy the pkglist script ($PDIR/core/include/pkglist)\n" \
+			"into the package root, so that it's available as\n" \
+			"$PKG_HOST:$PKG_PATH/pkglist\n"
 	}
 	rm $tmpfile
 }
