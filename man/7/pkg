@@ -91,7 +91,9 @@ Unless marked with [*], all files and directories are optional
 
 =item bin/
 
-The place for executables to be in the user's PATH. For their processing, see B<populate_collected>
+The place for executables to be in the user's PATH.
+pkg will automatically create symlinks in F<~/bin> pointing to the files
+in the package's F<bin/>
 
 =item etc/
 
@@ -212,6 +214,16 @@ Sourced before a package is removed (pkg remove/pkg delete)
 =back
 
 =head1 COLLECTED PACKAGE FILES
+
+These files reside in F<$PDIR/.collected> (subject to change).
+
+The directory is somewhat similar to F<~/bin> - it is automatically populated
+by pkg. However, this one does not contain symlinks.
+
+Currently, it only contains the directory F<man/>, which holds the "compiled"
+manual pages from the packages (both extracted from F<bin/> and F<man/>).
+This way, yuo can put F<.../.collected/man> into you MANPATH to access manuals
+provided by packages.
 
 =head1 GIT
 
