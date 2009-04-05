@@ -722,10 +722,6 @@ function pkg_list {
 	esac
 }
 
-function pkg_list_available {
-	cut -d ' ' -f 1 $PDIR/.list-remote
-}
-
 function pkg_status {
 	check_installed $1
 	cd $PDIR/$1
