@@ -48,7 +48,7 @@ function _pkg_args {
 			;;
 			list)
 				_wanted something expl 'list mode' \
-				compadd all local remote
+				compadd all local not-installed
 			;;
 			*)
 				_message 'no more arguments'
