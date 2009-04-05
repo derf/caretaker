@@ -339,7 +339,7 @@ function list_update_local {
 	typeset i
 	cd $PDIR
 	rm -f .list
-	for i in *(/); {
+	for i in *(-/); {
 		(( current++ ))
 		progress $current $all 'Updating package list' $i
 		vcs_to_list $i >> .list
@@ -561,7 +561,7 @@ function populate_collected {
 		say ')'
 	}
 	if [[ -d bin ]] {
-		for i in bin/*(*); {
+		for i in bin/*(-*); {
 			if [[ -L $HOME/$i || ! -e $HOME/$i ]] {
 				if [[ $(readlink $HOME/$i) != "../$1/$i" ]] {
 					rm -f $HOME/$i
@@ -597,7 +597,7 @@ function genocide_collected {
 	}
 	clear_line
 	if [[ -d bin ]] {
-		for i in bin/*(*); {
+		for i in bin/*(-*); {
 			if [[ $(readlink $HOME/$i) = "../${PDIR//$HOME\/}/$1/$i" ]] {
 				rm -f $HOME/$i
 			}
@@ -644,7 +644,7 @@ function wrap {
 		cd $PDIR
 		[[ -n $progress ]] && all=$(wc -l < $PDIR/.list)
 		[[ -n $progress ]] && current=0
-		for i in *(/); {
+		for i in *(-/); {
 			(( current++ ))
 			[[ -n $progress ]] && progress $current $all $progress $i
 			$function $i
