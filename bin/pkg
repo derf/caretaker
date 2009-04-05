@@ -195,7 +195,7 @@ function confirm_no {
 ##
 
 # this function only has content when wrap is used.
-# bit since it's always called, it will be empty by default
+# but since it's always called, it will be empty by default
 function wrap_info {}
 
 function progress {
