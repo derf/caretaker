@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-## Copyright (C) 2008 by Daniel Friesel <derf@derf.homelinux.org>
+## Copyright © 2008-2009 by Daniel Friesel <derf@derf.homelinux.org>
 ## License: WTFPL <http://sam.zoy.org/wtfpl>
 use strict;
 use warnings;
@@ -122,15 +122,12 @@ sub mkdirs {
 sub print_format {
 	my ($message, $src, $dst, $color) = @_;
 
-	$message .= ' 'x(9-length($message));
-	$src .= ' 'x(15-length($src));
-	$dst .= ' 'x(15-length($dst));
 	if (defined($color)) {
-		print colored ($message, $color);
+		printf(colored('%-9s', $color), $message);
 	} else {
-		print $message;
+		printf('%-9s', $message);
 	}
-	print "$src -> $dst\n";
+	printf(" %-15s -> %-15s\n", $src, $dst);
 }
 
 __END__
