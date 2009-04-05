@@ -200,12 +200,13 @@ function wrap_info {}
 
 function progress {
 	(( SILENT )) && return
-	current=$1
-	max=$2
-	desc=$3
-	desc2=$4
-	output=''
-	currentper=$(( (current*100)/max ))
+	typeset -i current=$1
+	typeset -i max=$2
+	typeset desc=$3
+	typeset desc2=$4
+	typeset output=''
+	typeset -i currentper=$(( (current*100)/max ))
+	typeset item j c a
 	function item {
 		for j in {0..$1}; {
 			(( j > 0 )) && output+=$2
@@ -333,10 +334,11 @@ function list_update_remote {
 }
 
 function list_update_local {
+	typeset all=${#$(echo $PDIR/*(/))}
+	typeset -i current=0
+	typeset i
 	cd $PDIR
 	rm -f .list
-	all=${#$(echo $PDIR/*(/))}
-	current=0
 	for i in *(/); {
 		(( current++ ))
 		progress $current $all 'Updating package list' $i
@@ -345,6 +347,7 @@ function list_update_local {
 }
 
 function list_update_package {
+	typeset list
 	cd $PDIR
 	list=$(grep -v "^$1 " .list)
 	echo $list > .list
@@ -352,6 +355,7 @@ function list_update_package {
 }
 
 function list_remove_package {
+	typeset list
 	cd $PDIR
 	list=$(grep -v "^$1 " .list)
 	echo $list > .list
@@ -381,8 +385,8 @@ function real_priority {
 
 # Execute a hook
 function exec_hook {
-	package=$1
-	hook=$2
+	typeset package=$1
+	typeset hook=$2
 	if [[ -r $PDIR/$package/hooks/$hook ]] {
 		info "$package: executing hook $hook\n"
 		cd $PDIR/$package
@@ -427,13 +431,13 @@ function global_hook {
 
 # Check dependencies, conflicts etc.
 function check_prereqs {
-	package=$1
+	typeset -a -U install maybe_install
+	typeset warn info i
+	typeset package=$1
 	[[ -r $PDIR/$package/prereqs ]] || return 0
 	cd $PDIR/$package
 	wrap_info $1
 	info "checking prerequisites\n"
-	typeset -a -U install maybe_install
-	typeset warn info
 
 	function is_installed {
 		[[ -d $PDIR/$1 ]]
@@ -512,6 +516,7 @@ function check_prereqs {
 function populate_collected {
 	cd $PDIR/$1 || return
 	typeset -i bins=0 bino=0 mans=0 mano=0
+	typeset i
 
 	wrap_info $1
 	info "Enabling documentation "
@@ -572,6 +577,7 @@ function populate_collected {
 # Remove a package's files from .collected
 # Assuming there are no packages with colliding files
 function genocide_collected {
+	typeset i
 	cd $PDIR/$1 || return
 	wrap_info $1
 	info "Removing documentation"
@@ -600,6 +606,7 @@ function genocide_collected {
 }
 
 function update_provides {
+	typeset package
 	[[ -d $PDIR/$1/provides ]] || return
 	cd $PDIR/$1/provides
 	for package in *; {
@@ -611,6 +618,7 @@ function update_provides {
 }
 
 function apply_triggers {
+	typeset package
 	for package in $triggers; {
 		exec_hook $package 'post-update'
 	}
@@ -618,9 +626,11 @@ function apply_triggers {
 
 # Iterate a function over every installed package
 function wrap {
-	function=$1
-	arg=$2
-	progress=$3
+	typeset function=$1
+	typeset arg=$2
+	typeset progress=$3
+	typeset i
+	typeset -i wrapped all current
 
 	if [[ -n $2 ]] {
 		wrapped=0
@@ -707,6 +717,7 @@ function pkg_upgrade {
 }
 
 function pkg_list {
+	typeset package crap
 	case $1 in
 		''|local)
 			cut -d ' ' -f 1 $PDIR/.list
@@ -723,6 +734,7 @@ function pkg_list {
 }
 
 function pkg_status {
+	typeset vcs_status
 	check_installed $1
 	cd $PDIR/$1
 	vcs_status=$(PAGER='' vcs_status $1)
@@ -770,30 +782,33 @@ function pkg_info {
 	check_valid $1
 
 	# Fetch the infos
-	NAME=$1
-	LOCAL_VERSION=$(list_local_version $1)
-	REMOTE_VERSION=$(list_remote_version $1)
-	REPO_TYPE=$(list_type $1)
+	typeset name=$1
+	typeset local_version=$(list_local_version $1)
+	typeset remote_version=$(list_remote_version $1)
+	typeset repo_type=$(list_type $1)
+	typeset priority priority_name
+	typeset -a tags
+	typeset hooks makefile discription state
 	if [[ -d $1 ]] {
 		cd $1
 		if [[ -r priority ]] {
-			PRIORITY=$(cat priority)
-			PRIORITY_NAME=$(real_priority "$PRIORITY")
+			priority=$(cat priority)
+			priority_name=$(real_priority $priority)
 		}
 		if [[ -r tags ]] {
 			TAGS=($(cat tags))
-			TAGS=$TAGS
-			TAGS=${TAGS//[[:space:]]/, }
+			tags=$tags
+			tags=${tags//[[:space:]]/, }
 		}
 		if [[ -d hooks ]] {
-			HOOKS=$(ls -m hooks)
+			hooks=$(ls -m hooks)
 		}
 		if [[ -r Makefile ]] {
-			MAKEFILE=1
+			makefile=1
 		}
-		SIZE=$(du -sh .$(list_type $1) | grep -o '.*[KMG]')
+		size=$(du -sh .$(list_type $1) | grep -o '.*[KMG]')
 		if [[ -r description ]] {
-			DESCRIPTION=$(cat description)
+			description=$(cat description)
 		}
 		state='installed'
 		if list_incoming $1; then
@@ -811,16 +826,16 @@ function pkg_info {
 		echo $2
 	}
 
-	show_info "Package" $NAME
+	show_info 'Package' $name
 	show_info 'State' $state
-	[[ -n $PRIORITY ]] && show_info "Priority" "$PRIORITY ($PRIORITY_NAME)"
-	show_info "Local Version" $LOCAL_VERSION
-	show_info "Remote Version" $REMOTE_VERSION
-	show_info "Repository Type" $REPO_TYPE
-	show_info "Repository Size" $SIZE
-	show_info "Tags" $TAGS
-	show_info "Hooks" $HOOKS
-	show_info "Description" $DESCRIPTION
+	[[ -n $priority ]] && show_info 'Priority' "$priority ($priority_name)"
+	show_info 'Local Version' $local_version
+	show_info 'Remote Version' $remote_version
+	show_info 'Repository Type' $repo_type
+	show_info 'Repository Size' $size
+	show_info 'Tags' $tags
+	show_info 'Hooks' $hooks
+	show_info 'Description' $description
 }
 
 function pkg_log {
