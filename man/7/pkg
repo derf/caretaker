@@ -25,18 +25,19 @@ guaranteed, though I will do my best.
 
 =head1 THE BASICS
 
-B<pkg> requires two directories in you home directory. B<~/bin> contains
+pkg requires two directories in you home directory. B<~/bin> contains
 symlinks to the executables shipped with your packages, and $PDIR
 (B<~/packages> by default, but *theoretically* configurable) contains the
-packages themselves. B<~/bin> may also contain normal executables, just make
-sure they don't conflict with a package's ones.
+packages themselves. B<~/bin> may also contain normal executables; pkg will
+not overwrite existing files.
 
 =head1 THE PACKAGE DIRECTORY
 
 $PDIR is the core of all this stuff. Its main use is storing the packages.
 There is one directory for each installed package, as created by B<git clone>.
-Additionally, $PDIR holds two speciel files: B<.list> and B<.list-remote>. For
-an explanation about these files, refer to the section 'the package list' below.
+$PDIR holds two special files: B<.list> and B<.list-remote>. For
+an explanation about these files, see L</"THE PACKAGE LIST"> below.
+It also contains a special directory, F<.collected> - see L</"COLLECTED PACKAGE FILES">.
 
 =head2 NOTE
 
@@ -59,6 +60,20 @@ location on the package root host.
 
 The file $PKG_ROOT/core/include/pkglist is used by pkg, so make sure the git
 repo is checked out. A regular 'git checkout -f' in the core repo is recommended.
+
+=head1 THE PACKAGE LIST
+
+Thi package list lives in the files B<.list> and B<.list-remote> mentioned
+above. It's used to decide whether a package needs to be pulled / pushed.
+Also, the 'pkg add' completion relies on .list-remote, and back in the days when
+pkg supported more than one DVCS, it was used to determine which DVCS to use
+for which package.
+
+It consists of one line per package, each line containing three items separated
+by a single whitespace. The first item is the package name, the second one the
+repository type (DVCS), the third the current revision. Example:
+
+  core git 82d716d01dee0329af7df5e67b55558fe3ff1466
 
 =head1 WHAT IS A PACKAGE?
 
@@ -108,11 +123,11 @@ Sym- and hardlink descriptions. See checklinks(1)
 
 =item Makefile
 
-If a Makefile is available, C<make> will be executed.
+If a Makefile is available, C<make> will be executed
 
 =item prereqs
 
-The package's prerequisites, mainly dependencies. See B<check_prereqs>
+The package's prerequisites, mainly dependencies. See L</"PREREQUISITES">
 
 =item priority
 
@@ -121,87 +136,55 @@ Packages with a priority above 3 require user confirmation to be removed
 
 =back
 
-=head1 MAJOR INTERNAL FUNCTIONS
+=head1 PREREQUISITES
+
+The prerequisites are stored in a package in the file F<prereqs>.
+It as an ordinary shell script which is sourced by pkg's global post-update
+hook; so it will be sourced after pulling, pushing or refreshing a package.
+
+It's main use is to check for dependencies. To help with this, the following
+functions are available:
 
 =over
 
-=item B<check_prereqs> I<package>
-
-Checks a package's prerequisites as defined in B<prereqs>.
-The prereqs file is a zsh script which is sourced by pkg when
-adding/updating a package.
-The following pkg-related functions are available:
-
-* B<is_installed> I<package>
+=item B<is_installed> I<package>
 
 Returns true if I<package> is installed, otherwise false
 
-* B<perlmodule> I<perlmodule>
+=item B<perlmodule> I<perlmodule>
 
 Returns true if I<perlmodule> can be used by perl, otherwise false
 
-* B<file_in_path> I<commendname>
+=item B<file_in_path> I<commendname>
 
 Returns true if I<commandname> was found in the users PATH, otherwise false
 
-* B<offer_install> I<package>
+=item B<offer_install> I<package>
 
 Mark I<package> for installation
 
-* B<require> I<expression> | B<require package> I<package>
+=item B<depend> I<expression> | B<depend package> I<package>
 
 Execute expression and automatically warn if it fails.
 In case of B<require package>, automatically mark B<package> for installation
-if it isn't installedx.
-'depend' is the same as require
+if it isn't installed.
+If a B<depend> fails, pkg will inform the user about it and wait for confirmation
 
-* B<recommend> I<...>, B<suggest> I<...>
+=item B<recommend> I<...>, B<suggest> I<...>
 
-Take the same arguments as B<require>, but are of lower priority.
+Take the same arguments as B<depend>, but are of lower priority.
 recommend only causes "info" messages, and suggest does not interrupt pkg
 to make sure it's read by the user
 
-Additionally, the string parameter 'warn' can be used to soak up warnings.
-It's also used by B<require>
-
-After completing the execution of B<prereqs>,
-pkg will offer to install all the packages added by B<offer_install> or
-B<require package>, and will print out the text stored in $warn
-
-=item B<populate_collected> I<package>
-
-This command does two things.
-First, it creates the appropiate symlinks in F<~/bin> to the files in B<bin/>.
-Second, it runs podchecker(1) over the files in B<bin/> and B<man/> and
-uses pod2man(1) to create man pages from them, which will then be stored in
-B<.collected> (like .collected/man/man7/pkg.7).
-
-The command is invoked with pkg upgrade, add, push and refresh
-
-=item B<genocide_collected> I<package>
-
-Revert the actions of populate_collected. Called with pkg delete.
-
-=item B<update_provides> I<package>
-
-Walks through the directories in B<provides> and executes the post-update hooks
-of the corresponding packages.
-
 =back
 
-=head1 THE PACKAGE LIST
+Additionally, the string parameters B<warn> and B<info> can be used to store
+messages.
 
-Thi package list lives in the files B<.list> and B<.list-remote> mentioned
-above. It's used to decide whether a package needs to be pulled / pushed.
-Also, the 'pkg add' completion relies on .list-remote, and back in the days when
-pkg supported more than one DVCS, it was used to determine which DVCS to use
-for which package.
-
-It consists of one line per package, each line containing three items separated
-by a single whitespace. The first item is the package name, the second one the
-repository type (DVCS), the third the current revision. Example:
-
-  core git 82d716d01dee0329af7df5e67b55558fe3ff1466
+After executing the prereqs script, pkg will print the content of
+these parameters; in case of B<warn>, it will also wait for confirmation.
+It will also offer to install packages marked by B<depend package> or
+B<recommend package>.
 
 =head1 HOOKS
 
@@ -227,6 +210,8 @@ when calling pkg refresh.
 Sourced before a package is removed (pkg remove/pkg delete)
 
 =back
+
+=head1 COLLECTED PACKAGE FILES
 
 =head1 GIT
 
