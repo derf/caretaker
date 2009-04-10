@@ -71,6 +71,21 @@ repeat 2 {
 	pkg update
 }
 
+echo "# pkg remove (not installed/nonexistent)"
+! pkg remove suckage
+! pkg remove rb
+
+echo "# pkg remove (ok)"
+pkg remove ra
+
+repeat 2 {
+	echo "# pkg list"
+	stringcmp "core" "$(pkg list local)"
+	stringcmp "ra\nrb\nrc" "$(pkg list not-installed)"
+	stringcmp "core\nra\nrb\nrc" "$(pkg list remote)"
+	pkg update
+}
+
 rm -rf $test_pdir $test_proot $test_home
 
 print -P '%F{green} test passed%F{default}'
