@@ -14,7 +14,7 @@ meow
 
 echo "# setting up PKG_ROOT"
 cd $test_proot
-git clone git://git.tabularazor.org/~derf/pkg core
+git clone ${1-git://git.tabularazor.org/~derf/pkg} core
 cp core/include/pkglist pkglist
 
 echo "# bootstrapping PDIR"
