@@ -6,17 +6,17 @@
 # and also have an excuse for using zsh here :P
 
 typeset -i rcempty=0
-typeset PKG_ROOT PKG_PATH default_path='~/packages'
+typeset PKG_ROOT PDIR default_path='~/packages'
 
 if [[ -n $1 ]] {
 	PKG_ROOT=$1
-	PKG_PATH=${~${2-$default_path}}
+	PDIR=${~${2-$default_path}}
 } else {
 	cat <<- meow
-		Usage: ./bootstrap PKG_ROOT [PKG_PATH]
+		Usage: ./bootstrap PKG_ROOT [PDIR]
 		PKG_ROOT is an URI, either of the form proto://host/path, or just /path
 		         Note: The path must be absolute, it may not contain a literal ~
-		PKG_PATH is the path where pkg and all further packages will be installed,
+		PDIR is the path where pkg and all further packages will be installed,
 		by default $default_path
 	meow
 	exit 100
@@ -34,7 +34,7 @@ if ! [[ -e ~/.zshrc ]] {
 echo 'Creating the basic directory structure'
 mkdir -p ~/bin
 path=(~/bin $path)
-mkdir -p $PKG_PATH/.collected/man/man{1..8}
+mkdir -p $PDIR/.collected/man/man{1..8}
 
 if ! which git &> /dev/null; then
 	echo 'It appears that git is not available on this system.'
@@ -43,13 +43,13 @@ if ! which git &> /dev/null; then
 fi
 
 echo 'Fetching the core package...'
-cd $PKG_PATH
+cd $PDIR
 git clone $PKG_ROOT/core
 cd core || exit 1
 
 echo 'Writing pkg.conf'
 echo "PKG_ROOT='$PKG_ROOT'" > ~/.pkg.conf
-echo "PKG_PATH=\"${PKG_PATH/$HOME/\$HOME}\"" >> ~/.pkg.conf
+echo "PDIR=\"${PDIR/$HOME/\$HOME}\"" >> ~/.pkg.conf
 
 echo 'Installing core package'
 rehash
