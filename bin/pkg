@@ -658,7 +658,7 @@ function wrap {
 function pkg_add {
 	if [[ -d $PDIR/$1 ]] {
 		info "Package '$1' is already installed!\n"
-		return 100
+		exit 1
 	}
 	list_exists $1 || die "No such package: $1\n"
 	info "Retrieving package $1...\n"

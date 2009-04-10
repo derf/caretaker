@@ -40,14 +40,36 @@ echo "# checking for success"
 [[ -d $test_pdir/core ]]
 
 echo "# pkg list local"
-stringcmp "core" $(pkg list)
-stringcmp "core" $(pkg list local)
+stringcmp "core" "$(pkg list)"
+stringcmp "core" "$(pkg list local)"
 
 echo "# pkg list not-installed"
 stringcmp "ra\nrb\nrc" "$(pkg list not-installed)"
 
 echo "# pkg list all"
 stringcmp "core\nra\nrb\nrc" "$(pkg list all)"
+
+echo "# pkg add (no such repo)"
+! pkg add weltfrieden
+
+echo "# pkg add (already installed)"
+! pkg add core
+
+echo "# pkg add (ok)"
+pkg add ra
+[[ -e $test_pdir/ra/foo ]]
+[[ -d $test_pdir/ra/.git ]]
+
+echo "# pkg add (already installed)"
+! pkg add ra
+
+repeat 2 {
+	echo "# pkg list"
+	stringcmp "core\nra" "$(pkg list local)"
+	stringcmp "rb\nrc" "$(pkg list not-installed)"
+	stringcmp "core\nra\nrb\nrc" "$(pkg list remote)"
+	pkg update
+}
 
 rm -rf $test_pdir $test_proot $test_home
 
