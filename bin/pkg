@@ -309,7 +309,7 @@ function list_type_local {
 }
 
 function list_update_remote {
-	typeset tmpfile=$(mktemp pkglist.XXXXXX)
+	typeset tmpfile=$(mktemp -t pkglist.XXXXXX)
 	typeset -i ret=0
 	export PDIR
 	if [[ $PKG_PROTO == 'ssh' ]] {
