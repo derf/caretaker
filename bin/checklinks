@@ -27,7 +27,7 @@ GetOptions(
 	'p|parameter=s' => \%substitute,
 );
 
-open(LINKS, '<', $linkfile) or die($!);
+open(LINKS, '<', $linkfile) or die("Can't open $linkfile: $!");
 while(<LINKS>) {
 	chomp;
 	foreach my $key (keys(%substitute)) {
@@ -59,9 +59,6 @@ sub check_symlink {
 	my $dst = shift;
 
 	mkdirs($src);
-	#if (not -e "$base/$dst") {
-	#	print_format('no dst!!', $src, $dst, 'red bold');
-	#}
 	if (not -l "$base/$src" and not -e "$base/$src") {
 		symlink($dst, "$base/$src");
 		print_format('created', $src, $dst, 'cyan');
