@@ -559,7 +559,11 @@ function populate_collected {
 		if [[ -L $HOME/$i || ! -e $HOME/$i ]] {
 			if [[ $(readlink $HOME/$i) != "../$1/$i" ]] {
 				rm -f $HOME/$i
-				ln -s ../${PDIR//$HOME\/}/$1/$i $HOME/$i
+				if [[ $PDIR == ${HOME}* ]] {
+					ln -s ../${PDIR//$HOME\/}/$1/$i $HOME/$i
+				} else {
+					ln -s $PDIR/$1/$i $HOME/$i
+				}
 			}
 		} else {
 			warn "populate_collected: Not updating ~/$i since it's not a symlink\n"
@@ -586,7 +590,7 @@ function genocide_collected {
 	}
 	clear_line
 	for i in bin/*(-*N); {
-		if [[ $(readlink $HOME/$i) = "../${PDIR//$HOME\/}/$1/$i" ]] {
+		if [[ $(readlink $HOME/$i) == (../${PDIR//$HOME\/}|$PDIR)/$1/$i ]] {
 			rm -f $HOME/$i
 		}
 	}
