@@ -40,7 +40,7 @@ function debug {
 alias debug='debug ${(%):-%N} ${(%):-%i}'
 
 function info {
-	(( SILENT )) || echo -ne "${c_info}$*${c_reset}"
+	echo -ne "${c_info}$*${c_reset}"
 }
 
 function warn {
@@ -53,7 +53,7 @@ function die {
 }
 
 function say {
-	(( SILENT )) || echo $*
+	echo $*
 }
 
 function check_installed {
@@ -65,7 +65,7 @@ function check_valid {
 }
 
 function clear_line {
-	(( SILENT )) || echo -ne "\r\e[2K"
+	echo -ne "\r\e[2K"
 }
 
 # Read local configuration
@@ -118,6 +118,9 @@ if (( SILENT )) {
 	# The goal is not to override anything set by the user...
 	# So, an alias should be safer than fiddling with $MAKEFLAGS
 	alias make='make -s'
+	function info {}
+	function say {}
+	function clear_line {}
 }
 
 ##
