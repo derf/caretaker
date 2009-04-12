@@ -143,7 +143,7 @@ if [[ $PKG_ROOT == ssh://* ]] {
 } elif [[ $PKG_ROOT == /* ]] {
 	PKG_PROTO='file'
 } else {
-	die "Error: Unknown protocol in PKG_ROOT '$PKG_ROOT'"
+	die "Error: Unknown protocol in PKG_ROOT '$PKG_ROOT'\n"
 }
 
 # user, host, path
