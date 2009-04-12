@@ -787,7 +787,7 @@ function pkg_info {
 			priority_name=$(real_priority $priority)
 		}
 		if [[ -r tags ]] {
-			TAGS=($(cat tags))
+			tags=($(cat tags))
 			tags=$tags
 			tags=${tags//[[:space:]]/, }
 		}
