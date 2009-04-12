@@ -241,24 +241,26 @@ function vcs_log {
 	git log
 }
 
-function vcs_pull {
-	typeset IFS=$'\n' line
-	typeset branch
+function vcs_branch_master {
+	typeset IFS=$'\n' branch line
 	for line in $(git branch); {
 		[[ $line == \*\ * ]] && branch=${line#* }
 	}
+	if [[ $branch != master ]] {
+		warn "$1: The currently checked out branch is not master, but '$branch'\n" \
+			"Currently, pkg can only operate on the branch master\n" \
+			" -> skipping repo, please fix manually or report a bug\n"
+		return 1
+	}
+}
+
+function vcs_pull {
 	if ((GIT_USE_ORIGIN)) {
 		# the package might be newly created and not have an origin yet
 		vcs_fix_origin
 		git pull
 	} else {
-		if [[ $branch != master ]] {
-			warn "$1: The currently checked out branch is not master, but '$branch'\n" \
-				"Currently, pkg can only operate on the branch master\n" \
-				" -> skipping repo, please fix manually or report a bug\n"
-			return 1
-		}
-		git pull $PKG_ROOT/${PWD:t} master
+		vcs_branch_master && git pull $PKG_ROOT/${PWD:t} master
 	}
 }
 
@@ -268,7 +270,7 @@ function vcs_push {
 		vcs_fix_origin
 		git push
 	} else {
-		git push $PKG_ROOT/${PWD:t} master
+		vcs_branch_master && git push $PKG_ROOT/${PWD:t} master
 	}
 }
 
