@@ -25,7 +25,10 @@ for repo in ra rb rc; (
 	cd $repo
 	git init
 	touch foo
-	git add foo
+	mkdir bin
+	touch bin/$repo
+	chmod 755 bin/$repo
+	git add .
 	git commit -m 'initial commit'
 )
 
@@ -38,6 +41,8 @@ echo "# checking for success"
 [[ -e $test_home/.pkg.conf ]]
 [[ -d $test_proot/core ]]
 [[ -d $test_pdir/core ]]
+[[ -L $test_home/bin/pkg ]]
+[[ -L $test_home/bin/checklinks ]]
 
 echo "# pkg list local"
 stringcmp "core" "$(pkg list)"
@@ -63,6 +68,9 @@ pkg add ra
 echo "# pkg add (already installed)"
 ! pkg add ra
 
+echo "# populate_collected (~/bin)"
+[[ -L $test_home/bin/ra ]]
+
 repeat 2 {
 	echo "# pkg list"
 	stringcmp "core\nra" "$(pkg list local)"
@@ -77,6 +85,9 @@ echo "# pkg remove (not installed/nonexistent)"
 
 echo "# pkg remove (ok)"
 pkg remove ra
+
+echo "# genocide_collected (~/bin)"
+[[ ! -L $test_home/bin/ra ]]
 
 repeat 2 {
 	echo "# pkg list"
