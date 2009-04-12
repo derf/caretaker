@@ -581,8 +581,8 @@ function genocide_collected {
 	for i in man/*/*(N); {
 		section=${i:h:t}
 		manual=${i:t}
-		if [[ -e $PDIR/.collected/man/man$section/$manual ]] {
-			rm $PDIR/.collected/man/man$section/$manual
+		if [[ -e $PDIR/.collected/man/man$section/$manual.$section ]] {
+			rm $PDIR/.collected/man/man$section/$manual.$section
 		}
 	}
 	for i in bin/*(N); {
