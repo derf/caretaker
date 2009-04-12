@@ -131,7 +131,7 @@ __END__
 
 =head1 NAME
 
-checklinks - create/update symlinks
+checklinks - create/update links
 
 =head1 SYNOPSIS
 
@@ -139,7 +139,7 @@ B<checklinks> [ I<options> ]
 
 =head1 DESCRIPTION
 
-Create or update symlinks based on a file
+Create or update links based on a file
 
 =head1 OPTIONS
 
@@ -147,11 +147,11 @@ Create or update symlinks based on a file
 
 =item B<-q>, B<--quiet>
 
-quiet. Hide unchanged symlinks
+Quiet. Hide unchanged links
 
 =item B<-r>, B<--remove>
 
-remove all symlinks
+Remove all symlinks. Hardlinks will be left as they are.
 
 =item B<-p>, B<--parameter> I<parameter>=I<value>
 
@@ -172,16 +172,19 @@ current working directory. Each line contains, separated by spaces:
 =item the symlink type
 
 This may be one of 'soft' or 'hard', indicating either a symlink or a hardlink.
-Note: The use of hardlinks is discouraged and not documented. The following
-definitions only apply to symlinks. For hardlinks, may the source be with you
 
 =item the source
 
-path of the source, i.e. the symlink. Relative to $HOME
+path of the source, i.e. the link. Relative to $HOME
+
+In symlink mode, the source will only be updated if it either does not exist or
+already is a symlink. This should prevent accidental data loss.
+Note that in hardlink mode, the source will I<always> be deleted unless it is
+already the correct hardlink
 
 =item the target
 
-path of the target, i.e. the symlink's destination.
+path of the target, i.e. the link's destination.
 This is relative to the source. See L<path_resolution>(7)
 
 =back
