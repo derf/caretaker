@@ -778,18 +778,12 @@ function pkg_info {
 	typeset remote_version=$(list_remote_version $1)
 	typeset repo_type=$(list_type $1)
 	typeset priority priority_name
-	typeset -a tags
 	typeset hooks makefile discription state
 	if [[ -d $1 ]] {
 		cd $1
 		if [[ -r priority ]] {
 			priority=$(cat priority)
 			priority_name=$(real_priority $priority)
-		}
-		if [[ -r tags ]] {
-			tags=($(cat tags))
-			tags=$tags
-			tags=${tags//[[:space:]]/, }
 		}
 		if [[ -d hooks ]] {
 			hooks=$(ls -m hooks)
@@ -824,7 +818,6 @@ function pkg_info {
 	show_info 'Remote Version' $remote_version
 	show_info 'Repository Type' $repo_type
 	show_info 'Repository Size' $size
-	show_info 'Tags' $tags
 	show_info 'Hooks' $hooks
 	show_info 'Description' $description
 }
