@@ -519,30 +519,26 @@ function populate_collected {
 
 	wrap_info $1
 	info "Enabling documentation "
-	if [[ -d man ]] {
-		for i in man/*/*; {
-			section=${i:h:t}
-			manpage=${i:t}
-			if (podchecker man/$section/$manpage &> /dev/null) {
-				pod2man -u -s $section -c "$1 package" -r $HOME man/$section/$manpage > $PDIR/.collected/man/man$section/$manpage.$section
-				say -n "+"
-				(( mans++ ))
-			} else {
-				say -n "."
-				(( mano++ ))
-			}
+	for i in man/*/*(N); {
+		section=${i:h:t}
+		manpage=${i:t}
+		if (podchecker man/$section/$manpage &> /dev/null) {
+			pod2man -u -s $section -c "$1 package" -r $HOME man/$section/$manpage > $PDIR/.collected/man/man$section/$manpage.$section
+			say -n "+"
+			(( mans++ ))
+		} else {
+			say -n "."
+			(( mano++ ))
 		}
 	}
-	if [[ -d bin ]] {
-		for i in bin/*; {
-			if (podchecker $i &> /dev/null) {
-				pod2man -u $i > $PDIR/.collected/man/man1/${i:t}.1
-				say -n "+"
-				(( bins++ ))
-			} else {
-				say -n "."
-				(( bino++ ))
-			}
+	for i in bin/*(N); {
+		if (podchecker $i &> /dev/null) {
+			pod2man -u $i > $PDIR/.collected/man/man1/${i:t}.1
+			say -n "+"
+			(( bins++ ))
+		} else {
+			say -n "."
+			(( bino++ ))
 		}
 	}
 	clear_line
@@ -559,16 +555,14 @@ function populate_collected {
 		}
 		say ')'
 	}
-	if [[ -d bin ]] {
-		for i in bin/*(-*); {
-			if [[ -L $HOME/$i || ! -e $HOME/$i ]] {
-				if [[ $(readlink $HOME/$i) != "../$1/$i" ]] {
-					rm -f $HOME/$i
-					ln -s ../${PDIR//$HOME\/}/$1/$i $HOME/$i
-				}
-			} else {
-				warn "populate_collected: Not updating ~/$i since it's not a symlink\n"
+	for i in bin/*(-*N); {
+		if [[ -L $HOME/$i || ! -e $HOME/$i ]] {
+			if [[ $(readlink $HOME/$i) != "../$1/$i" ]] {
+				rm -f $HOME/$i
+				ln -s ../${PDIR//$HOME\/}/$1/$i $HOME/$i
 			}
+		} else {
+			warn "populate_collected: Not updating ~/$i since it's not a symlink\n"
 		}
 	}
 }
@@ -580,26 +574,20 @@ function genocide_collected {
 	cd $PDIR/$1 || return
 	wrap_info $1
 	info "Removing documentation"
-	if [[ -d man ]] {
-		for i in man/*/*; {
-			section=${i:h:t}
-			manual=${i:t}
-			if [[ -e $PDIR/.collected/man/man$section/$manual ]] {
-				rm $PDIR/.collected/man/man$section/$manual
-			}
+	for i in man/*/*(N); {
+		section=${i:h:t}
+		manual=${i:t}
+		if [[ -e $PDIR/.collected/man/man$section/$manual ]] {
+			rm $PDIR/.collected/man/man$section/$manual
 		}
 	}
-	if [[ -d bin ]] {
-		for i in bin/*; {
-			rm -f $PDIR/.collected/man/man1/${i:t}.1
-		}
+	for i in bin/*(N); {
+		rm -f $PDIR/.collected/man/man1/${i:t}.1
 	}
 	clear_line
-	if [[ -d bin ]] {
-		for i in bin/*(-*); {
-			if [[ $(readlink $HOME/$i) = "../${PDIR//$HOME\/}/$1/$i" ]] {
-				rm -f $HOME/$i
-			}
+	for i in bin/*(-*N); {
+		if [[ $(readlink $HOME/$i) = "../${PDIR//$HOME\/}/$1/$i" ]] {
+			rm -f $HOME/$i
 		}
 	}
 }
