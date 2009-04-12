@@ -29,6 +29,8 @@ for repo in ra rb rc; (
 	touch foo
 	mkdir bin
 	touch bin/$repo
+	mkdir -p man/2
+	echo "=head1 WASTED SPACE\n\nhuhu" > man/2/$repo
 	chmod 755 bin/$repo
 	git add .
 	git commit -m 'initial commit'
@@ -47,6 +49,9 @@ echo "# checking for success"
 [[ -L $test_home/bin/checklinks ]]
 [[ -x $(readlink $test_home/bin/pkg) ]]
 [[ -x $(readlink $test_home/bin/checklinks) ]]
+[[ -e $test_pdir/.collected/man/man1/pkg.1 ]]
+[[ -e $test_pdir/.collected/man/man5/pkg.conf.5 ]]
+[[ -e $test_pdir/.collected/man/man7/pkg.7 ]]
 
 echo "# pkg list local"
 stringcmp "core" "$(pkg list)"
@@ -72,9 +77,10 @@ pkg add ra
 echo "# pkg add (already installed)"
 ! pkg add ra
 
-echo "# populate_collected (~/bin)"
+echo "# populate_collected"
 [[ -L $test_home/bin/ra ]]
 [[ -x $(readlink $test_home/bin/ra) ]]
+[[ -e $test_pdir/.collected/man/man2/ra.2 ]]
 
 repeat 2 {
 	echo "# pkg list"
@@ -93,6 +99,7 @@ pkg remove ra
 
 echo "# genocide_collected (~/bin)"
 [[ ! -L $test_home/bin/ra ]]
+[[ ! -e $test_pdir/.collected/man/man2/ra.2 ]]
 
 repeat 2 {
 	echo "# pkg list"
