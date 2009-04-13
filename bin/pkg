@@ -162,6 +162,7 @@ if [[ $PKG_PROTO == 'ssh' ]] {
 
 : ${PKGLIST_PATH:=$PKG_PATH/pkglist}
 
+debug "Running zsh v$ZSH_VERSION"
 debug "PKG_ROOT: '$PKG_ROOT'"
 debug "PKG_PROTO: '$PKG_PROTO'"
 debug "PKG_USER: '$PKG_USER'"
