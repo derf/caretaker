@@ -34,6 +34,12 @@ for repo in ra rb rc; (
 	chmod 755 bin/$repo
 	git add .
 	git commit -m 'initial commit'
+	cd ..
+	mkdir ${repo}-bare
+	cd ${repo}-bare
+	git --bare init
+	cd ../$repo
+	git push ../${repo}-bare master
 )
 
 echo "# bootstrapping PDIR"
@@ -58,10 +64,10 @@ stringcmp "core" "$(pkg list)"
 stringcmp "core" "$(pkg list local)"
 
 echo "# pkg list not-installed"
-stringcmp "ra\nrb\nrc" "$(pkg list not-installed)"
+stringcmp "ra\nra-bare\nrb\nrb-bare\nrc\nrc-bare" "$(pkg list not-installed)"
 
 echo "# pkg list all"
-stringcmp "core\nra\nrb\nrc" "$(pkg list all)"
+stringcmp "core\nra\nra-bare\nrb\nrb-bare\nrc\nrc-bare" "$(pkg list all)"
 
 echo "# pkg add (no such repo)"
 ! pkg add weltfrieden
@@ -69,44 +75,54 @@ echo "# pkg add (no such repo)"
 echo "# pkg add (already installed)"
 ! pkg add core
 
-echo "# pkg add (ok)"
-pkg add ra
-[[ -e $test_pdir/ra/foo ]]
-[[ -d $test_pdir/ra/.git ]]
+for repo in ra ra-bare; {
+	file=${repo%-*}
+	if [[ $repo == *-bare ]] {
+		echo "## bare repository"
+		complement=$file
+	} else {
+		echo "## non-bare repository"
+		complement=${repo}-bare
+	}
+	echo "# pkg add (ok)"
+	pkg add $repo
+	[[ -e $test_pdir/$repo/foo ]]
+	[[ -d $test_pdir/$repo/.git ]]
 
-echo "# pkg add (already installed)"
-! pkg add ra
+	echo "# pkg add (already installed)"
+	! pkg add $repo
 
-echo "# populate_collected"
-[[ -L $test_home/bin/ra ]]
-[[ -x $(readlink $test_home/bin/ra) ]]
-[[ -e $test_pdir/.collected/man/man2/ra.2 ]]
+	echo "# populate_collected"
+	[[ -L $test_home/bin/$file ]]
+	[[ -x $(readlink $test_home/bin/$file) ]]
+	[[ -e $test_pdir/.collected/man/man2/$file.2 ]]
 
-repeat 2 {
-	echo "# pkg list"
-	stringcmp "core\nra" "$(pkg list local)"
-	stringcmp "rb\nrc" "$(pkg list not-installed)"
-	stringcmp "core\nra\nrb\nrc" "$(pkg list remote)"
-	pkg update
-}
+	repeat 2 {
+		echo "# pkg list"
+		stringcmp "core\n$repo" "$(pkg list local)"
+		stringcmp "$complement\nrb\nrb-bare\nrc\nrc-bare" "$(pkg list not-installed)"
+		stringcmp "core\nra\nra-bare\nrb\nrb-bare\nrc\nrc-bare" "$(pkg list remote)"
+		pkg update
+	}
 
-echo "# pkg remove (not installed/nonexistent)"
-! pkg remove suckage
-! pkg remove rb
+	echo "# pkg remove (not installed/nonexistent)"
+	! pkg remove suckage
+	! pkg remove rb
 
-echo "# pkg remove (ok)"
-pkg remove ra
+	echo "# pkg remove (ok)"
+	pkg remove $repo
 
-echo "# genocide_collected (~/bin)"
-[[ ! -L $test_home/bin/ra ]]
-[[ ! -e $test_pdir/.collected/man/man2/ra.2 ]]
+	echo "# genocide_collected (~/bin)"
+	[[ ! -L $test_home/bin/$file ]]
+	[[ ! -e $test_pdir/.collected/man/man2/$file.2 ]]
 
-repeat 2 {
-	echo "# pkg list"
-	stringcmp "core" "$(pkg list local)"
-	stringcmp "ra\nrb\nrc" "$(pkg list not-installed)"
-	stringcmp "core\nra\nrb\nrc" "$(pkg list remote)"
-	pkg update
+	repeat 2 {
+		echo "# pkg list"
+		stringcmp "core" "$(pkg list local)"
+		stringcmp "ra\nra-bare\nrb\nrb-bare\nrc\nrc-bare" "$(pkg list not-installed)"
+		stringcmp "core\nra\nra-bare\nrb\nrb-bare\nrc\nrc-bare" "$(pkg list remote)"
+		pkg update
+	}
 }
 
 rm -rf $test_pdir $test_proot $test_home
