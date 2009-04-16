@@ -16,7 +16,7 @@ for i in *(-/); {
 		echo -n "$i git "
 		echo ${$(git --git-dir=$i/.git log -n 1)[2]}
 	} elif [[ -d $i/objects && -d $i/refs ]] {
-		echo -n "$ git "
+		echo -n "$i git "
 		echo ${$(git --git-dir=$i log -n 1)[2]}
 	} else {
 		echo "$i: Unsupported or no repository" >&2
