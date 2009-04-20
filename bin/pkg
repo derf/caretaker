@@ -298,6 +298,14 @@ function list_exists {
 	grep "^$1 " $PDIR/.list-remote &> /dev/null
 }
 
+function list_packages_local {
+	cut -d ' ' -f 1 $PDIR/.list
+}
+
+function list_packages_remote {
+	cut -d ' ' -f 1 $PDIR/.list-remote
+}
+
 function list_incoming {
 	[[ $(list_local_version $1) != $(list_remote_version $1) ]]
 }
@@ -634,7 +642,7 @@ function wrap {
 			info "$1: "
 		}
 		cd $PDIR
-		[[ -n $progress ]] && all=$(wc -l < $PDIR/.list)
+		[[ -n $progress ]] && all=$(list_packages_local | wc -l)
 		[[ -n $progress ]] && current=0
 		for i in *(-/); {
 			(( current++ ))
@@ -712,15 +720,15 @@ function pkg_list {
 	typeset package crap
 	case $1 in
 		''|local)
-			cut -d ' ' -f 1 $PDIR/.list
+			list_packages_local
 		;;
 		all|remote)
-			cut -d ' ' -f 1 $PDIR/.list-remote
+			list_packages_remote
 		;;
 		not-installed)
-			while read package crap; do
+			for package in $(list_packages_remote); {
 				list_is_installed $package || echo $package
-			done < $PDIR/.list-remote
+			}
 		;;
 	esac
 }
