@@ -16,6 +16,7 @@
 
 setopt extended_glob
 typeset -a -U triggers
+typeset -a CL_OPTIONS
 
 ##
 ## Internal functions for displaying stuff
@@ -164,6 +165,7 @@ debug "PKG_PROTO: '$PKG_PROTO'"
 debug "PKG_USER: '$PKG_USER'"
 debug "PKG_HOST: '$PKG_HOST'"
 debug "PKGLIST_PATH: '$PKGLIST_PATH'"
+debug "CL_OPTIONS : '$CL_OPTIONS'"
 
 ##
 ## Ask the user for confirmation
