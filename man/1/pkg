@@ -92,33 +92,31 @@ If no argument is given, updates all installed packages
 
 =head1 OPTIONS
 
-B<pkg> accepts both long and short options.
-Options marked as [boolean] may be negated,
-the short options by using '+' instead of '-' as prefix (like '+au'),
-the long options by prepending a 'no', like '--no-auto-update'.
+Options marked as [boolean] may be negated
+by prepending a 'no', like '--no-auto-update'.
 
-Options always override the configuration file and the environment variables.
+Options always override the configuration file.
 
 =over
 
-=item B<-q>, B<--quiet>  [boolean]
+=item B<--quiet>  [boolean]
 
 Enable quiet mode, don't print progress. Useful for scripting
 
-=item B<-d>, B<--debug>  [boolean]
+=item B<--debug>  [boolean]
 
 Enable debug mode
 
-=item B<-au>, B<--auto-update>  [boolean]
+=item B<--auto-update>  [boolean]
 
 Automatically update the package list before doing certain actions
 
-=item B<-co>, B<--checklinks-options> I<option>
+=item B<--checklinks-options> I<option>
 
 Append I<option> to the options checklinks is invoked with.
 Only one option is allowed. To append more options, repeat the argument
 
-=item B<-p>, B<--packagedir> I<directory>
+=item B<--packagedir> I<directory>
 
 Use I<directory> as local package directory
 

@@ -90,16 +90,16 @@ export PKG_ROOT
 ##
 
 # commandline options override everything else
-while [[ $1 == [-+]* ]] {
+while [[ $1 == --* ]] {
 	case $1 in
-		-q|--quiet) SILENT=1 ;;
-		+q|--no-quiiet) SILENT=0 ;;
-		-d|--debug) DEBUG=1 ;;
-		+d|--no-debug) DEBUG=0 ;;
-		-au|--auto-update) AUTOUPDATE=1 ;;
-		+au|--no-auto-update) AUTOUPDATE=0 ;;
-		-co|--checklinks-options) CL_OPTIONS+=$2; shift ;;
-		-p|--packagedir) PDIR=$2; shift ;;
+		--quiet) SILENT=1 ;;
+		--no-quiiet) SILENT=0 ;;
+		--debug) DEBUG=1 ;;
+		--no-debug) DEBUG=0 ;;
+		--auto-update) AUTOUPDATE=1 ;;
+		--no-auto-update) AUTOUPDATE=0 ;;
+		--checklinks-options) CL_OPTIONS+=$2; shift ;;
+		--packagedir) PDIR=$2; shift ;;
 		*) die "Unknown argument: '$1'\n" ;;
 	esac
 	shift
