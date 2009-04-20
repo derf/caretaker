@@ -73,23 +73,7 @@ if [[ -f $HOME/.pkg.conf ]] {
 	. $HOME/.pkg.conf
 }
 
-# Default values... or not
-[[ -n $PKG_ROOT ]] || die "No PKG_ROOT specified. Please edit ~/.pkg.conf\n"
-: ${PDIR:="$HOME/packages"}
-: ${CL_OPTIONS:=-q}
-: ${SILENT=0}
-: ${DEBUG=0}
-: ${AUTOUPDATE=1}
-: ${GIT_USE_ORIGIN=1}
-
-export PDIR
-export PKG_ROOT
-
-##
-## commandline parsing
-##
-
-# commandline options override everything else
+# Parse commandline options
 while [[ $1 == --* ]] {
 	case $1 in
 		--quiet) SILENT=1 ;;
@@ -100,6 +84,7 @@ while [[ $1 == --* ]] {
 		--no-auto-update) AUTOUPDATE=0 ;;
 		--checklinks-options) CL_OPTIONS+=$2; shift ;;
 		--packagedir) PDIR=$2; shift ;;
+		--packageroot) PKG_ROOT=$2; shift ;;
 		*) die "Unknown argument: '$1'\n" ;;
 	esac
 	shift
@@ -107,6 +92,17 @@ while [[ $1 == --* ]] {
 
 action=$1
 shift
+
+# Default values... or not
+[[ -n $PKG_ROOT ]] || die "No PKG_ROOT specified. Please edit ~/.pkg.conf\n"
+: ${PDIR:="$HOME/packages"}
+: ${CL_OPTIONS:=-q}
+: ${SILENT=0}
+: ${DEBUG=0}
+: ${AUTOUPDATE=1}
+: ${GIT_USE_ORIGIN=1}
+export PDIR
+export PKG_ROOT
 
 # Avoid calling debug without debug mode... just in case one needs more speed
 if (( !DEBUG )) {

@@ -120,6 +120,10 @@ Only one option is allowed. To append more options, repeat the argument
 
 Use I<directory> as local package directory
 
+=item B<--packageroot> I<URL>
+
+Use I<URL> as package root
+
 =back
 
 =head1 FILES

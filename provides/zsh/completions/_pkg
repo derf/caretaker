@@ -74,10 +74,11 @@ function _pkg_args {
 }
 
 _arguments \
-	{-q,--quiet}'[quiet mode]' \
-	{-d,--debug}'[debugmode]' \
-	{-au,--auto-update}'[automatically update package list]' \
-	'*'{-co,--checklinks-options}'[options for checklinks]:option' \
-	{-p,--packagedir}'[package directory]:directory:_files -/' \
+	'--quiet[quiet mode]' \
+	'--debug[debugmode]' \
+	'--auto-update[automatically update package list]' \
+	'*--checklinks-options[options for checklinks]:option' \
+	'--packagedir[package directory]:directory:_files -/' \
+	'--packageroot[package root]:url' \
 	':action:_pkg_action' \
 	'*::arguments:_pkg_args'
