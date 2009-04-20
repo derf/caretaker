@@ -719,7 +719,7 @@ function pkg_list {
 		;;
 		not-installed)
 			while read package crap; do
-				grep "^$package " $PDIR/.list &> /dev/null || echo $package
+				list_is_installed $package || echo $package
 			done < $PDIR/.list-remote
 		;;
 	esac
