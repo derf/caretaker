@@ -228,9 +228,9 @@ provided by packages.
 =head1 GIT
 
 B<pkg> uses git(1) as backend for storing and syncing package information.
-Currently it can only operate on the master branch, so it is strongly
-recommended not to use any other branches, or you might end up with unwanted
-merges.
+It is not recommended to use branches other than "master".
+While they should work if GIT_USE_ORIGIN is set to 1 (the default), they will
+most likely confuse pkg update.
 
 =head1 AUTHOR
 
