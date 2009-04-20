@@ -305,7 +305,7 @@ function list_packages_remote {
 }
 
 function list_incoming {
-	[[ $(list_local_version $1) != $(list_remote_version $1) ]]
+	[[ $(list_version_local $1) != $(list_version_remote $1) ]]
 }
 
 function list_type {
@@ -352,7 +352,7 @@ function list_update_local {
 	}
 }
 
-function list_update_package {
+function list_package_update {
 	typeset list
 	cd $PDIR
 	list=$(grep -v "^$1 " .list)
@@ -360,18 +360,18 @@ function list_update_package {
 	vcs_to_list $1 >> .list
 }
 
-function list_remove_package {
+function list_package_remove {
 	typeset list
 	cd $PDIR
 	list=$(grep -v "^$1 " .list)
 	echo $list > .list
 }
 
-function list_local_version {
+function list_version_local {
 	echo ${$(grep "^$1 " $PDIR/.list)[3]}
 }
 
-function list_remote_version {
+function list_version_remote {
 	echo ${$(grep "^$1 " $PDIR/.list-remote)[3]}
 }
 
@@ -422,13 +422,13 @@ function global_hook {
 				--parameter etc=${${PWD#$HOME}#/##}/etc
 			populate_collected $1
 			update_provides $1
-			list_update_package $1
+			list_package_update $1
 		;;
 		pre-remove)
 			exec_hook $1 pre-remove
 			genocide_collected $1
 			checklinks -r
-			list_remove_package $1
+			list_package_remove $1
 			update_provides $1 'remove'
 		;;
 	esac
@@ -707,7 +707,7 @@ function pkg_upgrade {
 	}
 	if list_incoming $1; then
 		clear_line
-		info "Updating $1 to $(list_remote_version $1)\n"
+		info "Updating $1 to $(list_version_remote $1)\n"
 		global_hook $1 pre-update
 		vcs_pull
 		global_hook $1 post-update
@@ -781,8 +781,8 @@ function pkg_info {
 
 	# Fetch the infos
 	typeset name=$1
-	typeset local_version=$(list_local_version $1)
-	typeset remote_version=$(list_remote_version $1)
+	typeset local_version=$(list_version_local $1)
+	typeset remote_version=$(list_version_remote $1)
 	typeset repo_type=$(list_type $1)
 	typeset priority priority_name
 	typeset hooks makefile discription state
