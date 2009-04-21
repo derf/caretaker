@@ -224,10 +224,17 @@ function progress {
 }
 
 ## VCS Wrappers
+
+function vcs_setup {
+	export GIT_DIR=$PDIR/$1/.git
+	export GIT_WORK_TREE=$PDIR/$1
+}
+
 function vcs_to_list {
+	vcs_setup $1
 	if [[ -d $PDIR/$1/.git ]] {
 		echo -n "$1 git "
-		echo ${$(git --git-dir=$PDIR/$1/.git log -n 1 master)[2]}
+		echo ${$(git log -n 1 master)[2]}
 	} else {
 		warn "No git repository found: $1\n"
 	}
@@ -241,10 +248,12 @@ function vcs_add {
 }
 
 function vcs_log {
+	vcs_setup $1
 	git log
 }
 
 function vcs_branch_master {
+	vcs_setup $1
 	typeset IFS=$'\n' branch line
 	for line in $(git branch); {
 		[[ $line == \*\ * ]] && branch=${line#* }
@@ -258,33 +267,37 @@ function vcs_branch_master {
 }
 
 function vcs_pull {
+	vcs_setup $1
 	if ((GIT_USE_ORIGIN)) {
 		# the package might be newly created and not have an origin yet
-		vcs_fix_origin
+		vcs_fix_origin $1
 		git pull
 	} else {
-		vcs_branch_master && git pull $PKG_ROOT/${PWD:t} master
+		vcs_branch_master $1 && git pull $PKG_ROOT/${PWD:t} master
 	}
 }
 
 function vcs_push {
+	vcs_setup $1
 	if ((GIT_USE_ORIGIN)) {
 		# see above
-		vcs_fix_origin
+		vcs_fix_origin $1
 		git push
 	} else {
-		vcs_branch_master && git push $PKG_ROOT/${PWD:t} master
+		vcs_branch_master $1 && git push $PKG_ROOT/${PWD:t} master
 	}
 }
 
 function vcs_status {
+	vcs_setup $1
 	git status
 }
 
 # Set the correct origin
 function vcs_fix_origin {
-	if [[ ! -r .git/remotes/origin && ! -r .git/refs/remotes/origin/HEAD ]] {
-		fgrep '[remote "origin"]' .git/config &> /dev/null ||
+	vcs_setup $1
+	if [[ ! -r $GIT_DIR/remotes/origin && ! -r $GIT_DIR/refs/remotes/origin/HEAD ]] {
+		fgrep '[remote "origin"]' $GIT_DIR/config &> /dev/null ||
 			git remote add origin $PKG_ROOT/${PWD:t}
 	}
 }
@@ -676,7 +689,7 @@ function pkg_push {
 		clear_line
 		info "Pushing $1\n"
 		global_hook $1 pre-update
-		vcs_push
+		vcs_push $1
 		global_hook $1 post-update
 	fi
 }
@@ -708,7 +721,7 @@ function pkg_upgrade {
 		clear_line
 		info "Updating $1 to $(list_version_remote $1)\n"
 		global_hook $1 pre-update
-		vcs_pull
+		vcs_pull $1
 		global_hook $1 post-update
 	fi
 }
@@ -828,7 +841,7 @@ function pkg_info {
 function pkg_log {
 	check_installed $1
 	cd $PDIR/$1
-	vcs_log
+	vcs_log $1
 }
 
 
