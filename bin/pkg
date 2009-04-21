@@ -390,7 +390,7 @@ function real_priority {
 		3) echo 'standard' ;;
 		2) echo 'optional' ;;
 		1) echo 'extra' ;;
-		*) echo ;;
+		*) warn "invalid priority: $!" ;;
 	esac
 }
 
