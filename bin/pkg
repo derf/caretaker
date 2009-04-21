@@ -252,8 +252,8 @@ function vcs_branch_master {
 	}
 	if [[ $branch != master ]] {
 		warn "$1: The currently checked out branch is not master, but '$branch'\n" \
-			"Currently, pkg can only operate on the branch master\n" \
-			" -> skipping repo, please fix manually or report a bug\n"
+			"Currently, with GIT_USE_ORIGIN=0, pkg can only operate on the branch master\n" \
+			" -> skipping repo, please fix manually\n"
 		return 1
 	}
 }
