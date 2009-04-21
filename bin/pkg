@@ -361,10 +361,10 @@ function list_update_local {
 	typeset -i current=0
 	typeset i
 	rm -f $PDIR/.list
-	for i in *(-/); {
+	for package in *(-/); {
 		(( current++ ))
-		progress $current $all 'Updating package list' $i
-		vcs_to_list $i >> $PDIR/.list
+		progress $current $all 'Updating package list' $package
+		vcs_to_list $package >> $PDIR/.list
 	}
 }
 
@@ -516,16 +516,16 @@ function check_prereqs {
 	if [[ -n $install ]] {
 		info "$1 requires the following packages: ${(j:, :)install}\n"
 		if confirm_yes "Install them?"; then
-			for i in $install; {
-				pkg_add $i
+			for package in $install; {
+				pkg_add $package
 			}
 		fi
 	}
 	if [[ -n $maybe_install ]] {
 		info "$1 recommends the following packages: ${(j:, :)maybe_install}\n"
 		if confirm_no "Install them?"; then
-			for i in $maybe_install; {
-				pkg_add $i
+			for package in $maybe_install; {
+				pkg_add $package
 			}
 		fi
 	}
@@ -540,9 +540,9 @@ function populate_collected {
 
 	wrap_info $1
 	info "Enabling documentation "
-	for i in man/*/*(N); {
-		section=${i:h:t}
-		manpage=${i:t}
+	for man in man/*/*(N); {
+		section=${man:h:t}
+		manpage=${man:t}
 		if (podchecker man/$section/$manpage &> /dev/null) {
 			pod2man -u -s $section -c "$1 package" -r $HOME man/$section/$manpage > $PDIR/.collected/man/man$section/$manpage.$section
 			say -n "+"
@@ -552,9 +552,9 @@ function populate_collected {
 			(( mano++ ))
 		}
 	}
-	for i in bin/*(N); {
-		if (podchecker $i &> /dev/null) {
-			pod2man -u $i > $PDIR/.collected/man/man1/${i:t}.1
+	for file in bin/*(N); {
+		if (podchecker $file &> /dev/null) {
+			pod2man -u $file > $PDIR/.collected/man/man1/${file:t}.1
 			say -n "+"
 			(( bins++ ))
 		} else {
@@ -576,18 +576,18 @@ function populate_collected {
 		}
 		say ')'
 	}
-	for i in bin/*(-*N); {
-		if [[ -L $HOME/$i || ! -e $HOME/$i ]] {
-			if [[ $(readlink $HOME/$i) != (../${PDIR//$HOME\/}|$PDIR)/$1/$i ]] {
-				rm -f $HOME/$i
+	for file in bin/*(-*N); {
+		if [[ -L $HOME/$file || ! -e $HOME/$file ]] {
+			if [[ $(readlink $HOME/$file) != (../${PDIR//$HOME\/}|$PDIR)/$1/$file ]] {
+				rm -f $HOME/$file
 				if [[ $PDIR == ${HOME}* ]] {
-					ln -s ../${PDIR//$HOME\/}/$1/$i $HOME/$i
+					ln -s ../${PDIR//$HOME\/}/$1/$file $HOME/$file
 				} else {
-					ln -s $PDIR/$1/$i $HOME/$i
+					ln -s $PDIR/$1/$file $HOME/$file
 				}
 			}
 		} else {
-			warn "populate_collected: Not updating ~/$i since it's not a symlink\n"
+			warn "populate_collected: Not updating ~/$file since it's not a symlink\n"
 		}
 	}
 }
@@ -599,20 +599,20 @@ function genocide_collected {
 	cd $PDIR/$1 || return
 	wrap_info $1
 	info "Removing documentation"
-	for i in man/*/*(N); {
-		section=${i:h:t}
-		manual=${i:t}
+	for man in man/*/*(N); {
+		section=${man:h:t}
+		manual=${man:t}
 		if [[ -e $PDIR/.collected/man/man$section/$manual.$section ]] {
 			rm $PDIR/.collected/man/man$section/$manual.$section
 		}
 	}
-	for i in bin/*(N); {
-		rm -f $PDIR/.collected/man/man1/${i:t}.1
+	for file in bin/*(N); {
+		rm -f $PDIR/.collected/man/man1/${file:t}.1
 	}
 	clear_line
-	for i in bin/*(-*N); {
-		if [[ $(readlink $HOME/$i) == (../${PDIR//$HOME\/}|$PDIR)/$1/$i ]] {
-			rm -f $HOME/$i
+	for file in bin/*(-*N); {
+		if [[ $(readlink $HOME/$file) == (../${PDIR//$HOME\/}|$PDIR)/$1/$file ]] {
+			rm -f $HOME/$file
 		}
 	}
 }
@@ -655,11 +655,11 @@ function wrap {
 		}
 		[[ -n $progress ]] && all=$(list_packages_local | wc -l)
 		[[ -n $progress ]] && current=0
-		for i in *(-/); {
+		for package in *(-/); {
 			cd $PDIR
 			(( current++ ))
-			[[ -n $progress ]] && progress $current $all $progress $i
-			$function $i
+			[[ -n $progress ]] && progress $current $all $progress $package
+			$function $package
 		}
 		[[ -n $progress ]] && clear_line
 	}
