@@ -543,24 +543,24 @@ function populate_collected {
 	for man in man/*/*(N); {
 		section=${man:h:t}
 		manpage=${man:t}
-		if (podchecker man/$section/$manpage &> /dev/null) {
+		if podchecker man/$section/$manpage &> /dev/null; then
 			pod2man -u -s $section -c "$1 package" -r $HOME man/$section/$manpage > $PDIR/.collected/man/man$section/$manpage.$section
 			say -n "+"
 			(( mans++ ))
-		} else {
+		else
 			say -n "."
 			(( mano++ ))
-		}
+		fi
 	}
 	for file in bin/*(N); {
-		if (podchecker $file &> /dev/null) {
+		if podchecker $file &> /dev/null; then
 			pod2man -u $file > $PDIR/.collected/man/man1/${file:t}.1
 			say -n "+"
 			(( bins++ ))
-		} else {
+		else
 			say -n "."
 			(( bino++ ))
-		}
+		fi
 	}
 	clear_line
 	if (( bins + mans > 0 )) {
