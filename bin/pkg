@@ -677,14 +677,13 @@ function pkg_push {
 	check_installed $1
 	check_valid $1
 	cd $PDIR/$1
-	list_incoming $1
-	if [[ $? = 0 ]] {
+	if list_incoming $1; then
 		clear_line
 		info "Pushing $1\n"
 		global_hook $1 pre-update
 		vcs_push
 		global_hook $1 post-update
-	}
+	fi
 }
 
 function pkg_remove {
