@@ -7,6 +7,7 @@ function stringcmp {
 	diff -u <(echo $1) <(echo $2)
 }
 
+tests=$PWD/test
 test_pdir=$(mktemp -dt pkgdir.XXXXXX)
 test_proot=$(mktemp -dt pkgroot.XXXXXX)
 test_home=$(mktemp -dt pkghome.XXXXXX)
@@ -18,29 +19,7 @@ test directories:
 	HOME = $test_home
 meow
 
-echo "# setting up PKG_ROOT"
-cd $test_proot
-git clone ${1-git://git.tabularazor.org/~derf/pkg} core
-cp core/include/pkglist pkglist
-for repo in ra rb rc; (
-	mkdir $repo
-	cd $repo
-	git init
-	touch foo
-	mkdir bin
-	touch bin/$repo
-	mkdir -p man/2
-	echo "=head1 WASTED SPACE\n\nhuhu" > man/2/$repo
-	chmod 755 bin/$repo
-	git add .
-	git commit -m 'initial commit'
-	cd ..
-	mkdir ${repo}-bare
-	cd ${repo}-bare
-	git --bare init
-	cd ../$repo
-	git push ../${repo}-bare master
-)
+source $tests/setup
 
 echo "# bootstrapping PDIR"
 cd $test_home
@@ -75,53 +54,11 @@ echo "# pkg add (no such repo)"
 echo "# pkg add (already installed)"
 ! pkg add core
 
-for repo in ra ra-bare; {
-	file=${repo%-*}
-	if [[ $repo == *-bare ]] {
-		echo "## bare repository"
-		complement=$file
-	} else {
-		echo "## non-bare repository"
-		complement=${repo}-bare
-	}
-	echo "# pkg add (ok)"
-	pkg add $repo
-	[[ -e $test_pdir/$repo/foo ]]
-	[[ -d $test_pdir/$repo/.git ]]
-
-	echo "# pkg add (already installed)"
-	! pkg add $repo
-
-	echo "# populate_collected"
-	[[ -L $test_home/bin/$file ]]
-	[[ -x $(readlink $test_home/bin/$file) ]]
-	[[ -e $test_pdir/.collected/man/man2/$file.2 ]]
-
-	repeat 2 {
-		echo "# pkg list"
-		stringcmp "core\n$repo" "$(pkg list local)"
-		stringcmp "$complement\nrb\nrb-bare\nrc\nrc-bare" "$(pkg list not-installed)"
-		stringcmp "core\nra\nra-bare\nrb\nrb-bare\nrc\nrc-bare" "$(pkg list remote)"
-		pkg update
-	}
-
-	echo "# pkg remove (not installed/nonexistent)"
-	! pkg remove suckage
-	! pkg remove rb
-
-	echo "# pkg remove (ok)"
-	pkg remove $repo
-
-	echo "# genocide_collected (~/bin)"
-	[[ ! -L $test_home/bin/$file ]]
-	[[ ! -e $test_pdir/.collected/man/man2/$file.2 ]]
-
-	repeat 2 {
-		echo "# pkg list"
-		stringcmp "core" "$(pkg list local)"
-		stringcmp "ra\nra-bare\nrb\nrb-bare\nrc\nrc-bare" "$(pkg list not-installed)"
-		stringcmp "core\nra\nra-bare\nrb\nrb-bare\nrc\nrc-bare" "$(pkg list remote)"
-		pkg update
+for conf_origin in 0 1; {
+	echo "## GIT_USE_ORIGIN=$conf_origin"
+	echo "GIT_USE_ORIGIN=$conf_origin" >> $test_home/.pkg.conf
+	for repo in ra ra-bare; {
+		source $tests/addremove
 	}
 }
 

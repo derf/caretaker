@@ -1,0 +1,24 @@
+## vim:ft=zsh
+echo "# setting up PKG_ROOT"
+cd $test_proot
+git clone ${1-git://git.tabularazor.org/~derf/pkg} core
+cp core/include/pkglist pkglist
+for repo in ra rb rc; (
+	mkdir $repo
+	cd $repo
+	git init
+	touch foo
+	mkdir bin
+	touch bin/$repo
+	mkdir -p man/2
+	echo "=head1 WASTED SPACE\n\nhuhu" > man/2/$repo
+	chmod 755 bin/$repo
+	git add .
+	git commit -m 'initial commit'
+	cd ..
+	mkdir ${repo}-bare
+	cd ${repo}-bare
+	git --bare init
+	cd ../$repo
+	git push ../${repo}-bare master
+)
