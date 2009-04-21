@@ -58,11 +58,11 @@ function say {
 }
 
 function check_installed {
-	[[ -n $1 && -d $PDIR/$1 ]] || die "Not installed: '$1'\n"
+	[[ -n $1 && -d $PDIR/$1 ]] || die "Package not installed: '$1'\n"
 }
 
 function check_valid {
-	list_exists $1 || die "No such package: '$1'\n"
+	list_exists $1 || die "Package does not exist: '$1'\n"
 }
 
 function clear_line {
@@ -334,7 +334,7 @@ function list_update_remote {
 		cp $tmpfile .list-remote
 	} else {
 		die "remote list update failed\n" \
-			" -- note --\n" \
+			"-- note --\n" \
 			"There were recent changes in pkg involving the package root\n\n" \
 			"You might want to copy the pkglist script ($PDIR/core/include/pkglist)\n" \
 			"into the package root, so that it's available as\n" \
@@ -665,7 +665,7 @@ function pkg_add {
 		info "Package '$1' is already installed!\n"
 		exit 1
 	}
-	list_exists $1 || die "No such package: $1\n"
+	check_valid $1
 	info "Retrieving package $1...\n"
 	cd $PDIR   || return 255
 	vcs_add $1 || return 255
