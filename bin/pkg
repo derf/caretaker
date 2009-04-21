@@ -225,16 +225,15 @@ function progress {
 
 ## VCS Wrappers
 function vcs_to_list {
-	if [[ -d $1/.git ]] {
+	if [[ -d $PDIR/$1/.git ]] {
 		echo -n "$1 git "
-		echo ${$(git --git-dir=$1/.git log -n 1 master)[2]}
+		echo ${$(git --git-dir=$PDIR/$1/.git log -n 1 master)[2]}
 	} else {
 		warn "No git repository found: $1\n"
 	}
 }
 
 function vcs_add {
-	cd $PDIR
 	case $(list_type $1) in
 		git)   git clone "$PKG_ROOT/$1" ;;
 		*)     die "$1: Cannot handle repository format '$(list_type $1)'\n" ;;
@@ -348,28 +347,25 @@ function list_update_local {
 	typeset all=${#$(echo $PDIR/*(/))}
 	typeset -i current=0
 	typeset i
-	cd $PDIR
-	rm -f .list
+	rm -f $PDIR/.list
 	for i in *(-/); {
 		(( current++ ))
 		progress $current $all 'Updating package list' $i
-		vcs_to_list $i >> .list
+		vcs_to_list $i >> $PDIR/.list
 	}
 }
 
 function list_package_update {
 	typeset list
-	cd $PDIR
-	list=$(grep -v "^$1 " .list)
-	echo $list > .list
-	vcs_to_list $1 >> .list
+	list=$(grep -v "^$1 " $PDIR/.list)
+	echo $list > $PDIR/.list
+	vcs_to_list $1 >> $PDIR/.list
 }
 
 function list_package_remove {
 	typeset list
-	cd $PDIR
-	list=$(grep -v "^$1 " .list)
-	echo $list > .list
+	list=$(grep -v "^$1 " $PDIR/.list)
+	echo $list > $PDIR/.list
 }
 
 function list_version_local {
@@ -644,10 +640,10 @@ function wrap {
 			clear_line
 			info "$1: "
 		}
-		cd $PDIR
 		[[ -n $progress ]] && all=$(list_packages_local | wc -l)
 		[[ -n $progress ]] && current=0
 		for i in *(-/); {
+			cd $PDIR
 			(( current++ ))
 			[[ -n $progress ]] && progress $current $all $progress $i
 			$function $i
@@ -667,7 +663,6 @@ function pkg_add {
 	}
 	check_valid $1
 	info "Retrieving package $1...\n"
-	cd $PDIR   || return 255
 	vcs_add $1 || return 255
 	cd $1      || return 255
 	global_hook $1 post-add
@@ -765,7 +760,6 @@ function pkg_update {
 }
 
 function pkg_update_remote {
-	cd $PDIR
 	info "Updating remote package list..."
 	list_update_remote
 	clear_line
@@ -779,8 +773,6 @@ function pkg_update_local {
 
 # Various information related to a package
 function pkg_info {
-	cd $PDIR
-
 	check_valid $1
 
 	# Fetch the infos
@@ -843,6 +835,8 @@ function pkg_log {
 ##
 ## Now what shall we do...
 ##
+
+cd $PDIR || die "Cannot cd $PDIR"
 
 # Note:
 # wrap foobar "$1" <- the "" are neccessary here, since $1 is optional (and therefore may be empty)
