@@ -58,7 +58,19 @@ for conf_origin in 0 1; {
 	echo "## GIT_USE_ORIGIN=$conf_origin"
 	echo "GIT_USE_ORIGIN=$conf_origin" >> $test_home/.pkg.conf
 	for repo in ra ra-bare; {
-		source $tests/addremove
+		file=${repo%-*}
+		if [[ $repo == *-bare ]] {
+			echo "## bare repository"
+			complement=$file
+		} else {
+			echo "## non-bare repository"
+			complement=${repo}-bare
+		}
+		source $tests/add
+		cd $test_pdir/$repo
+		source $tests/push
+		cd $test_pdir
+		source $tests/remove
 	}
 }
 
