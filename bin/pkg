@@ -338,11 +338,11 @@ function list_update_remote {
 	typeset -i ret=0
 	export PDIR
 	if [[ $PKG_PROTO == 'ssh' ]] {
-		ssh $PKG_USER@$PKG_HOST "PDIR='$PDIR' $PKGLIST_PATH $PKG_PATH" > $tmpfile || ret=$?
+		ssh $PKG_USER@$PKG_HOST "PDIR='$PDIR' $PKGLIST_PATH $PKG_PATH" > $tmpfile
 	} elif [[ $PKG_PROTO == 'file' ]] {
-		$PKGLIST_PATH $PKG_PATH > $tmpfile || ret=$?
+		$PKGLIST_PATH $PKG_PATH > $tmpfile
 	}
-	if (( ret == 0 )) {
+	if [[ -n $(cat $tmpfile) ]] {
 		cp $tmpfile .list-remote
 	} else {
 		die "remote list update failed\n" \
