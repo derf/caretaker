@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
-setopt err_exit
 unset -m 'GIT_*'
+setopt err_exit
 
 trap "print -P '\n%N:%i: %B%F{red}Test faild!%F{default}%b'" ZERR
 
