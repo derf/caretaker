@@ -675,14 +675,12 @@ function pkg_add {
 	check_valid $1
 	info "Retrieving package $1...\n"
 	vcs_add $1 || return 255
-	cd $1      || return 255
 	global_hook $1 post-add
 }
 
 function pkg_push {
 	check_installed $1
 	check_valid $1
-	cd $PDIR/$1
 	if list_incoming $1; then
 		clear_line
 		info "Pushing $1\n"
@@ -694,10 +692,9 @@ function pkg_push {
 
 function pkg_remove {
 	check_installed $1
-	cd $PDIR/$1
-	if [[ -r priority ]] {
-		if (( $(cat priority) > 3 )) {
-			confirm_no "Package '$1' is $(real_priority $(cat priority)). Really remove?" || return
+	if [[ -r $PDIR/$1/priority ]] {
+		if (( $(cat $PDIR/$1/priority) > 3 )) {
+			confirm_no "Package '$1' is $(real_priority $(cat $PDIR/$1/priority)). Really remove?" || return
 		}
 	}
 	global_hook $1 pre-remove
@@ -708,7 +705,6 @@ function pkg_remove {
 function pkg_upgrade {
 	check_installed $1
 	check_valid $1
-	cd $PDIR/$1
 	if [[ $(list_type $1) != $(list_type_local $1) ]] {
 		clear_line
 		warn "Incompatible systems. Please reinstall: $1\n"
@@ -744,7 +740,6 @@ function pkg_list {
 function pkg_status {
 	typeset vcs_status
 	check_installed $1
-	cd $PDIR/$1
 	vcs_status=$(PAGER='' vcs_status $1)
 	if [[ -n $vcs_status && $(echo $vcs_status | tail -n 1) != 'nothing to commit (working directory clean)' ]] {
 		clear_line
@@ -755,12 +750,11 @@ function pkg_status {
 
 function pkg_refresh {
 	check_installed $1
-	cd $PDIR/$1
 	global_hook $1 pre-update
-	if [[ -r Makefile ]] {
+	if [[ -r $PDIR/$1/Makefile ]] {
 		wrap_info $1
 		info "Cleaning build diroctery\n"
-		make clean
+		make -C $PDIR/$1 clean
 	}
 	global_hook $1 post-update
 }
@@ -838,7 +832,6 @@ function pkg_info {
 
 function pkg_log {
 	check_installed $1
-	cd $PDIR/$1
 	vcs_log $1
 }
 
