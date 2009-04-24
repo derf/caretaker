@@ -70,7 +70,7 @@ function clear_line {
 }
 
 # Read local configuration
-if [[ -f $HOME/.pkg.conf ]] {
+if [[ -r $HOME/.pkg.conf ]] {
 	source $HOME/.pkg.conf
 }
 
