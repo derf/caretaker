@@ -298,7 +298,7 @@ function vcs_fix_origin {
 	vcs_setup $1
 	if [[ ! -r $GIT_DIR/remotes/origin && ! -r $GIT_DIR/refs/remotes/origin/HEAD ]] {
 		fgrep '[remote "origin"]' $GIT_DIR/config &> /dev/null ||
-			git remote add origin $PKG_ROOT/${PWD:t}
+			git remote add origin $PKG_ROOT/$1
 	}
 }
 
