@@ -213,13 +213,13 @@ function progress {
 			(( j > 0 )) && output+=$2
 		}
 	}
-	clear_line
 	c=$(( currentper/5 ))
 	a=$(( 20-c ))
 	output+="${c_info}$desc${c_reset} ["
 	item $c '='
 	item $a ' '
 	output+="] $currentper% $desc2"
+	clear_line
 	echo -ne $output
 }
 
