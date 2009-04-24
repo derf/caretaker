@@ -443,7 +443,7 @@ function global_hook {
 			genocide_collected $1
 			checklinks -r
 			list_package_remove $1
-			update_provides $1 'remove'
+			update_provides $1
 		;;
 	esac
 	(( $+functions[pkg_hook_$2] )) && pkg_hook_$2 $1
@@ -619,11 +619,8 @@ function genocide_collected {
 
 function update_provides {
 	typeset package
-	[[ -d $PDIR/$1/provides ]] || return
-	cd $PDIR/$1/provides
-	for package in *; {
+	for package in $PDIR/$1/provides/*(N:t); {
 		if [[ -d $PDIR/$package ]] {
-			[[ $2 = 'remove' ]] && rm -r $package
 			triggers+=$package
 		}
 	}
