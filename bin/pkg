@@ -642,13 +642,11 @@ function wrap {
 	typeset arg=$2
 	typeset progress=$3
 	typeset i
-	typeset -i wrapped all current
+	typeset -i all current
 
 	if [[ -n $2 ]] {
-		wrapped=0
 		$function $2
 	} else {
-		wrapped=1
 		function wrap_info {
 			clear_line
 			info "$1: "
