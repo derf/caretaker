@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-pkg - Package maintenance utility
+pkg - distributed dotfile and script manager
 
 =head1 SYNOPSIS
 

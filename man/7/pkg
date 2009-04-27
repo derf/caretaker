@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-pkg - Package maintenance utility, package format
+pkg - distributed dotfile and script manager, package format
 
 =head1 INTRO
 
