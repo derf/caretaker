@@ -159,18 +159,24 @@ if [[ $PKG_PROTO == 'ssh' ]] {
 
 : ${PKGLIST_PATH:=$PKG_PATH/pkglist}
 
-debug "Running zsh v$ZSH_VERSION"
-debug "--- settings ---"
-debug "  PKG_ROOT      '$PKG_ROOT'"
-debug "  PKG_PROTO:    '$PKG_PROTO'"
-debug "  PKG_USER:     '$PKG_USER'"
-debug "  PKG_HOST:     '$PKG_HOST'"
-debug "  PKGLIST_PATH: '$PKGLIST_PATH'"
-debug "  PDIR:         '$PDIR'"
-debug "  CL_OPTIONS:   '$CL_OPTIONS'"
-debug "  SILENT:       '$SILENT'"
-debug "  AUTOUPDATE:   '$AUTOUPDATE'"
-debug "  GIT_USE_ORIGIN: '$GIT_USE_ORIGIN'"
+if ((DEBUG)) {
+	info "pkg: running in debug mode. Infos follow:\n"
+	echo "--- running ---"
+	echo "  zsh           $ZSH_VERSION"
+	echo "  git           ${${(z)$(git --version)}[3]}"
+	echo "  pkg           ?"
+	echo "--- settings ---"
+	echo "  PKG_ROOT      $PKG_ROOT"
+	echo "  PKG_PROTO     $PKG_PROTO"
+	echo "  PKG_USER      $PKG_USER"
+	echo "  PKG_HOST      $PKG_HOST"
+	echo "  PKGLIST_PATH  $PKGLIST_PATH"
+	echo "  PDIR          $PDIR"
+	echo "  CL_OPTIONS    $CL_OPTIONS"
+	echo "  SILENT        $SILENT"
+	echo "  AUTOUPDATE    $AUTOUPDATE"
+	echo "  GIT_USE_ORIGIN $GIT_USE_ORIGIN"
+}
 
 ##
 ## Ask the user for confirmation
