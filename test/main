@@ -15,14 +15,14 @@ test_home=$(mktemp -dt pkghome.XXXXXX)
 
 cat << meow
 test directories:
-	PDIR = $test_pdir
+	PKG_DIR = $test_pdir
 	PKG_ROOT = $test_proot
 	HOME = $test_home
 meow
 
 source $tests/setup
 
-echo "# bootstrapping PDIR"
+echo "# bootstrapping PKG_DIR"
 cd $test_home
 export HOME=$test_home
 $test_proot/core/include/bootstrap $test_proot $test_pdir

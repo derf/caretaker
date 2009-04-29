@@ -58,7 +58,7 @@ function say {
 }
 
 function check_installed {
-	[[ -n $1 && -d $PDIR/$1 ]] || die "Package not installed: '$1'\n"
+	[[ -n $1 && -d $PKG_DIR/$1 ]] || die "Package not installed: '$1'\n"
 }
 
 function check_valid {
@@ -84,7 +84,7 @@ while [[ $1 == --* ]] {
 		--auto-update) AUTOUPDATE=1 ;;
 		--no-auto-update) AUTOUPDATE=0 ;;
 		--checklinks-options) CL_OPTIONS+=$2; shift ;;
-		--packagedir) PDIR=$2; shift ;;
+		--packagedir) PKG_DIR=$2; shift ;;
 		--packageroot) PKG_ROOT=$2; shift ;;
 		*) die "Unknown argument: '$1'\n" ;;
 	esac
@@ -96,14 +96,21 @@ shift
 
 # Default values... or not
 [[ -n $PKG_ROOT ]] || die "No PKG_ROOT specified. Please edit ~/.pkg.conf\n"
-: ${PDIR:="$HOME/packages"}
+: ${PKG_DIR:="$HOME/packages"}
 : ${CL_OPTIONS:=-q}
 : ${SILENT=0}
 : ${DEBUG=0}
 : ${AUTOUPDATE=1}
 : ${GIT_USE_ORIGIN=1}
-export PDIR
+export PKG_DIR
 export PKG_ROOT
+
+# Legacy crap (XXX remove before 1.0 release)
+if [[ -n $PDIR ]] {
+	warn "LEGACY WARNING: use PKG_DIR instead of PDIR (fix your config)\n"
+	PKG_DIR=$PDIR
+	unset PDIR
+}
 
 # Avoid calling debug without debug mode... just in case one needs more speed
 if (( !DEBUG )) {
@@ -125,8 +132,8 @@ if (( SILENT )) {
 ## Warn otherwise
 ##
 
-if [[ ! -d $PDIR ]] {
-	die "Error: Package directory '$PDIR' not found\n"
+if [[ ! -d $PKG_DIR ]] {
+	die "Error: Package directory '$PKG_DIR' not found\n"
 }
 
 
@@ -171,7 +178,7 @@ if ((DEBUG)) {
 	echo "  PKG_USER      $PKG_USER"
 	echo "  PKG_HOST      $PKG_HOST"
 	echo "  PKGLIST_PATH  $PKGLIST_PATH"
-	echo "  PDIR          $PDIR"
+	echo "  PKG_DIR       $PKG_DIR"
 	echo "  CL_OPTIONS    $CL_OPTIONS"
 	echo "  SILENT        $SILENT"
 	echo "  AUTOUPDATE    $AUTOUPDATE"
@@ -232,13 +239,13 @@ function progress {
 ## VCS Wrappers
 
 function vcs_setup {
-	export GIT_DIR=$PDIR/$1/.git
-	export GIT_WORK_TREE=$PDIR/$1
+	export GIT_DIR=$PKG_DIR/$1/.git
+	export GIT_WORK_TREE=$PKG_DIR/$1
 }
 
 function vcs_to_list {
 	vcs_setup $1
-	if [[ -d $PDIR/$1/.git ]] {
+	if [[ -d $PKG_DIR/$1/.git ]] {
 		echo -n "$1 git "
 		echo ${$(git log -n 1 master)[2]}
 	} else {
@@ -312,19 +319,19 @@ function vcs_fix_origin {
 ## List stuff
 
 function list_is_installed {
-	grep "^$1 " $PDIR/.list &> /dev/null
+	grep "^$1 " $PKG_DIR/.list &> /dev/null
 }
 
 function list_exists {
-	grep "^$1 " $PDIR/.list-remote &> /dev/null
+	grep "^$1 " $PKG_DIR/.list-remote &> /dev/null
 }
 
 function list_packages_local {
-	cut -d ' ' -f 1 $PDIR/.list
+	cut -d ' ' -f 1 $PKG_DIR/.list
 }
 
 function list_packages_remote {
-	cut -d ' ' -f 1 $PDIR/.list-remote
+	cut -d ' ' -f 1 $PKG_DIR/.list-remote
 }
 
 function list_incoming {
@@ -332,19 +339,19 @@ function list_incoming {
 }
 
 function list_type {
-	echo ${$(grep "^$1 " $PDIR/.list-remote)[2]}
+	echo ${$(grep "^$1 " $PKG_DIR/.list-remote)[2]}
 }
 
 function list_type_local {
-	echo ${$(grep "^$1 " $PDIR/.list)[2]}
+	echo ${$(grep "^$1 " $PKG_DIR/.list)[2]}
 }
 
 function list_update_remote {
 	typeset tmpfile=$(mktemp -t pkglist.XXXXXX)
 	typeset -i ret=0
-	export PDIR
+	export PKG_DIR
 	if [[ $PKG_PROTO == 'ssh' ]] {
-		ssh $PKG_USER@$PKG_HOST "PDIR='$PDIR' $PKGLIST_PATH $PKG_PATH" > $tmpfile
+		ssh $PKG_USER@$PKG_HOST "PKG_DIR='$PKG_DIR' $PKGLIST_PATH $PKG_PATH" > $tmpfile
 	} elif [[ $PKG_PROTO == 'file' ]] {
 		$PKGLIST_PATH $PKG_PATH > $tmpfile
 	}
@@ -354,7 +361,7 @@ function list_update_remote {
 		die "remote list update failed\n" \
 			"-- note --\n" \
 			"There were recent changes in pkg involving the package root\n\n" \
-			"You might want to copy the pkglist script ($PDIR/core/include/pkglist)\n" \
+			"You might want to copy the pkglist script ($PKG_DIR/core/include/pkglist)\n" \
 			"into the package root, so that it's available as\n" \
 			"$PKG_HOST:$PKG_PATH/pkglist\n"
 			"alternatively, set PKGLIST_PATH to the correct value (see pkg.conf(5))\n"
@@ -363,36 +370,36 @@ function list_update_remote {
 }
 
 function list_update_local {
-	typeset all=${#$(echo $PDIR/*(/))}
+	typeset all=${#$(echo $PKG_DIR/*(/))}
 	typeset -i current=0
 	typeset i
-	rm -f $PDIR/.list
+	rm -f $PKG_DIR/.list
 	for package in *(-/); {
 		(( current++ ))
 		progress $current $all 'Updating package list' $package
-		vcs_to_list $package >> $PDIR/.list
+		vcs_to_list $package >> $PKG_DIR/.list
 	}
 }
 
 function list_package_update {
 	typeset list
-	list=$(grep -v "^$1 " $PDIR/.list)
-	echo $list > $PDIR/.list
-	vcs_to_list $1 >> $PDIR/.list
+	list=$(grep -v "^$1 " $PKG_DIR/.list)
+	echo $list > $PKG_DIR/.list
+	vcs_to_list $1 >> $PKG_DIR/.list
 }
 
 function list_package_remove {
 	typeset list
-	list=$(grep -v "^$1 " $PDIR/.list)
-	echo $list > $PDIR/.list
+	list=$(grep -v "^$1 " $PKG_DIR/.list)
+	echo $list > $PKG_DIR/.list
 }
 
 function list_version_local {
-	echo ${$(grep "^$1 " $PDIR/.list)[3]}
+	echo ${$(grep "^$1 " $PKG_DIR/.list)[3]}
 }
 
 function list_version_remote {
-	echo ${$(grep "^$1 " $PDIR/.list-remote)[3]}
+	echo ${$(grep "^$1 " $PKG_DIR/.list-remote)[3]}
 }
 
 
@@ -413,15 +420,15 @@ function real_priority {
 function exec_hook {
 	typeset package=$1
 	typeset hook=$2
-	if [[ -r $PDIR/$package/hooks/$hook ]] {
+	if [[ -r $PKG_DIR/$package/hooks/$hook ]] {
 		info "$package: executing hook $hook\n"
-		cd $PDIR/$package
+		cd $PKG_DIR/$package
 		(source hooks/$hook)
 	}
 }
 
 function global_hook {
-	cd $PDIR/$1
+	cd $PKG_DIR/$1
 	case $2 in
 		post-add)
 			exec_hook $1 post-add
@@ -460,13 +467,13 @@ function check_prereqs {
 	typeset -a -U install maybe_install
 	typeset warn info i
 	typeset package=$1
-	[[ -r $PDIR/$package/prereqs ]] || return 0
-	cd $PDIR/$package
+	[[ -r $PKG_DIR/$package/prereqs ]] || return 0
+	cd $PKG_DIR/$package
 	wrap_info $1
 	info "checking prerequisites\n"
 
 	function is_installed {
-		[[ -d $PDIR/$1 ]]
+		[[ -d $PKG_DIR/$1 ]]
 	}
 	function perlmodule {
 		perl -M$1 < /dev/null 2> /dev/null
@@ -540,7 +547,7 @@ function check_prereqs {
 # Write a package's documentation to .collected
 # and symlink its binaries from ~/bin
 function populate_collected {
-	cd $PDIR/$1 || return
+	cd $PKG_DIR/$1 || return
 	typeset -i bins=0 bino=0 mans=0 mano=0
 	typeset i
 
@@ -550,7 +557,7 @@ function populate_collected {
 		section=${man:h:t}
 		manpage=${man:t}
 		if podchecker man/$section/$manpage &> /dev/null; then
-			pod2man -u -s $section -c "$1 package" -r $HOME man/$section/$manpage > $PDIR/.collected/man/man$section/$manpage.$section
+			pod2man -u -s $section -c "$1 package" -r $HOME man/$section/$manpage > $PKG_DIR/.collected/man/man$section/$manpage.$section
 			say -n "+"
 			(( mans++ ))
 		else
@@ -560,7 +567,7 @@ function populate_collected {
 	}
 	for file in bin/*(N); {
 		if podchecker $file &> /dev/null; then
-			pod2man -u $file > $PDIR/.collected/man/man1/${file:t}.1
+			pod2man -u $file > $PKG_DIR/.collected/man/man1/${file:t}.1
 			say -n "+"
 			(( bins++ ))
 		else
@@ -584,12 +591,12 @@ function populate_collected {
 	}
 	for file in bin/*(-*N); {
 		if [[ -L $HOME/$file || ! -e $HOME/$file ]] {
-			if [[ $(readlink $HOME/$file) != (../${PDIR//$HOME\/}|$PDIR)/$1/$file ]] {
+			if [[ $(readlink $HOME/$file) != (../${PKG_DIR//$HOME\/}|$PKG_DIR)/$1/$file ]] {
 				rm -f $HOME/$file
-				if [[ $PDIR == ${HOME}* ]] {
-					ln -s ../${PDIR//$HOME\/}/$1/$file $HOME/$file
+				if [[ $PKG_DIR == ${HOME}* ]] {
+					ln -s ../${PKG_DIR//$HOME\/}/$1/$file $HOME/$file
 				} else {
-					ln -s $PDIR/$1/$file $HOME/$file
+					ln -s $PKG_DIR/$1/$file $HOME/$file
 				}
 			}
 		} else {
@@ -602,22 +609,22 @@ function populate_collected {
 # Assuming there are no packages with colliding files
 function genocide_collected {
 	typeset i
-	cd $PDIR/$1 || return
+	cd $PKG_DIR/$1 || return
 	wrap_info $1
 	info "Removing documentation"
 	for man in man/*/*(N); {
 		section=${man:h:t}
 		manual=${man:t}
-		if [[ -e $PDIR/.collected/man/man$section/$manual.$section ]] {
-			rm $PDIR/.collected/man/man$section/$manual.$section
+		if [[ -e $PKG_DIR/.collected/man/man$section/$manual.$section ]] {
+			rm $PKG_DIR/.collected/man/man$section/$manual.$section
 		}
 	}
 	for file in bin/*(N); {
-		rm -f $PDIR/.collected/man/man1/${file:t}.1
+		rm -f $PKG_DIR/.collected/man/man1/${file:t}.1
 	}
 	clear_line
 	for file in bin/*(-*N); {
-		if [[ $(readlink $HOME/$file) == (../${PDIR//$HOME\/}|$PDIR)/$1/$file ]] {
+		if [[ $(readlink $HOME/$file) == (../${PKG_DIR//$HOME\/}|$PKG_DIR)/$1/$file ]] {
 			rm -f $HOME/$file
 		}
 	}
@@ -625,8 +632,8 @@ function genocide_collected {
 
 function update_provides {
 	typeset package
-	for package in $PDIR/$1/provides/*(N:t); {
-		if [[ -d $PDIR/$package ]] {
+	for package in $PKG_DIR/$1/provides/*(N:t); {
+		if [[ -d $PKG_DIR/$package ]] {
 			triggers+=$package
 		}
 	}
@@ -657,7 +664,7 @@ function wrap {
 		[[ -n $progress ]] && all=$(list_packages_local | wc -l)
 		[[ -n $progress ]] && current=0
 		for package in *(-/); {
-			cd $PDIR
+			cd $PKG_DIR
 			(( current++ ))
 			[[ -n $progress ]] && progress $current $all $progress $package
 			$function $package
@@ -671,7 +678,7 @@ function wrap {
 ##
 
 function pkg_add {
-	if [[ -d $PDIR/$1 ]] {
+	if [[ -d $PKG_DIR/$1 ]] {
 		info "Package '$1' is already installed!\n"
 		exit 1
 	}
@@ -695,13 +702,13 @@ function pkg_push {
 
 function pkg_remove {
 	check_installed $1
-	if [[ -r $PDIR/$1/priority ]] {
-		if (( $(cat $PDIR/$1/priority) > 3 )) {
-			confirm_no "Package '$1' is $(real_priority $(cat $PDIR/$1/priority)). Really remove?" || return
+	if [[ -r $PKG_DIR/$1/priority ]] {
+		if (( $(cat $PKG_DIR/$1/priority) > 3 )) {
+			confirm_no "Package '$1' is $(real_priority $(cat $PKG_DIR/$1/priority)). Really remove?" || return
 		}
 	}
 	global_hook $1 pre-remove
-	rm -rf $PDIR/$1
+	rm -rf $PKG_DIR/$1
 	info "Package removed.\n"
 }
 
@@ -754,8 +761,8 @@ function pkg_status {
 function pkg_refresh {
 	check_installed $1
 	global_hook $1 pre-update
-	if [[ -r $PDIR/$1/Makefile ]] (
-		cd $PDIR/$1
+	if [[ -r $PKG_DIR/$1/Makefile ]] (
+		cd $PKG_DIR/$1
 		wrap_info $1
 		info "Cleaning build diroctery\n"
 		make clean
@@ -844,7 +851,7 @@ function pkg_log {
 ## Now what shall we do...
 ##
 
-cd $PDIR || die "Cannot cd $PDIR"
+cd $PKG_DIR || die "Cannot cd $PKG_DIR"
 
 # Note:
 # wrap foobar "$1" <- the "" are neccessary here, since $1 is optional (and therefore may be empty)

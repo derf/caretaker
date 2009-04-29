@@ -26,29 +26,29 @@ guaranteed, though I will do my best.
 =head1 THE BASICS
 
 pkg requires two directories in you home directory. B<~/bin> contains
-symlinks to the executables shipped with your packages, and $PDIR
+symlinks to the executables shipped with your packages, and $PKG_DIR
 (B<~/packages> by default, but *theoretically* configurable) contains the
 packages themselves. B<~/bin> may also contain normal executables; pkg will
 not overwrite existing files.
 
 =head1 THE PACKAGE DIRECTORY
 
-$PDIR is the core of all this stuff. Its main use is storing the packages.
+$PKG_DIR is the core of all this stuff. Its main use is storing the packages.
 There is one directory for each installed package, as created by B<git clone>.
-$PDIR holds two special files: B<.list> and B<.list-remote>. For
+$PKG_DIR holds two special files: B<.list> and B<.list-remote>. For
 an explanation about these files, see L</"THE PACKAGE LIST"> below.
 It also contains a special directory, F<.collected> - see L</"COLLECTED PACKAGE FILES">.
 
 =head2 NOTE
 
-All directories in $PDIR must be valid git repositories which are not in the
+All directories in $PKG_DIR must be valid git repositories which are not in the
 state of 'initial commit'. Dotfiles (directories starting with a .) are exempt
 from this, they will be ignored by pkg.
 
 =head1 THE PACKAGE ROOT
 
 The packages_root, in pkg referred to as $PKG_ROOT, is structured just like
-the packages directory $PDIR, except that it neither contains .list nor
+the packages directory $PKG_DIR, except that it neither contains .list nor
 .list-remote. The packages root is the central point where pkg fetches
 packages from and pushes packages to.
 
@@ -190,7 +190,7 @@ B<recommend package>.
 
 =head1 HOOKS
 
-Hooks are little zsh-snippets residing in $PDIR/hooks
+Hooks are little zsh-snippets residing in $PKG_DIR/hooks
 which are sourced from within pkg whenever needed.
 
 Currently, the following hooks exist:
@@ -215,7 +215,7 @@ Sourced before a package is removed (pkg remove/pkg delete)
 
 =head1 COLLECTED PACKAGE FILES
 
-These files reside in F<$PDIR/.collected> (subject to change).
+These files reside in F<$PKG_DIR/.collected> (subject to change).
 
 The directory is somewhat similar to F<~/bin> - it is automatically populated
 by pkg. However, this one does not contain symlinks.
