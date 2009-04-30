@@ -136,11 +136,6 @@ Contains configuration vars
 
 =back
 
-=head1 WARNING
-
-This is early-beta software. No backwards compatibility guaranteed.
-Please refer to pkg(7)
-
 =head1 EXAMPLES
 
 =over
