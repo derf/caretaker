@@ -14,6 +14,7 @@ for repo in ra rb rc; (
 	mkdir -p man/2
 	echo "=head1 WASTED SPACE\n\nhuhu" > man/2/$repo
 	chmod 755 bin/$repo
+	echo 'touch ~/prereq_ok_'$repo > prereqs
 	git add .
 	git commit -m 'initial commit'
 	cd ..

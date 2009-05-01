@@ -68,6 +68,7 @@ for conf_origin in 0 1; {
 			complement=${repo}-bare
 		}
 		source $tests/add
+		source $tests/prereqs
 		cd $test_pdir/$repo
 		source $tests/push
 		cd $test_pdir
