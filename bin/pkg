@@ -171,7 +171,7 @@ if ((DEBUG)) {
 	echo "--- running ---"
 	echo "  zsh           $ZSH_VERSION"
 	echo "  git           ${${(z)$(git --version)}[3]}"
-	echo "  pkg           ?"
+	echo "  pkg           ${${(z)$(git --git-dir=$HOME/packages/core/.git/ log -n 1)}[2]}"
 	echo "--- settings ---"
 	echo "  PKG_ROOT      $PKG_ROOT"
 	echo "  PKG_PROTO     $PKG_PROTO"
