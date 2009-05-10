@@ -484,15 +484,12 @@ function check_prereqs {
 	function offer_install {
 		install+=$1
 	}
-	function require {
+	function require depend {
 		if [[ $1 == 'package' ]] {
 			is_installed $2 || offer_install $2
 		} else {
 			$* || warn+="Requirement failed: $*\n"
 		}
-	}
-	function depend {
-		require $*
 	}
 
 	function suggest {
