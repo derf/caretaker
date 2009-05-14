@@ -247,10 +247,13 @@ function vcs_to_list {
 }
 
 function vcs_add {
-	case $(list_type $1) in
-		git)   git clone "$PKG_ROOT/$1" ;;
-		*)     die "$1: Cannot handle repository format '$(list_type $1)'\n" ;;
-	esac
+	if [[ $(list_type $1) == git ]] {
+		git clone "$PKG_ROOT/$1"
+		vcs_setup $1
+		git config push.default matching
+	} else {
+		 die "$1: Cannot handle repository format '$(list_type $1)'\n"
+	}
 }
 
 function vcs_log {
