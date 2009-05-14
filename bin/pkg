@@ -28,7 +28,7 @@ c_reset=$'\e[0m'
 
 function debug {
 	typeset func line
-	if (( ${#*} >= 3 )) {
+	if (( $# >= 3 )) {
 		func=$1
 		line=$2
 		shift 2
