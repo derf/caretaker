@@ -105,13 +105,6 @@ shift
 export PKG_DIR
 export PKG_ROOT
 
-# Legacy crap (XXX remove before 1.0 release)
-if [[ -n $PDIR ]] {
-	warn "LEGACY WARNING: use PKG_DIR instead of PDIR (fix your config)\n"
-	PKG_DIR=$PDIR
-	unset PDIR
-}
-
 # Avoid calling debug without debug mode... just in case one needs more speed
 if (( !DEBUG )) {
 	unalias debug
