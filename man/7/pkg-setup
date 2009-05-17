@@ -1,0 +1,23 @@
+=pod
+
+=head1 NAME
+
+pkg - Package root setup
+
+=head1 PACKAGE ROOT
+
+First, you'll need to create a root directory (from now on PKG_ROOT) on the
+server which shall from now on host all your packages.
+Then you need to put the pkg git repository into F<PKG_ROOT/core> - it's recommended
+to do this via git clone --bare.
+
+Copy the pkglist script (include/pkglist) to F<PKG_ROOT/pkglist>.
+
+Now you can add your own packages as git repos in PKG_ROOT.
+
+To use pkg with your packages on a machine, download and execute
+the bootstrap script (include/bootstrap).
+
+=cut
+
+vim:ft=pod
