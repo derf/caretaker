@@ -1,0 +1,9 @@
+pkg - distributed dotfile and script manager
+
+Requires:
+ - zsh
+ - git
+ - perl v5.8 or newer
+
+Recommends:
+ - perl v5.10 or newer
