@@ -1,0 +1,9 @@
+pkg 1.0 - Wed May 20 2009
+
+    * git as backend
+    * add, pull, push, remove
+    * prereqs support
+    * ~/bin symlinking
+    * automatic manpage creaton
+    * hooks
+    * bacis provides system
