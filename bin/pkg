@@ -70,7 +70,9 @@ function clear_line {
 }
 
 # Read local configuration
-if [[ -r $HOME/.pkg.conf ]] {
+if [[ -r ${XDG_CONFIG_HOME-$HOME/.config/pkg/pkg.conf} ]] {
+	source ${XDG_CONFIG_HOME-$HOME/.config/pkg/pkg.conf}
+} elif [[ -r $HOME/.pkg.conf ]] {
 	source $HOME/.pkg.conf
 }
 
