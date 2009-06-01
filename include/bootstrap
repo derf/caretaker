@@ -52,7 +52,7 @@ echo 'Writing pkg.conf'
 mkdir -p $XDG_CONFIG_HOME/pkg
 cat > $XDG_CONFIG_HOME/pkg/pkg.conf <<- flurbl
 	PKG_ROOT='$PKG_ROOT'
-	PKG_DIR=\"${PKG_DIR/$HOME/\$HOME}\"
+	PKG_DIR="${PKG_DIR/$HOME/\$HOME}"
 flurbl
 
 echo 'Installing core package'
