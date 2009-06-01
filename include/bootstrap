@@ -7,6 +7,7 @@
 
 typeset -i rcempty=0
 typeset PKG_ROOT PKG_DIR default_path='~/packages'
+: ${XDG_CONFIG_HOME=$HOME/.config}
 
 if [[ -n $1 ]] {
 	PKG_ROOT=$1
@@ -48,8 +49,11 @@ git clone $PKG_ROOT/core
 cd core || exit 1
 
 echo 'Writing pkg.conf'
-echo "PKG_ROOT='$PKG_ROOT'" > ~/.pkg.conf
-echo "PKG_DIR=\"${PKG_DIR/$HOME/\$HOME}\"" >> ~/.pkg.conf
+mkdir -p $XDG_CONFIG_HOME/pkg
+cat > $XDG_CONFIG_HOME/pkg/pkg.conf <<- flurbl
+	PKG_ROOT='$PKG_ROOT'
+	PKG_DIR=\"${PKG_DIR/$HOME/\$HOME}\"
+flurbl
 
 echo 'Installing core package'
 rehash
