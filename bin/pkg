@@ -309,7 +309,7 @@ function vcs_status {
 function vcs_fix_origin {
 	vcs_setup $1
 	if [[ ! -r $GIT_DIR/remotes/origin && ! -r $GIT_DIR/refs/remotes/origin/HEAD ]] {
-		fgrep '[remote "origin"]' $GIT_DIR/config &> /dev/null ||
+		fgrep -q '[remote "origin"]' $GIT_DIR/config ||
 			git remote add origin $PKG_ROOT/$1
 	}
 }
@@ -318,11 +318,11 @@ function vcs_fix_origin {
 ## List stuff
 
 function list_is_installed {
-	grep "^$1 " $PKG_DIR/.list &> /dev/null
+	grep -q "^$1 " $PKG_DIR/.list
 }
 
 function list_exists {
-	grep "^$1 " $PKG_DIR/.list-remote &> /dev/null
+	grep -q "^$1 " $PKG_DIR/.list-remote
 }
 
 function list_packages_local {
