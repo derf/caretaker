@@ -5,6 +5,7 @@
 # This way, I don't have to check for zsh somewhere in the script,
 # and also have an excuse for using zsh here :P
 
+setopt err_exit
 typeset -i rcempty=0
 typeset PKG_ROOT PKG_DIR default_path='~/packages'
 : ${XDG_CONFIG_HOME=$HOME/.config}
@@ -46,7 +47,7 @@ fi
 echo 'Fetching the core package...'
 cd $PKG_DIR
 git clone $PKG_ROOT/core
-cd core || exit 1
+cd core
 
 echo 'Writing pkg.conf'
 mkdir -p $XDG_CONFIG_HOME/pkg
