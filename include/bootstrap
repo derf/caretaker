@@ -6,6 +6,7 @@
 # and also have an excuse for using zsh here :P
 
 setopt err_exit
+trap "print -P '\n%N:%i: bootstrap failed ($?)'" ZERR
 typeset -i rcempty=0
 typeset PKG_ROOT PKG_DIR default_path='~/packages'
 : ${XDG_CONFIG_HOME=$HOME/.config}
