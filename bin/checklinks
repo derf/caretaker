@@ -63,10 +63,10 @@ sub check_symlink {
 		symlink($dst, "$base/$src");
 		print_format('created', $src, $dst, 'cyan');
 	}
-	elsif (readlink("$base/$src") eq $dst) {
+	elsif (-l "$base/$src" and readlink("$base/$src") eq $dst) {
 		print_format('ok', $src, $dst, 'green') unless $quiet;
 	}
-	elsif (readlink("$base/$src") eq "$base/$dst") {
+	elsif (-l "$base/$src" and readlink("$base/$src") eq "$base/$dst") {
 		print_format('absolute', $src, $dst, 'yellow') unless $quiet;
 	}
 	elsif (not -l "$base/$src" and -e "$base/$src") {
