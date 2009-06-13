@@ -25,7 +25,7 @@ function _pkg_all () {
 
 function _pkg_notinstalled () {
 	_wanted package expl 'remote package' \
-	compadd $(pkg list remote)
+	compadd $(pkg list not-installed)
 }
 
 function _pkg_args {
