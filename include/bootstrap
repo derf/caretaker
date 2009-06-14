@@ -69,3 +69,10 @@ if (( rcempty )) {
 	echo 'Removing empty zshrc'
 	rm ~/.zshrc
 }
+
+if [[ $PATH != *$HOME/bin* ]] {
+	cat <<- tac
+		Note: You may need to change your PATH to include ~/bin,
+		otherwise certain parts of pkg will not work.
+	tac
+}
