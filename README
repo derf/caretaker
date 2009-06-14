@@ -1,6 +1,6 @@
 pkg - distributed dotfile and script manager
 
-For setup: perldoc man/7/pkg-setup
+For setup: perldoc -F man/7/pkg-setup
 
 Requires:
  - zsh
