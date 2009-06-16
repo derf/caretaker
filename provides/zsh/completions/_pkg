@@ -10,7 +10,7 @@ typeset expl
 function _pkg_action () {
 	_wanted action expl 'action' \
 	compadd add install delete eval remove info list \
-	local-update log pull push remote-update refresh status update upgrade
+	log pull push refresh status update upgrade
 }
 
 function _pkg_installed () {
@@ -49,6 +49,10 @@ function _pkg_args {
 			list)
 				_wanted something expl 'list mode' \
 				compadd all local not-installed
+			;;
+			update)
+				_wanted mode expl 'update target' \
+				compadd local remote
 			;;
 			*)
 				_message 'no more arguments'

@@ -52,10 +52,6 @@ show remote packages which are not installed
 
 =back
 
-=item B<local-update>
-
-Update the local package list
-
 =item B<log> I<package>
 
 Show commit history for package
@@ -70,18 +66,14 @@ If no argument is given, pushes all installed packages
 Check prereqs and update symlinks of I<package>.
 If no argument is given, refreshs all installed packages
 
-=item B<remote-update>
-
-Update remote package list
-
 =item B<status> [ I<package> ]
 
 Check for local changes to the I<package>'s files.
 If no arguments is given, checks all installed packages
 
-=item B<update>
+=item B<update> [ B<local>|B<remote> ]
 
-Update local and remote package list
+Update local/remote package list (both if no argument is given)
 
 =item B<upgrade>|B<pull> [ I<package> ]
 

@@ -755,20 +755,16 @@ function pkg_refresh {
 }
 
 function pkg_update {
-	pkg_update_remote
-	pkg_update_local
-}
-
-function pkg_update_remote {
-	info "Updating remote package list..."
-	list_update_remote
-	clear_line
-}
-
-function pkg_update_local {
-	info "Updating local package list..."
-	list_update_local
-	clear_line
+	if [[ -z $1 || $1 == local ]] {
+		info "Updating local package list"
+		list_update_local
+		clear_line
+	}
+	if [[ -z $1 || $1 == remote ]] {
+		info "Updating remote package list"
+		list_update_remote
+		clear_line
+	}
 }
 
 function pkg_info {
@@ -839,14 +835,12 @@ case $action in
 	info) pkg_info $* ;;
 	install) pkg_add $* ;;
 	list) pkg_list $* ;;
-	local-update) pkg_update_local $* ;;
 	log) pkg_log $* ;;
 	push)
 		(( AUTOUPDATE )) && pkg_update
 		wrap pkg_push "$1" 'Pushing'
 	;;
 	refresh) wrap pkg_refresh "$1" 'Refreshing' ;;
-	remote-update) pkg_update_remote $* ;;
 	remove) pkg_remove $* ;;
 	status) wrap pkg_status "$1" 'Checking package status' ;;
 	update) pkg_update $* ;;
