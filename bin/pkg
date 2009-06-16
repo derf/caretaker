@@ -845,7 +845,7 @@ case $action in
 	status) wrap pkg_status "$1" 'Checking package status' ;;
 	update) pkg_update $* ;;
 	upgrade|pull)
-		(( AUTOUPDATE )) && pkg_update_remote
+		(( AUTOUPDATE )) && pkg_update remote
 		wrap pkg_upgrade "$1" 'Looking for updates'
 	;;
 	eval) eval $* ;;
