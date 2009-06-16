@@ -97,7 +97,6 @@ while [[ $1 == --* ]] {
 action=$1
 shift
 
-# Default values... or not
 [[ -n $PKG_ROOT ]] || die "No PKG_ROOT specified. Please edit ~/.pkg.conf\n"
 : ${PKG_DIR:="$HOME/packages"}
 : ${CL_OPTIONS:=-q}
@@ -123,10 +122,6 @@ if (( SILENT )) {
 	function clear_line {}
 }
 
-##
-## Make sure everything's sane
-## Warn otherwise
-##
 
 if [[ ! -d $PKG_DIR ]] {
 	die "Error: Package directory '$PKG_DIR' not found\n"
@@ -180,10 +175,6 @@ if ((DEBUG)) {
 	echo "  AUTOUPDATE    $AUTOUPDATE"
 	echo "  GIT_USE_ORIGIN $GIT_USE_ORIGIN"
 }
-
-##
-## Ask the user for confirmation
-##
 
 # Default reply: Yes
 function confirm_yes {
@@ -265,7 +256,7 @@ function vcs_log {
 	git log
 }
 
-function vcs_branch_master {
+function vcs_branch_is_master {
 	vcs_setup $1
 	typeset IFS=$'\n' branch line
 	for line in $(git branch); {
@@ -286,7 +277,7 @@ function vcs_pull {
 		vcs_fix_origin $1
 		git pull
 	} else {
-		vcs_branch_master $1 && git pull $PKG_ROOT/${PWD:t} master
+		vcs_branch_is_master $1 && git pull $PKG_ROOT/${PWD:t} master
 	}
 }
 
@@ -297,7 +288,7 @@ function vcs_push {
 		vcs_fix_origin $1
 		git push
 	} else {
-		vcs_branch_master $1 && git push $PKG_ROOT/${PWD:t} master
+		vcs_branch_is_master $1 && git push $PKG_ROOT/${PWD:t} master
 	}
 }
 
@@ -306,7 +297,6 @@ function vcs_status {
 	git status
 }
 
-# Set the correct origin
 function vcs_fix_origin {
 	vcs_setup $1
 	if [[ ! -r $GIT_DIR/remotes/origin && ! -r $GIT_DIR/refs/remotes/origin/HEAD ]] {
@@ -403,8 +393,7 @@ function list_version_remote {
 }
 
 
-# Return an understandable priority from the numeric one
-function real_priority {
+function priority_name {
 	case $1 in
 		6) echo 'essential' ;;
 		5) echo 'important' ;;
@@ -416,7 +405,6 @@ function real_priority {
 	esac
 }
 
-# Execute a hook
 function exec_hook {
 	typeset package=$1
 	typeset hook=$2
@@ -462,7 +450,6 @@ function global_hook {
 	(( $+functions[pkg_hook_$2] )) && pkg_hook_$2 $1
 }
 
-# Check dependencies, conflicts etc.
 function check_prereqs {
 	typeset -a -U install maybe_install
 	typeset warn info i
@@ -671,7 +658,7 @@ function wrap {
 }
 
 ##
-## Finally - the functions actually doing something
+## The "frontend" functions
 ##
 
 function pkg_add {
@@ -701,7 +688,7 @@ function pkg_remove {
 	check_installed $1
 	if [[ -r $PKG_DIR/$1/priority ]] {
 		if (( $(cat $PKG_DIR/$1/priority) > 3 )) {
-			confirm_no "Package '$1' is $(real_priority $(cat $PKG_DIR/$1/priority)). Really remove?" || return
+			confirm_no "Package '$1' is $(priority_name $(cat $PKG_DIR/$1/priority)). Really remove?" || return
 		}
 	}
 	global_hook $1 pre-remove
@@ -784,11 +771,9 @@ function pkg_update_local {
 	clear_line
 }
 
-# Various information related to a package
 function pkg_info {
 	check_valid $1
 
-	# Fetch the infos
 	typeset name=$1
 	typeset local_version=$(list_version_local $1)
 	typeset remote_version=$(list_version_remote $1)
@@ -799,7 +784,7 @@ function pkg_info {
 		cd $1
 		if [[ -r priority ]] {
 			priority=$(cat priority)
-			priority_name=$(real_priority $priority)
+			priority_name=$(priority_name $priority)
 		}
 		if [[ -d hooks ]] {
 			hooks=$(ls -m hooks)
@@ -843,10 +828,6 @@ function pkg_log {
 	vcs_log $1
 }
 
-
-##
-## Now what shall we do...
-##
 
 cd $PKG_DIR || die "Cannot cd $PKG_DIR"
 
