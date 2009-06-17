@@ -4,6 +4,8 @@ setopt err_exit
 
 trap "print -P '\n%N:%i: %B%F{red}Test faild!%F{default}%b'" ZERR
 
+source test/documentation
+
 function stringcmp {
 	diff -u <(echo $1) <(echo $2)
 }
