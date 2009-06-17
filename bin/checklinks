@@ -191,6 +191,15 @@ This is relative to the source. See L<path_resolution>(7)
 
 Lines beginning with an invalid symlink type will be ignored.
 
+Example:
+
+  # checklinks --parameter etc=packages/zsh
+  soft .zshrc $etc/rc
+  soft .zprofile $etc/profile
+  soft .zlogin $etc/login
+  soft .zlogout $etc/logout
+  soft .zshenv $etc/env
+
 =head1 BUGS
 
 There are no checks whether the symlink target actually exists.
