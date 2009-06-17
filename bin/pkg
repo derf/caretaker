@@ -771,8 +771,6 @@ function pkg_info {
 	check_valid $1
 
 	typeset name=$1
-	typeset local_version=$(list_version_local $1)
-	typeset remote_version=$(list_version_remote $1)
 	typeset repo_type=$(list_type $1)
 	typeset priority priority_name
 	typeset hooks makefile discription state
@@ -811,8 +809,8 @@ function pkg_info {
 	show_info 'Package' $name
 	show_info 'State' $state
 	[[ -n $priority ]] && show_info 'Priority' "$priority ($priority_name)"
-	show_info 'Local Version' $local_version
-	show_info 'Remote Version' $remote_version
+	show_info 'Local Version' $(list_version_local $1)
+	show_info 'Remote Version' $(list_version_remote $1)
 	show_info 'Repository Type' $repo_type
 	show_info 'Repository Size' $size
 	show_info 'Hooks' $hooks
