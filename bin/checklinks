@@ -163,6 +163,55 @@ and $etc will be set to $package/etc (like C<packages/core/etc>)
 
 =back
 
+=head1 OUTPUT
+
+Typical checklinks output might look like this:
+
+  ok        .zshrc          -> packages/zsh/etc/rc
+  ok        .zprofile       -> packages/zsh/etc/profile
+  absolute  .zlogin         -> packages/zsh/etc/login
+  created   .zlogout        -> packages/zsh/etc/logout
+  ok        .zshenv         -> packages/zsh/etc/env
+
+The first item is the status, the second the link source (as in, the link),
+the third the link target.
+
+The following status messages are possible:
+
+=over
+
+=item ok
+
+The link exists and points to the right file
+
+=item absolute (soft links only)
+
+The link exists and points to the right file, however it is an absolute link
+
+=item fixed (soft links only)
+
+The link pointed to the wrong file and has been corrected
+
+=item updated (hard links only)
+
+The source existed, but was not identical to the target. It has been deleted
+and replaced with a link to the target
+
+=item created
+
+The link did not exist and has been created
+
+=item EXISTS (soft links only)
+
+The source already exists, but is not a symlink
+
+=item no dest
+
+The link destination does not exist
+
+=back
+
+
 =head1 FILES
 
 The symlink definitions are read from the file F<.links> or F<links> in the
