@@ -168,7 +168,7 @@ Mark I<package> for installation
 =item B<depend> I<expression> | B<depend package> I<package>
 
 Execute expression and automatically warn if it fails.
-In case of B<require package>, automatically mark B<package> for installation
+In case of B<depend package>, automatically mark B<package> for installation
 if it isn't installed.
 If a B<depend> fails, pkg will inform the user about it and wait for confirmation
 
