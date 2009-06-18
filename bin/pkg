@@ -18,27 +18,9 @@ setopt extended_glob
 typeset -a -U triggers
 typeset -a CL_OPTIONS
 
-##
-## Internal functions for displaying stuff
-##
-
 c_info=$'\e[0;36m'
 c_error=$'\e[0;31m'
 c_reset=$'\e[0m'
-
-function debug {
-	typeset func line
-	if (( $# >= 3 )) {
-		func=$1
-		line=$2
-		shift 2
-	}
-	echo "(debug) $func:$line: $*" >&2
-}
-
-# I need function name and line number of the function _calling_ debug,
-# so I can't get them from inside the debug function.
-alias debug='debug ${(z%):-%N %i}'
 
 function info {
 	echo -ne "${c_info}$*${c_reset}"
@@ -55,14 +37,6 @@ function die {
 
 function say {
 	echo $*
-}
-
-function check_installed {
-	[[ -n $1 && -d $PKG_DIR/$1 ]] || die "Package not installed: '$1'\n"
-}
-
-function check_valid {
-	list_exists $1 || die "Package does not exist: '$1'\n"
 }
 
 function clear_line {
@@ -107,6 +81,20 @@ shift
 export PKG_DIR
 export PKG_ROOT
 
+function debug {
+	typeset func line
+	if (( $# >= 3 )) {
+		func=$1
+		line=$2
+		shift 2
+	}
+	echo "(debug) $func:$line: $*" >&2
+}
+
+# I need function name and line number of the function _calling_ debug,
+# so I can't get them from inside the debug function.
+alias debug='debug ${(z%):-%N %i}'
+
 # Avoid calling debug without debug mode... just in case one needs more speed
 if (( !DEBUG )) {
 	unalias debug
@@ -121,7 +109,6 @@ if (( SILENT )) {
 	function say {}
 	function clear_line {}
 }
-
 
 if [[ ! -d $PKG_DIR ]] {
 	die "Error: Package directory '$PKG_DIR' not found\n"
@@ -174,6 +161,14 @@ if ((DEBUG)) {
 	echo "  SILENT        $SILENT"
 	echo "  AUTOUPDATE    $AUTOUPDATE"
 	echo "  GIT_USE_ORIGIN $GIT_USE_ORIGIN"
+}
+
+function check_installed {
+	[[ -n $1 && -d $PKG_DIR/$1 ]] || die "Package not installed: '$1'\n"
+}
+
+function check_valid {
+	list_exists $1 || die "Package does not exist: '$1'\n"
 }
 
 # Default reply: Yes
