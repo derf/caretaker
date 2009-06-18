@@ -73,7 +73,7 @@ shift
 
 [[ -n $PKG_ROOT ]] || die "No PKG_ROOT specified. Please edit ~/.pkg.conf\n"
 : ${PKG_DIR:="$HOME/packages"}
-: ${CL_OPTIONS:=-q}
+: ${CL_OPTIONS:=--quiet}
 : ${SILENT=0}
 : ${DEBUG=0}
 : ${AUTOUPDATE=1}
