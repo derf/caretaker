@@ -8,7 +8,7 @@ use Term::ANSIColor;
 
 my $base = $ENV{HOME};
 my ($type, $src, $dst);
-my $quiet = 0;
+my $msglevel = 0;
 my $remove = 0;
 my %substitute;
 my $linkfile;
@@ -22,7 +22,7 @@ if (-f '.links') {
 }
 
 GetOptions(
-	'q|quiet'  => \$quiet,
+	'q|quiet'  => sub {$msglevel = 1},
 	'r|remove' => \$remove,
 	'p|parameter=s' => \%substitute,
 );
@@ -61,21 +61,21 @@ sub check_symlink {
 	mkdirs($src);
 	if (not -l "$base/$src" and not -e "$base/$src") {
 		symlink($dst, "$base/$src");
-		print_format('created', $src, $dst, 'cyan');
+		print_format('created', $src, $dst, 'cyan', 1);
 	}
 	elsif (-l "$base/$src" and readlink("$base/$src") eq $dst) {
-		print_format('ok', $src, $dst, 'green') unless $quiet;
+		print_format('ok', $src, $dst, 'green', 0);
 	}
 	elsif (-l "$base/$src" and readlink("$base/$src") eq "$base/$dst") {
-		print_format('absolute', $src, $dst, 'yellow') unless $quiet;
+		print_format('absolute', $src, $dst, 'yellow', 0);
 	}
 	elsif (not -l "$base/$src" and -e "$base/$src") {
-		print colored ("$base/$src: File exists but is not a symlink. Not updating.\n", 'bold red');
+		print_format('EXISTS', $src, $dst, 'bold red', 2);
 	}
 	elsif (-l "$base/$src") {
 		unlink("$base/$src");
 		symlink($dst, "$base/$src");
-		print_format('fixed', $src, $dst, 'cyan');
+		print_format('fixed', $src, $dst, 'cyan', 1);
 	}
 }
 
@@ -85,19 +85,19 @@ sub check_hardlink {
 
 	mkdirs($src);
 	if (not -e "$base/$dst") {
-		print_format('no dst!!', $src, $dst, 'red bold');
+		print_format('no dest', $src, $dst, 'red bold', 2);
 	}
 	elsif (not -f "$base/$src") {
 		link("$base/$dst", "$base/$src") or warn($!);
-		print_format('created', $src, $dst, 'cyan');
+		print_format('created', $src, $dst, 'cyan', 1);
 	}
 	elsif ((stat("$base/$src"))[1] != (stat("$base/$dst"))[1]) {
 		unlink("$base/$src");
 		link("$base/$dst", "$base/$src") or warn($!);
-		print_format('updated', $src, $dst, 'cyan');
+		print_format('updated', $src, $dst, 'cyan', 1);
 	}
 	elsif ((stat("$base/$src"))[1] == (stat("$base/$dst"))[1]) {
-		print_format('ok', $src, $dst, 'green') unless $quiet;
+		print_format('ok', $src, $dst, 'green', 0);
 	}
 }
 
@@ -117,8 +117,9 @@ sub mkdirs {
 }
 
 sub print_format {
-	my ($message, $src, $dst, $color) = @_;
+	my ($message, $src, $dst, $color, $level) = @_;
 
+	return if ($level < $msglevel);
 	if (defined($color)) {
 		printf(colored('%-9s', $color), $message);
 	} else {
