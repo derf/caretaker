@@ -437,7 +437,7 @@ function global_hook {
 		pre-remove)
 			exec_hook $1 pre-remove
 			genocide_collected $1
-			checklinks $CL_OPTIONS -r
+			checklinks $CL_OPTIONS --remove
 			list_package_remove $1
 			update_provides $1
 		;;
