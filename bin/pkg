@@ -221,8 +221,9 @@ function progress {
 ## VCS Wrappers
 
 function vcs_setup {
-	export GIT_DIR=$PKG_DIR/$1/.git
 	export GIT_WORK_TREE=$PKG_DIR/$1
+	export GIT_DIR=$GIT_WORK_TREE/.git
+	export GIT_CONFIG=$GIT_DIR/config
 }
 
 function vcs_to_list {
