@@ -412,7 +412,7 @@ function exec_hook {
 
 function global_hook {
 	cd $PKG_DIR/$1
-	unset -M 'GIT_*'
+	unset -m 'GIT_*'
 	case $2 in
 		post-add)
 			exec_hook $1 post-add
