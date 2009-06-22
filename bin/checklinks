@@ -12,6 +12,7 @@ my $msglevel = 0;
 my $remove = 0;
 my %substitute;
 my $linkfile;
+my $exit = 0;
 
 if (-f '.links') {
 	$linkfile = '.links';
@@ -119,6 +120,10 @@ sub mkdirs {
 sub print_format {
 	my ($message, $src, $dst, $color, $level) = @_;
 
+	if ($msglevel > 1) {
+		$exit++;
+	}
+
 	return if ($level < $msglevel);
 	if (defined($color)) {
 		printf(colored('%-9s', $color), $message);
@@ -127,6 +132,8 @@ sub print_format {
 	}
 	printf(" %-15s -> %-15s\n", $src, $dst);
 }
+
+exit($exit);
 
 __END__
 
