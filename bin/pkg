@@ -503,7 +503,7 @@ function check_prereqs {
 	if [[ -n $warn || -n $info ]] {
 		[[ -n $warn ]] && warn $warn
 		[[ -n $info ]] && echo -n $info
-		read -q
+		read -q '?continue? [] '
 	}
 
 	if [[ -n $install ]] {
