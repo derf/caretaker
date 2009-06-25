@@ -28,8 +28,8 @@ GetOptions(
 	'p|parameter=s' => \%substitute,
 );
 
-open(LINKS, '<', $linkfile) or die("Can't open $linkfile: $!");
-while(<LINKS>) {
+open(my $links, '<', $linkfile) or die("Can't open $linkfile: $!");
+while(<$links>) {
 	chomp;
 	foreach my $key (keys(%substitute)) {
 		s/\$$key/$substitute{$key}/g;
@@ -44,7 +44,7 @@ while(<LINKS>) {
 		check_hardlink($src, $dst);
 	}
 }
-close(LINKS);
+close($links);
 
 sub remove_link {
 	my $link = shift;
