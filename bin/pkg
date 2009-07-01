@@ -410,7 +410,6 @@ function exec_hook {
 
 function global_hook {
 	cd $PKG_DIR/$1
-	unset -m 'GIT_*'
 	case $2 in
 		post-add)
 			exec_hook $1 post-add
@@ -530,42 +529,18 @@ function populate_collected {
 	typeset i
 
 	wrap_info $1
-	info "Enabling documentation "
+	info "Enabling documentation\n"
 	for man in man/*/*(N); {
 		section=${man:h:t}
 		manpage=${man:t}
 		if podchecker man/$section/$manpage &> /dev/null; then
 			pod2man -u -s $section -c "$1 package" -r $HOME man/$section/$manpage > $PKG_DIR/.collected/man/man$section/$manpage.$section
-			say -n "+"
-			(( mans++ ))
-		else
-			say -n "."
-			(( mano++ ))
 		fi
 	}
 	for file in bin/*(N); {
 		if podchecker $file &> /dev/null; then
 			pod2man -u $file > $PKG_DIR/.collected/man/man1/${file:t}.1
-			say -n "+"
-			(( bins++ ))
-		else
-			say -n "."
-			(( bino++ ))
 		fi
-	}
-	clear_line
-	if (( bins + mans > 0 )) {
-		wrap_info $1
-		info "Compiled documentation "
-		say -n '('
-		if (( bins + bino > 0 )) {
-			say -n "$(( bins*100/(bins+bino) ))% bin"
-			(( mans + mano > 0 )) && say -n ', '
-		}
-		if (( mans + mano > 0 )) {
-			say -n "$(( mans*100/(mans+mano) ))% man"
-		}
-		say ')'
 	}
 	for file in bin/*(-*N); {
 		if [[ -L $HOME/$file || ! -e $HOME/$file ]] {
