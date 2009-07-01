@@ -1,3 +1,11 @@
+pkg 1.1 - Wed Jul 1 2009
+
+    * checklinks: style and documentation improvements
+    * Fixed git repositories being behind the remote branch
+      for GIT_USE_ORIGIN=1
+    * Compile the documentation in a less verbose manner
+    * replaced pkg local-update/remote-update by pkg update remote/local
+
 pkg 1.0.1 - Sun Jun 14 2009
 
     * Fixed some warnings in checklinks
