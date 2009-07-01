@@ -221,12 +221,10 @@ function progress {
 ## VCS Wrappers
 
 function vcs_setup {
-	export GIT_WORK_TREE=$PKG_DIR/$1
-	export GIT_DIR=$GIT_WORK_TREE/.git
-	export GIT_CONFIG=$GIT_DIR/config
+	cd GIT_WORK_TREE=$PKG_DIR/$1
 }
 
-function vcs_to_list {
+function vcs_to_list (
 	vcs_setup $1
 	if [[ -d $PKG_DIR/$1/.git ]] {
 		echo -n "$1 git "
@@ -234,9 +232,9 @@ function vcs_to_list {
 	} else {
 		warn "No git repository found: $1\n"
 	}
-}
+)
 
-function vcs_add {
+function vcs_add (
 	if [[ $(list_type $1) == git ]] {
 		git clone "$PKG_ROOT/$1"
 		vcs_setup $1
@@ -244,14 +242,14 @@ function vcs_add {
 	} else {
 		 die "$1: Cannot handle repository format '$(list_type $1)'\n"
 	}
-}
+)
 
-function vcs_log {
+function vcs_log (
 	vcs_setup $1
 	git log
-}
+)
 
-function vcs_branch_is_master {
+function vcs_branch_is_master (
 	vcs_setup $1
 	typeset IFS=$'\n' branch line
 	for line in $(git branch); {
@@ -263,9 +261,9 @@ function vcs_branch_is_master {
 			" -> skipping repo, please fix manually\n"
 		return 1
 	}
-}
+)
 
-function vcs_pull {
+function vcs_pull (
 	vcs_setup $1
 	if ((GIT_USE_ORIGIN)) {
 		# the package might be newly created and not have an origin yet
@@ -274,9 +272,9 @@ function vcs_pull {
 	} else {
 		vcs_branch_is_master $1 && git pull $PKG_ROOT/${PWD:t} master
 	}
-}
+)
 
-function vcs_push {
+function vcs_push (
 	vcs_setup $1
 	if ((GIT_USE_ORIGIN)) {
 		# see above
@@ -285,20 +283,20 @@ function vcs_push {
 	} else {
 		vcs_branch_is_master $1 && git push $PKG_ROOT/${PWD:t} master
 	}
-}
+)
 
-function vcs_status {
+function vcs_status (
 	vcs_setup $1
 	git status
-}
+)
 
-function vcs_fix_origin {
+function vcs_fix_origin (
 	vcs_setup $1
 	if [[ ! -r $GIT_DIR/remotes/origin && ! -r $GIT_DIR/refs/remotes/origin/HEAD ]] {
 		fgrep -q '[remote "origin"]' $GIT_DIR/config ||
 			git remote add origin $PKG_ROOT/$1
 	}
-}
+)
 
 
 ## List stuff
