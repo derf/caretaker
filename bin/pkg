@@ -725,14 +725,13 @@ function pkg_refresh {
 
 function pkg_update {
 	if [[ -z $1 || $1 == local ]] {
-		info "Updating local package list"
+		info "Updating local package list\n"
 		list_update_local
 		clear_line
 	}
 	if [[ -z $1 || $1 == remote ]] {
-		info "Updating remote package list"
+		info "Updating remote package list\n"
 		list_update_remote
-		clear_line
 	}
 }
 
