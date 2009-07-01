@@ -221,7 +221,7 @@ function progress {
 ## VCS Wrappers
 
 function vcs_setup {
-	cd GIT_WORK_TREE=$PKG_DIR/$1
+	cd $PKG_DIR/$1
 }
 
 function vcs_to_list (
