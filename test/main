@@ -3,6 +3,7 @@ unset -m 'GIT_*'
 setopt err_exit
 
 trap "print -P '\n%N:%i: %B%F{red}Test faild!%F{default}%b'" ZERR
+alias pkg='pkg --quiet'
 
 source test/documentation
 

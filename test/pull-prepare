@@ -2,8 +2,8 @@
 if [[ $repo == $file ]] {
 	echo "# Creating new commit in PKG_ROOT"
 	cd $test_proot/$file
-	git checkout -f
+	git checkout -q -f
 	echo $RANDOM > baz
 	git add baz
-	git commit -m 'floeppel'
+	git commit --quiet -m 'floeppel'
 }

@@ -1,12 +1,12 @@
 ## vim:ft=zsh
 echo "# setting up PKG_ROOT"
 cd $test_proot
-git clone ${1-git://git.tabularazor.org/~derf/pkg} core
+git clone --quiet ${1-git://git.tabularazor.org/~derf/pkg} core
 cp core/include/pkglist pkglist
 for repo in ra rb rc; (
 	mkdir $repo
 	cd $repo
-	git init
+	git init --quiet
 	git config receive.denyCurrentBranch ignore
 	touch foo
 	mkdir bin
@@ -16,11 +16,11 @@ for repo in ra rb rc; (
 	chmod 755 bin/$repo
 	echo 'touch ~/prereq_ok_'$repo > prereqs
 	git add .
-	git commit -m 'initial commit'
+	git commit --quiet -m 'initial commit'
 	cd ..
 	mkdir ${repo}-bare
 	cd ${repo}-bare
-	git --bare init
+	git --bare init --quiet
 	cd ../$repo
 	git push ../${repo}-bare master
 )

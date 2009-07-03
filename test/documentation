@@ -1,7 +1,4 @@
 ## vim:ft=zsh
-alias podchecker='podchecker -warnings -warnings'
 echo "# Documentation"
 podchecker bin/checklinks
-for file in man/*/*; {
-	podchecker $file
-}
+podchecker -warnings -warnings man/*/*

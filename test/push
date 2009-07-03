@@ -2,7 +2,7 @@
 somefile=$RANDOM
 touch $somefile
 git add $somefile
-git commit -m $somefile
+git commit --quiet -m $somefile
 pkg push
 if [[ $repo == *-bare ]] {
 	[[ $(git --git-dir=$test_proot/$repo log --pretty=oneline | head -1) == *$somefile ]]
