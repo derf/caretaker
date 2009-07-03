@@ -30,6 +30,7 @@ source $tests/setup
 echo "# bootstrapping PKG_DIR"
 cd $test_home
 export HOME=$test_home
+source $tests/checklinks
 $test_proot/core/include/bootstrap $test_proot $test_pdir
 
 echo "# checking for success"

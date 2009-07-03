@@ -1,0 +1,20 @@
+## vim:ft=zsh
+
+cat > links <<- quux
+	foo ignored
+	# ignored
+	hard foo bar
+	soft link file
+	soft blub \$quux
+quux
+
+alias checklinks='checklinks --parameter quux=flurbl'
+
+echo barbl > bar
+echo flurbl > file
+echo morp > flurbl
+
+checklinks
+[[ $(cat foo) == $(cat bar) ]]
+[[ $(cat link) == $(cat file) ]]
+[[ $(cat blub) == $(cat flurbl) ]]
