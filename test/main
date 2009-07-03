@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-unset -m 'GIT_*'
+unset -m 'GIT_*' 'XDG_*'
 setopt err_exit
 
 trap "print -P '\n%N:%i: %B%F{red}Test faild!%F{default}%b'" ZERR
