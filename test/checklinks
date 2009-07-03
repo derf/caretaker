@@ -18,3 +18,10 @@ checklinks
 [[ $(cat foo) == $(cat bar) ]]
 [[ $(cat link) == $(cat file) ]]
 [[ $(cat blub) == $(cat flurbl) ]]
+
+checklinks --remove
+[[ -e bar ]]
+[[ ! -e link ]]
+[[ -e file ]]
+[[ ! -e blub ]]
+[[ -e flurbl ]]
