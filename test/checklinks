@@ -8,7 +8,7 @@ cat > links <<- quux
 	soft blub \$quux
 quux
 
-alias checklinks='checklinks --parameter quux=flurbl'
+alias checklinks='checklinks --parameter quux=flurbl --msglevel 99'
 
 echo barbl > bar
 echo flurbl > file

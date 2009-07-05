@@ -23,9 +23,10 @@ if (-f '.links') {
 }
 
 GetOptions(
+	'm|msglevel=i' => \$msglevel,
+	'p|parameter=s' => \%substitute,
 	'q|quiet'  => sub {$msglevel = 1},
 	'r|remove' => \$remove,
-	'p|parameter=s' => \%substitute,
 );
 
 open(my $links, '<', $linkfile) or die("Can't open $linkfile: $!");
@@ -153,13 +154,12 @@ Create or update links based on a file
 
 =over
 
-=item B<-q>, B<--quiet>
+=item B<-m>, B<--msglevel>=I<level>
 
-Quiet. Hide unchanged links
-
-=item B<-r>, B<--remove>
-
-Remove all symlinks. Hardlinks will be left as they are.
+Set the level of status messages.
+If I<level> is B<0>, all will be shown. A level of 1 will filter out messages
+which have a status of "ok" or "absolute", level 2 will filter anything except
+"EXISTS" and "no dst", and anything higher will filter all output.
 
 =item B<-p>, B<--parameter> I<parameter>=I<value>
 
@@ -167,6 +167,14 @@ While reading the links file, replace $I<parameter> with I<value>.
 When used in conjuction with pkg(1), $package will be set to the current
 package's relative path (as seen from $HOME, like C<packages/core>),
 and $etc will be set to $package/etc (like C<packages/core/etc>)
+
+=item B<-q>, B<--quiet>
+
+Shortcut for C<< --msglevel=1 >>
+
+=item B<-r>, B<--remove>
+
+Remove all symlinks. Hardlinks will be left as they are.
 
 =back
 
