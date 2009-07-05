@@ -120,7 +120,7 @@ sub mkdirs {
 sub print_format {
 	my ($message, $src, $dst, $color, $level) = @_;
 
-	if ($msglevel > 1) {
+	if ($level > 1) {
 		$exit++;
 	}
 

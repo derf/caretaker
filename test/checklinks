@@ -27,3 +27,8 @@ checklinks --remove
 [[ -e file ]]
 [[ ! -e blub ]]
 [[ -e flurbl ]]
+
+echo "# checklinks: link source exists already"
+echo exists > link
+! checklinks
+[[ $(cat link) == exists ]]
