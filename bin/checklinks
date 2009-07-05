@@ -257,6 +257,11 @@ Example:
   soft .zlogout $etc/logout
   soft .zshenv $etc/env
 
+=head1 DIAGNOSTICS
+
+The exit value is the number of files with grave errors
+(a status of "EXISTS" or "no dst").
+
 =head1 BUGS
 
 There are no checks whether the symlink target actually exists.
