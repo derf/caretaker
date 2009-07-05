@@ -18,16 +18,11 @@ basically anything you can think of - you can even store movies in them.
 (Of course that would be completely braindead, but hey -
 you could, if you wanted to)
 
-Currently, pkg should be considered early-beta software. It already works quite
-well and does not have many known bugs, however some concepts are really stupid
-and are subject to change. Be warned that backwards compatibility can NOT be
-guaranteed, though I will do my best.
-
 =head1 THE BASICS
 
 pkg requires two directories in you home directory. B<~/bin> contains
 symlinks to the executables shipped with your packages, and $PKG_DIR
-(B<~/packages> by default, but *theoretically* configurable) contains the
+(B<~/packages> by default) contains the
 packages themselves. B<~/bin> may also contain normal executables; pkg will
 not overwrite existing files.
 
