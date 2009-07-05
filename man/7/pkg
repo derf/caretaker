@@ -152,7 +152,7 @@ Returns true if I<package> is installed, otherwise false
 
 Returns true if I<perlmodule> can be used by perl, otherwise false
 
-=item B<file_in_path> I<commendname>
+=item B<executable> I<commendname>
 
 Returns true if I<commandname> was found in the users PATH, otherwise false
 

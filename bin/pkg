@@ -458,7 +458,10 @@ function check_prereqs {
 	function perlmodule {
 		perl -M$1 < /dev/null 2> /dev/null
 	}
-	function file_in_path {
+	function executable file_in_path {
+		if [[ $0 == file_in_path ]] {
+			warn "'file_in_path' is deprecated, use 'executable' instead\n"
+		}
 		which $1 > /dev/null
 	}
 	function offer_install {
