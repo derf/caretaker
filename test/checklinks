@@ -14,11 +14,13 @@ echo barbl > bar
 echo flurbl > file
 echo morp > flurbl
 
+echo "# checklinks"
 checklinks
 [[ $(cat foo) == $(cat bar) ]]
 [[ $(cat link) == $(cat file) ]]
 [[ $(cat blub) == $(cat flurbl) ]]
 
+echo "# checklinks --remove"
 checklinks --remove
 [[ -e bar ]]
 [[ ! -e link ]]
