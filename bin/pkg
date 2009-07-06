@@ -465,6 +465,18 @@ function check_prereqs {
 	wrap_info $1
 	info "checking prerequisites\n"
 
+	# function scope → typeset and localoptions are possible
+	function source_prereqs {
+		{
+			source prereqs
+		} always {
+			if (( TRY_BLOCK_ERROR )) {
+				warn "Error in prereqs script\n"
+				TRY_BLOCK_ERROR=0
+			}
+		}
+	}
+
 	function is_installed {
 		[[ -d $PKG_DIR/$1 ]]
 	}
@@ -507,14 +519,7 @@ function check_prereqs {
 		}
 	}
 
-	{
-		source prereqs
-	} always {
-		if (( TRY_BLOCK_ERROR )) {
-			warn "Error in prereqs script\n"
-			TRY_BLOCK_ERROR=0
-		}
-	}
+	source_prereqs
 
 	if [[ -n $warn || -n $info ]] {
 		[[ -n $warn ]] && warn $warn

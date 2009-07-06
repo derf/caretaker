@@ -139,6 +139,10 @@ The prerequisites are stored in a package in the file F<prereqs>.
 It as an ordinary shell script which is sourced by pkg's global post-update
 hook; so it will be sourced after pulling, pushing or refreshing a package.
 
+Note that the file will be sourced in function scope. It is recommended to
+introduce parameters and options local to the prereqs script with
+C<< typeset >> and C<< setopt localoptions >>, respectively.
+
 It's main use is to check for dependencies. To help with this, the following
 functions are available:
 
