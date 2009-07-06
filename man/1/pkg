@@ -26,7 +26,7 @@ Remove I<package> from the local packages tree
 
 =item B<eval> I<expression>
 
-Evauluate I<expression>. See the 'Examples' section and pkg(7)
+Evauluate I<expression>. See pkg(7)
 
 =item B<info> I<package>
 
