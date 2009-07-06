@@ -54,6 +54,8 @@ if [[ -r $XDG_CONFIG_HOME/pkg/pkg.conf ]] {
 # Parse commandline options
 while [[ $1 == --* ]] {
 	case $1 in
+		--coluors) COLOURS=1 ;;
+		--no-colours) COLOURS=0 ;;
 		--quiet) SILENT=1 ;;
 		--no-quiiet) SILENT=0 ;;
 		--debug) DEBUG=1 ;;
@@ -63,6 +65,8 @@ while [[ $1 == --* ]] {
 		--checklinks-options) CL_OPTIONS+=$2; shift ;;
 		--packagedir) PKG_DIR=$2; shift ;;
 		--packageroot) PKG_ROOT=$2; shift ;;
+		--progress) PROGRESS=1 ;;
+		--no-progress) PROGRESS=0 ;;
 		*) die "Unknown argument: '$1'\n" ;;
 	esac
 	shift
@@ -78,6 +82,8 @@ shift
 : ${DEBUG=0}
 : ${AUTOUPDATE=1}
 : ${GIT_USE_ORIGIN=1}
+: ${COLOURS=1}
+: ${PROGRESS=1}
 export PKG_DIR
 export PKG_ROOT
 
@@ -108,6 +114,13 @@ if (( SILENT )) {
 	function info {}
 	function say {}
 	function clear_line {}
+	PROGRESS=0
+}
+
+if (( !COLOURS )) {
+	c_info=''
+	c_reset=''
+	c_error=''
 }
 
 if [[ ! -d $PKG_DIR ]] {
@@ -195,7 +208,7 @@ function confirm_no {
 function wrap_info {}
 
 function progress {
-	(( SILENT )) && return
+	((PROGRESS)) || return
 	typeset -i current=$1
 	typeset -i max=$2
 	typeset desc=$3
