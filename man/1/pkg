@@ -88,35 +88,8 @@ Options marked as [boolean] may be negated
 by prepending a 'no', like '--no-auto-update'.
 
 Options always override the configuration file.
-
-=over
-
-=item B<--quiet>  [boolean]
-
-Enable quiet mode, don't print progress. Useful for scripting
-
-=item B<--debug>  [boolean]
-
-Enable debug mode
-
-=item B<--auto-update>  [boolean]
-
-Automatically update the package list before doing certain actions
-
-=item B<--checklinks-options> I<option>
-
-Append I<option> to the options checklinks is invoked with.
-Only one option is allowed. To append more options, repeat the argument
-
-=item B<--packagedir> I<directory>
-
-Use I<directory> as local package directory
-
-=item B<--packageroot> I<URL>
-
-Use I<URL> as package root
-
-=back
+Also, every option refers to a configuration parameter,
+so please see pkg.conf(5) for more information.
 
 =head1 FILES
 
