@@ -480,7 +480,10 @@ function check_prereqs {
 	function offer_install {
 		install+=$1
 	}
-	function require depend {
+	function depend require {
+		if [[ $0 == require ]] {
+			warn "'require' is depracated, use 'depend' instead\n"
+		}
 		if [[ $1 == 'package' ]] {
 			is_installed $2 || offer_install $2
 		} else {
