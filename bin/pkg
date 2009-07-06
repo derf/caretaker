@@ -729,9 +729,13 @@ function pkg_status {
 	check_installed $1
 	vcs_status=$(PAGER='' vcs_status $1)
 	if [[ -n $vcs_status && $vcs_status != *'nothing to commit (working directory clean)' ]] {
-		clear_line
-		info "$1:\n"
-		echo $vcs_status
+		if ((SILENT)) {
+			echo $1
+		} else {
+			clear_line
+			info "$1:\n"
+			echo $vcs_status
+		}
 	}
 }
 
