@@ -161,8 +161,8 @@ if ((DEBUG)) {
 	info "pkg: running in debug mode. Infos follow:\n"
 	echo "--- running ---"
 	echo "  zsh           $ZSH_VERSION"
-	echo "  git           ${${(z)$(git --version)}[3]}"
-	echo "  pkg           ${${(z)$(git --git-dir=$PKG_DIR/core/.git/ log -n 1)}[2]}"
+	echo "  git           "${$(git --version)[3]}
+	echo "  pkg           "${$(git --git-dir=$PKG_DIR/${${(s:/:)$(readlink $0)}[-3]}/.git/ log -n 1)[2]}
 	echo "--- settings ---"
 	echo "  PKG_ROOT      $PKG_ROOT"
 	echo "  PKG_PROTO     $PKG_PROTO"
