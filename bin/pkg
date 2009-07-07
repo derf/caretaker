@@ -825,9 +825,15 @@ cd $PKG_DIR || die "Cannot cd $PKG_DIR"
 # wrap foobar "$1" <- the "" are neccessary here, since $1 is optional (and therefore may be empty)
 case $action in
 	add|install)
+		if [[ $action == install ]] {
+			warn "pkg install is deprecated, use pkg add instead\n"
+		}
 		pkg_add $*
 	;;
 	delete|remove)
+		if [[ $action == delete ]] {
+			warn "pkg delete is deprecated, use pkg remove instead\n"
+		}
 		pkg_remove $*
 	;;
 	info) pkg_info $* ;;
