@@ -86,7 +86,7 @@ a manual will be generated out of it (see L</"COLLECTED PACKAGE FILES">)
 
 =item etc/
 
-Configuration files, not threated specially though
+Configuration files, not treated specially though
 
 =item hooks/
 
@@ -94,7 +94,7 @@ Package hooks, see L</"HOOKS">
 
 =item include/
 
-Scripts used by the package that don't belong into B<bin/>. Not threated specially
+Scripts used by the package that don't belong into B<bin/>. Not treated specially
 
 =item man/
 
