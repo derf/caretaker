@@ -45,10 +45,10 @@ if ! which git &> /dev/null; then
 	exit 200
 fi
 
-echo 'Fetching the core package...'
+echo 'Fetching the pkg package...'
 cd $PKG_DIR
-git clone $PKG_ROOT/core
-cd core
+git clone $PKG_ROOT/pkg
+cd pkg
 
 echo 'Writing pkg.conf'
 mkdir -p $XDG_CONFIG_HOME/pkg
@@ -57,11 +57,11 @@ cat > $XDG_CONFIG_HOME/pkg/pkg.conf <<- flurbl
 	PKG_DIR="${PKG_DIR/$HOME/\$HOME}"
 flurbl
 
-echo 'Installing core package'
+echo 'Installing pkg package'
 rehash
 bin/checklinks
-bin/pkg eval populate_collected core
-bin/pkg eval exec_hook core post-add
+bin/pkg eval populate_collected pkg
+bin/pkg eval exec_hook pkg post-add
 
 bin/pkg update
 

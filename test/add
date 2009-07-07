@@ -14,8 +14,8 @@ echo "# populate_collected"
 
 repeat 2 {
 	echo "# pkg list"
-	stringcmp "core\n$repo" "$(pkg list local)"
+	stringcmp "pkg\n$repo" "$(pkg list local)"
 	stringcmp "$complement\nrb\nrb-bare\nrc\nrc-bare" "$(pkg list not-installed)"
-	stringcmp "core\nra\nra-bare\nrb\nrb-bare\nrc\nrc-bare" "$(pkg list remote)"
+	stringcmp "pkg\nra\nra-bare\nrb\nrb-bare\nrc\nrc-bare" "$(pkg list remote)"
 	pkg update
 }

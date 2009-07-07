@@ -31,12 +31,12 @@ source $tests/checklinks
 (source $tests/setup)
 
 echo "# bootstrapping PKG_DIR"
-$test_proot/core/include/bootstrap $test_proot $test_pdir
+$test_proot/pkg/include/bootstrap $test_proot $test_pdir
 
 echo "# checking for success"
 [[ -e $test_home/.config/pkg/pkg.conf ]]
-[[ -d $test_proot/core ]]
-[[ -d $test_pdir/core ]]
+[[ -d $test_proot/pkg ]]
+[[ -d $test_pdir/pkg ]]
 [[ -L $test_home/bin/pkg ]]
 [[ -L $test_home/bin/checklinks ]]
 [[ -x $(readlink $test_home/bin/pkg) ]]
@@ -46,20 +46,20 @@ echo "# checking for success"
 [[ -e $test_pdir/.collected/man/man7/pkg.7 ]]
 
 echo "# pkg list local"
-stringcmp "core" "$(pkg list)"
-stringcmp "core" "$(pkg list local)"
+stringcmp "pkg" "$(pkg list)"
+stringcmp "pkg" "$(pkg list local)"
 
 echo "# pkg list not-installed"
 stringcmp "ra\nra-bare\nrb\nrb-bare\nrc\nrc-bare" "$(pkg list not-installed)"
 
 echo "# pkg list all"
-stringcmp "core\nra\nra-bare\nrb\nrb-bare\nrc\nrc-bare" "$(pkg list all)"
+stringcmp "pkg\nra\nra-bare\nrb\nrb-bare\nrc\nrc-bare" "$(pkg list all)"
 
 echo "# pkg add (no such repo)"
 ! pkg add weltfrieden
 
 echo "# pkg add (already installed)"
-! pkg add core
+! pkg add pkg
 
 for conf_origin in 0 1; {
 	echo "## GIT_USE_ORIGIN=$conf_origin"
