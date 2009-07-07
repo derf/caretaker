@@ -84,6 +84,9 @@ If no argument is given, updates all installed packages
 
 =head2 SHORT ACTIONS
 
+Instead of the I<action>s described above, you may also use their short
+forms:
+
   short   long form
   -----   ---------
      a    add
