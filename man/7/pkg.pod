@@ -104,7 +104,7 @@ recommended to postfix each file with .pod
 
 =item provides/
 
-Files for inclusion into other packages
+Files for inclusion into other packages. See L</"PROVIDES">
 
 =item description
 
@@ -183,6 +183,14 @@ After executing the prereqs script, pkg will print the content of
 these parameters and wait for confirmation.
 It will also offer to install packages marked by B<depend package> or
 B<recommend package>.
+
+=head1 PROVIDES
+
+The F<provides> directory contains subdirectories with the names of the package
+for which stuff is provided. Every time a package with a provides directory is
+added, updated or removed, for each of the directories in F<provides/>, the
+respective package's post-update hook is exectued. It is the responsibility
+of that hook to do something useful with the data in F<provides/>.
 
 =head1 HOOKS
 
