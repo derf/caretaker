@@ -1,17 +1,17 @@
 =head1 NAME
 
-~/.pkg.conf - L<pkg>(1) configuration
+~/.config/pkg/pkg.conf - L<pkg>(1) configuration
 
 =head1 DESCRIPTION
 
-Contains configuration variables for L<pkg>(1)
+Contains configuration parameters for L<pkg>(1)
 
-The file consists of multiple lines of the form I<variable>=I<value>.
+The file consists of multiple lines of the form I<parameter>=I<value>.
 
 Normal zsh syntax is allowed, which means everything after '#' will be treated
-a comment and that there must be no space between the variable and the content.
+as comment and that there must be no space between the parameter and the content.
 
-With the exception of B<PKG_ROOT>, all variables are optional as they have
+With the exception of B<PKG_ROOT>, all parameters are optional as they have
 reasonable (so I hope) defaults.
 
 =head1 OPTIONS
@@ -22,46 +22,46 @@ The text in [these braces] is the default value.
 
 =over
 
-=item B<PKG_ROOT>=I<url> (--packageroot I<url>)
+=item B<PKG_ROOT>=I<url>   (--packageroot I<url>)
 
 the package root path.
 I<url> may either be of the form C<ssh://host/path> or C</path>.
 
-=item B<PKGLIST_PATH>=I<path> [$PKG_PATH/pkglist]
+=item B<PKGLIST_PATH>=I<path>   [$PKG_PATH/pkglist]
 
 path to pkglist on the package root, to generate the package list.
 In the default, $PKG_PATH means the path component of $PKG_ROOT.
 
-=item B<PKG_DIR>=I<path> (--packagedir I<path>) [$HOME/packages]
+=item B<PKG_DIR>=I<path>   (--packagedir I<path>)   [$HOME/packages]
 
 path for the local package tree
 
-=item B<CL_OPTIONS>=(I<options>) (--checklinks-options I<options>) [-q]
+=item B<CL_OPTIONS>=(I<options>)   (--checklinks-options I<options>)   [-q]
 
 Options to invoke L<checklinks>(1) with
 
-=item B<COLOURS>=I<boolean> (--colours) [1]
+=item B<COLOURS>=I<boolean>   (--colours)   [1]
 
 Colorize the output (cyan for info messages, red for errors/warnings)
 
-=item B<PROGRESS>=I<boolean> (--progress) [1]
+=item B<PROGRESS>=I<boolean>   (--progress)   [1]
 
 Show a progress bar when performing tasks on all packages
 
-=item B<SILENT>=I<boolean> (--quiet) [0]
+=item B<SILENT>=I<boolean>   (--quiet)   [0]
 
 Operate in silent mode. If B<1>, it also sets PROGRESS=0
 
-=item B<DEBUG>=I<boolean> (--debug) [0]
+=item B<DEBUG>=I<boolean>   (--debug)   [0]
 
 Operate in debug mode if 1
 
-=item B<AUTOUPDATE>=I<boolean> (--auto-update) [1]
+=item B<AUTOUPDATE>=I<boolean>   (--auto-update)   [1]
 
 If 1, automatically execute 'pkg update' before 'pkg push'
 and 'pkg remote-update' before 'pkg upgrade'
 
-=item B<GIT_USE_ORIGIN>=I<boolean> [1]
+=item B<GIT_USE_ORIGIN>=I<boolean>   [1]
 
 By default, pkg will simply issue a git push/pull, so that git will use the
 repository's origin to determine where to push/pull.
