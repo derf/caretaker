@@ -75,7 +75,7 @@ while [[ $1 == --* ]] {
 action=$1
 shift
 
-[[ -n $PKG_ROOT ]] || die "No PKG_ROOT specified. Please edit ~/.pkg.conf\n"
+[[ -n $PKG_ROOT ]] || die "No PKG_ROOT specified. Please edit your pkg.conf\n"
 : ${PKG_DIR:="$HOME/packages"}
 : ${CL_OPTIONS:=--quiet}
 : ${SILENT=0}
