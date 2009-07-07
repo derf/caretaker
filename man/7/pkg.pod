@@ -1,5 +1,3 @@
-=pod
-
 =head1 NAME
 
 pkg - distributed dotfile and script manager, package format
@@ -83,7 +81,8 @@ Unless marked with [*], all files and directories are optional
 
 The place for executables to be in the user's PATH.
 pkg will automatically create symlinks in F<~/bin> pointing to the files
-in the package's F<bin/>
+in the package's F<bin/>. Also, if a file in F<bin/> contains valid POD,
+a manual will be generated out of it (see L</"COLLECTED PACKAGE FILES">)
 
 =item etc/
 
@@ -99,7 +98,9 @@ Scripts used by the package that don't belong into B<bin/>. Not threated special
 
 =item man/
 
-Manual files in POD format, separated by section (like man/7/pkg)
+Manual files in POD format, separated by section (like man/7/pkg.pod).
+To be prepared for possible future support of other manual formats, it is
+recommended to postfix each file with .pod
 
 =item provides/
 
@@ -215,7 +216,7 @@ The directory is somewhat similar to F<~/bin> - it is automatically populated
 by pkg. However, this one does not contain symlinks.
 
 Currently, it only contains the directory F<man/>, which holds the "compiled"
-manual pages from the packages (both extracted from F<bin/> and F<man/>).
+manual pages from the packages (extracted from F<bin/> and F<man/>).
 This way, yuo can put F<.../.collected/man> into you MANPATH to access manuals
 provided by packages.
 
@@ -233,7 +234,3 @@ Daniel Friesel E<lt>derf@derf.homelinux.orgE<gt>
 =head1 SEE ALSO
 
 checklinks(1), pkg(1)
-
-=cut
-
-vim:ft=pod

@@ -1,5 +1,3 @@
-=pod
-
 =head1 NAME
 
 pkg - distributed dotfile and script manager
@@ -162,7 +160,3 @@ many ideas and suggestions
 =head1 SEE ALSO
 
 L<pkg.conf>(5), pkg(7)
-
-=cut
-
-vim:ft=pod

@@ -1,5 +1,3 @@
-=pod
-
 =head1 NAME
 
 ~/.pkg.conf - L<pkg>(1) configuration
@@ -108,7 +106,3 @@ Colour for warning and error messages (default: red)
 =head1 SEE ALSO
 
 L<pkg>(1), L<checklinks>(1)
-
-=cut
-
-vim:ft=pod

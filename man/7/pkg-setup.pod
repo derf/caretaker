@@ -1,5 +1,3 @@
-=pod
-
 =head1 NAME
 
 pkg - Package root setup
@@ -17,7 +15,3 @@ Now you can add your own packages as git repos in PKG_ROOT.
 
 To use pkg with your packages on a machine, download and execute
 the bootstrap script (include/bootstrap).
-
-=cut
-
-vim:ft=pod

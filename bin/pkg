@@ -558,7 +558,7 @@ function populate_collected {
 		section=${man:h:t}
 		manpage=${man:t}
 		if podchecker man/$section/$manpage &> /dev/null; then
-			pod2man -u -s $section -c "$1 package" -r $HOME man/$section/$manpage > $PKG_DIR/.collected/man/man$section/$manpage.$section
+			pod2man -u -s $section -c "$1 package" -r $HOME man/$section/$manpage > $PKG_DIR/.collected/man/man$section/${manpage%.pod}.$section
 		fi
 	}
 	for file in bin/*(N); {
