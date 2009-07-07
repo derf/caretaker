@@ -51,11 +51,6 @@ The package root should contain the pkglist script shipped in include/.
 If it doesn't, PKGLIST_PATH in .pkg.conf must be set to the appropiate
 location on the package root host.
 
-=head2 CAUTION
-
-The file $PKG_ROOT/core/include/pkglist is used by pkg, so make sure the git
-repo is checked out. A regular 'git checkout -f' in the core repo is recommended.
-
 =head1 THE PACKAGE LIST
 
 Thi package list lives in the files B<.list> and B<.list-remote> mentioned
@@ -68,7 +63,7 @@ It consists of one line per package, each line containing three items separated
 by a single whitespace. The first item is the package name, the second one the
 repository type (DVCS), the third the current revision. Example:
 
-  core git 82d716d01dee0329af7df5e67b55558fe3ff1466
+  pkg git 82d716d01dee0329af7df5e67b55558fe3ff1466
 
 =head1 WHAT IS A PACKAGE?
 

@@ -1,2 +1,2 @@
-The core package
+The pkg package
 Contains the 'pkg' utility itself, 'checklinks' and the 'bootstrap' script.

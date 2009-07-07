@@ -357,7 +357,7 @@ function list_update_remote {
 		die "remote list update failed\n" \
 			"-- note --\n" \
 			"There were recent changes in pkg involving the package root\n\n" \
-			"You might want to copy the pkglist script ($PKG_DIR/core/include/pkglist)\n" \
+			"You might want to copy the pkglist script ($PKG_DIR/pkg/include/pkglist)\n" \
 			"into the package root, so that it's available as\n" \
 			"$PKG_HOST:$PKG_PATH/pkglist\n"
 			"alternatively, set PKGLIST_PATH to the correct value (see pkg.conf(5))\n"

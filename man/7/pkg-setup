@@ -8,7 +8,7 @@ pkg - Package root setup
 
 First, you'll need to create a root directory (from now on PKG_ROOT) on the
 server which shall from now on host all your packages.
-Then you need to put the pkg git repository into F<PKG_ROOT/core> - it's recommended
+Then you need to put the pkg git repository into F<PKG_ROOT/pkg> - it's recommended
 to do this via git clone --bare.
 
 Copy the pkglist script (include/pkglist) to F<PKG_ROOT/pkglist>.

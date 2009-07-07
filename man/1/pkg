@@ -131,9 +131,9 @@ Note: If you haven't disabled AUTOUPDATE, B<pkg upgrade> will suffice here
 Push local changes to the packages_root.
 Note: If you haven't disabled AUTOUPDATE, B<pkg push> will suffice here
 
-=item * B<pkg refresh core>
+=item * B<pkg refresh pkg>
 
-'Fake-Upgrade'. Execute the appropiate commands as if the core package had been
+'Fake-Upgrade'. Execute the appropiate commands as if the pkg package had been
 upgraded (useful when you change something but don't want to commit/push yet)
 
 =back
