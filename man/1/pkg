@@ -82,6 +82,22 @@ If no argument is given, updates all installed packages
 
 =back
 
+=head2 SHORT ACTIONS
+
+  short   long form
+  -----   ---------
+     a    add
+     e    eval
+     f    pull      (think "fetch")
+     i    info
+     l    log
+     ls   list
+     p    push
+     r    refresh
+     rm   remove
+     s    status
+     u    update
+
 =head1 OPTIONS
 
 Options marked as [boolean] may be negated

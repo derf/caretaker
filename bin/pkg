@@ -824,36 +824,36 @@ cd $PKG_DIR || die "Cannot cd $PKG_DIR"
 # Note:
 # wrap foobar "$1" <- the "" are neccessary here, since $1 is optional (and therefore may be empty)
 case $action in
-	add|install)
+	a|add|install)
 		if [[ $action == install ]] {
 			warn "pkg install is deprecated, use pkg add instead\n"
 		}
 		pkg_add $*
 	;;
-	delete|remove)
+	rm|delete|remove)
 		if [[ $action == delete ]] {
 			warn "pkg delete is deprecated, use pkg remove instead\n"
 		}
 		pkg_remove $*
 	;;
-	info) pkg_info $* ;;
-	list) pkg_list $* ;;
-	log) pkg_log $* ;;
-	push)
+	i|info) pkg_info $* ;;
+	ls|list) pkg_list $* ;;
+	l|log) pkg_log $* ;;
+	p|push)
 		(( AUTOUPDATE )) && pkg_update
 		wrap pkg_push "$1" 'Pushing'
 	;;
-	refresh) wrap pkg_refresh "$1" 'Refreshing' ;;
-	status) wrap pkg_status "$1" 'Checking package status' ;;
-	update) pkg_update $* ;;
-	upgrade|pull)
+	r|refresh) wrap pkg_refresh "$1" 'Refreshing' ;;
+	s|status) wrap pkg_status "$1" 'Checking package status' ;;
+	u|update) pkg_update $* ;;
+	f|upgrade|pull)
 		if [[ $action == upgrade ]] {
 			warn "pkg updgrade is deprecated, use pkg pull instead\n"
 		}
 		(( AUTOUPDATE )) && pkg_update remote
 		wrap pkg_upgrade "$1" 'Looking for updates'
 	;;
-	eval) eval $* ;;
+	e|eval) eval $* ;;
 	*) die "wait, what?\npkg: unknown action: '$action'\n" ;;
 esac
 

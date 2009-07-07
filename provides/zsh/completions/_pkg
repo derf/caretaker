@@ -31,26 +31,26 @@ function _pkg_notinstalled () {
 function _pkg_args {
 	if (( CURRENT == 2 )) {
 		case ${words[1]} in
-			log|pull|push|refresh|remove|status)
+			l|log|f|pull|p|push|r|refresh|rm|remove|s|status)
 				_pkg_installed
 			;;
-			info)
+			i|info)
 				_pkg_all 
 			;;
-			add)
+			a|add)
 				_pkg_notinstalled
 			;;
-			eval)
+			e|eval)
 				_message 'shell code for evaluation'
 				_wanted function expl 'internal function' \
 				compadd $(grep -E '^\S*\s*\(\)\s*{' =pkg | cut -d ' ' -f 1) \
 					$(grep -E 'function \S* (\(\) )?{' =pkg | cut -d ' ' -f 2)
 			;;
-			list)
+			ls|list)
 				_wanted something expl 'list mode' \
 				compadd all local not-installed
 			;;
-			update)
+			u|update)
 				_wanted mode expl 'update target' \
 				compadd local remote
 			;;
@@ -58,7 +58,7 @@ function _pkg_args {
 				_message 'no more arguments'
 			;;
 		esac
-	} elif [[ ${words[1]} = 'eval' ]] {
+	} elif [[ ${words[1]} == e(val|) ]] {
 		_message 'shell code for evaluation'
 		if (( CURRENT == 3 )) {
 			case ${words[2]} in
