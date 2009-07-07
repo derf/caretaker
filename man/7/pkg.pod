@@ -18,7 +18,7 @@ you could, if you wanted to)
 
 =head1 THE BASICS
 
-pkg requires two directories in you home directory. B<~/bin> contains
+pkg requires two directories in your home directory. B<~/bin> contains
 symlinks to the executables shipped with your packages, and $PKG_DIR
 (B<~/packages> by default) contains the
 packages themselves. B<~/bin> may also contain normal executables; pkg will
@@ -51,7 +51,7 @@ location on the package root host.
 
 =head1 THE PACKAGE LIST
 
-Thi package list lives in the files B<.list> and B<.list-remote> mentioned
+The package list lives in the files B<.list> and B<.list-remote> mentioned
 above. It's used to decide whether a package needs to be pulled / pushed.
 Also, the 'pkg add' completion relies on .list-remote, and back in the days when
 pkg supported more than one DVCS, it was used to determine which DVCS to use
@@ -73,7 +73,7 @@ files and directories described below in it.
 
 Special (as in, mostly handled by pkg) directories and files in a package.
 
-Unless marked with [*], all files and directories are optional
+Note that all files and directories mentioned here are optional.
 
 =over
 
@@ -116,7 +116,8 @@ Sym- and hardlink descriptions. See checklinks(1)
 
 =item Makefile
 
-If a Makefile is available, C<make> will be executed
+If a Makefile is available, C<make> will be executed every time the package
+is updated (pkg add/push/pull/refresh)
 
 =item prereqs
 
@@ -179,13 +180,13 @@ Additionally, the string parameters B<warn> and B<info> can be used to store
 messages.
 
 After executing the prereqs script, pkg will print the content of
-these parameters; in case of B<warn>, it will also wait for confirmation.
+these parameters and wait for confirmation.
 It will also offer to install packages marked by B<depend package> or
 B<recommend package>.
 
 =head1 HOOKS
 
-Hooks are little zsh-snippets residing in $PKG_DIR/hooks
+Hooks are little zsh snippets residing in $PKG_DIR/hooks
 which are sourced from within pkg whenever needed.
 
 Currently, the following hooks exist:
@@ -198,13 +199,13 @@ Sourced after a package was installed (e.g. with pkg add/pkg install)
 
 =item post-update
 
-Sourced after a package was updated (pkg upgrade/pkg pull).
+Sourced after a package was updated (pkg pkg pull).
 It is also sourced when adding a package (after post-add) and
 when calling pkg refresh.
 
 =item pre-remove
 
-Sourced before a package is removed (pkg remove/pkg delete)
+Sourced before a package is removed (pkg remove)
 
 =back
 
@@ -217,7 +218,7 @@ by pkg. However, this one does not contain symlinks.
 
 Currently, it only contains the directory F<man/>, which holds the "compiled"
 manual pages from the packages (extracted from F<bin/> and F<man/>).
-This way, yuo can put F<.../.collected/man> into you MANPATH to access manuals
+This way, you can put F<.../.collected/man> into you MANPATH to access manuals
 provided by packages.
 
 =head1 GIT
@@ -225,7 +226,7 @@ provided by packages.
 B<pkg> uses git(1) as backend for storing and syncing package information.
 It is not recommended to use branches other than "master".
 While they should work if GIT_USE_ORIGIN is set to 1 (the default), they will
-most likely confuse pkg update.
+most likely confuse pkg.
 
 =head1 AUTHOR
 
