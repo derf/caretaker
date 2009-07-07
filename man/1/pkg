@@ -16,11 +16,11 @@ I<action> may be one of:
 
 =over
 
-=item B<add>|B<install> I<package>
+=item B<add> I<package>
 
 fetch given I<package> from the package_root and install it
 
-=item B<delete>|B<remove> I<package>
+=item B<remove> I<package>
 
 Remove I<package> from the local packages tree
 
@@ -75,7 +75,7 @@ If no arguments is given, checks all installed packages
 
 Update local/remote package list (both if no argument is given)
 
-=item B<upgrade>|B<pull> [ I<package> ]
+=item B<pull> [ I<package> ]
 
 retrieve and install newest available version of I<package>.
 If no argument is given, updates all installed packages

@@ -824,10 +824,13 @@ cd $PKG_DIR || die "Cannot cd $PKG_DIR"
 # Note:
 # wrap foobar "$1" <- the "" are neccessary here, since $1 is optional (and therefore may be empty)
 case $action in
-	add) pkg_add $* ;;
-	delete) pkg_remove $* ;;
+	add|install)
+		pkg_add $*
+	;;
+	delete|remove)
+		pkg_remove $*
+	;;
 	info) pkg_info $* ;;
-	install) pkg_add $* ;;
 	list) pkg_list $* ;;
 	log) pkg_log $* ;;
 	push)
@@ -835,7 +838,6 @@ case $action in
 		wrap pkg_push "$1" 'Pushing'
 	;;
 	refresh) wrap pkg_refresh "$1" 'Refreshing' ;;
-	remove) pkg_remove $* ;;
 	status) wrap pkg_status "$1" 'Checking package status' ;;
 	update) pkg_update $* ;;
 	upgrade|pull)

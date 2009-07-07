@@ -9,8 +9,8 @@ typeset expl
 
 function _pkg_action () {
 	_wanted action expl 'action' \
-	compadd add install delete eval remove info list \
-	log pull push refresh status update upgrade
+	compadd add eval remove info list \
+	log pull push refresh status update
 }
 
 function _pkg_installed () {
@@ -31,13 +31,13 @@ function _pkg_notinstalled () {
 function _pkg_args {
 	if (( CURRENT == 2 )) {
 		case ${words[1]} in
-			changelog|check|delete|log|pull|push|refresh|remove|status|upgrade)
+			log|pull|push|refresh|remove|status)
 				_pkg_installed
 			;;
 			info)
 				_pkg_all 
 			;;
-			add|install)
+			add)
 				_pkg_notinstalled
 			;;
 			eval)
@@ -84,5 +84,9 @@ _arguments \
 	'*--checklinks-options[options for checklinks]:option' \
 	'--packagedir[package directory]:directory:_files -/' \
 	'--packageroot[package root]:url' \
+	'--colours[use colours]' \
+	'--no-colours[No colours]' \
+	'--progress[show progress bar]' \
+	'--no-progress[No progress bar]' \
 	':action:_pkg_action' \
 	'*::arguments:_pkg_args'
