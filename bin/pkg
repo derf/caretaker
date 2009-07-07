@@ -839,6 +839,9 @@ case $action in
 	status) wrap pkg_status "$1" 'Checking package status' ;;
 	update) pkg_update $* ;;
 	upgrade|pull)
+		if [[ $action == upgrade ]] {
+			warn "pkg updgrade is deprecated, use pkg pull instead\n"
+		}
 		(( AUTOUPDATE )) && pkg_update remote
 		wrap pkg_upgrade "$1" 'Looking for updates'
 	;;
