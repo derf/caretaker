@@ -550,7 +550,7 @@ function check_prereqs {
 function populate_collected {
 	cd $PKG_DIR/$1 || return
 	typeset -i bins=0 bino=0 mans=0 mano=0
-	typeset i
+	typeset man section manpage file
 
 	wrap_info $1
 	info "Enabling documentation\n"
@@ -585,7 +585,7 @@ function populate_collected {
 # Remove a package's files from .collected
 # Assuming there are no packages with colliding files
 function genocide_collected {
-	typeset i
+	typeset i file man manual section
 	cd $PKG_DIR/$1 || return
 	wrap_info $1
 	info "Removing documentation"
