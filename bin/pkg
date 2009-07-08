@@ -136,6 +136,8 @@ if [[ ! -d $PKG_DIR ]] {
 # Protocol
 if [[ $PKG_ROOT == ssh://* ]] {
 	PKG_PROTO='ssh'
+} elif [[ $PKG_ROOT == git://* ]] {
+	PKG_PROTO='git'
 } elif [[ $PKG_ROOT == /* ]] {
 	PKG_PROTO='file'
 } else {
@@ -143,9 +145,9 @@ if [[ $PKG_ROOT == ssh://* ]] {
 }
 
 # user, host, path
-if [[ $PKG_PROTO == 'ssh' ]] {
-	PKG_HOST=${${PKG_ROOT#'ssh://'}%%/*}
-	PKG_PATH=${PKG_ROOT#"ssh://$PKG_HOST"}
+if [[ $PKG_PROTO == (git|ssh) ]] {
+	PKG_HOST=${${PKG_ROOT#"${PKG_PROTO}://"}%%/*}
+	PKG_PATH=${PKG_ROOT#"${PKG_PROTO}://$PKG_HOST"}
 	if [[ $PKG_HOST == *@* ]] {
 		PKG_USER=${PKG_HOST%%@*}
 		PKG_HOST=${PKG_HOST#*@}
