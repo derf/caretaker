@@ -77,6 +77,7 @@ shift
 
 [[ -n $PKG_ROOT ]] || die "No PKG_ROOT specified. Please edit your pkg.conf\n"
 : ${PKG_DIR:="$HOME/packages"}
+: ${PKGLIST_LOCAL=0}
 : ${CL_OPTIONS:=--quiet}
 : ${SILENT=0}
 : ${DEBUG=0}
@@ -346,10 +347,10 @@ function list_update_remote {
 	typeset tmpfile=$(mktemp -t pkglist.XXXXXX)
 	typeset -i ret=0
 	export PKG_DIR
-	if [[ $PKG_PROTO == 'ssh' ]] {
-		ssh $PKG_USER@$PKG_HOST "PKG_DIR='$PKG_DIR' $PKGLIST_PATH $PKG_PATH" > $tmpfile
-	} elif [[ $PKG_PROTO == 'file' ]] {
+	if [[ $PKGLIST_LOCAL == 1 || $PKG_PROTO == 'file' ]] {
 		$PKGLIST_PATH $PKG_PATH > $tmpfile
+	} elif [[ $PKG_PROTO == 'ssh' ]] {
+		ssh $PKG_USER@$PKG_HOST "PKG_DIR='$PKG_DIR' $PKGLIST_PATH $PKG_PATH" > $tmpfile
 	}
 	if [[ -n $(cat $tmpfile) ]] {
 		cp $tmpfile .list-remote

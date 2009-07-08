@@ -32,6 +32,12 @@ I<url> may either be of the form C<ssh://host/path> or C</path>.
 path to pkglist on the package root, to generate the package list.
 In the default, $PKG_PATH means the path component of $PKG_ROOT.
 
+=item B<PKGLIST_LOCAL>=I<boolean>   [0]
+
+If true, B<PKLIST_PATH> will always be executed on the local machine, regardless
+of where the B<PKG_ROOT> lies. For possible uses of this setting, see
+L<pkg(7)/"THE PACKAGE LIST">
+
 =item B<PKG_DIR>=I<path>   (--packagedir I<path>)   [$HOME/packages]
 
 path for the local package tree
