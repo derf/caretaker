@@ -172,9 +172,12 @@ if ((DEBUG)) {
 	echo "  PKG_USER      $PKG_USER"
 	echo "  PKG_HOST      $PKG_HOST"
 	echo "  PKGLIST_PATH  $PKGLIST_PATH"
+	echo "  PKGLIST_LOCAL $PKGLIST_LOCAL"
 	echo "  PKG_DIR       $PKG_DIR"
 	echo "  CL_OPTIONS    $CL_OPTIONS"
 	echo "  SILENT        $SILENT"
+	echo "  COLOURS       $COLOURS"
+	echo "  PROGRESS      $PROGRESS"
 	echo "  AUTOUPDATE    $AUTOUPDATE"
 	echo "  GIT_USE_ORIGIN $GIT_USE_ORIGIN"
 }
