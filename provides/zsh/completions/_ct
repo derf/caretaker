@@ -1,50 +1,47 @@
-#compdef pkg
+#compdef ct
 ## vim:ft=zsh
-## pkg completion
-## Daniel Friesel <derf@derf.homelinux.org>
-## https://derf.homelinux.org/~derf/dotfiles/zsh/completions/_pkg
-## see also: https://derf.homelinux.org/~derf/code/lighty-stats
+## caretaker completion
 
 typeset expl
 
-function _pkg_action () {
+function _ct_action () {
 	_wanted action expl 'action' \
 	compadd add eval remove info list \
 	log pull push refresh status update
 }
 
-function _pkg_installed () {
+function _ct_installed () {
 	_wanted package expl 'local package' \
-	compadd $(pkg list local)
+	compadd $(ct list local)
 }
 
-function _pkg_all () {
+function _ct_all () {
 	_wanted package expl 'package' \
-	compadd $(pkg list all)
+	compadd $(ct list all)
 }
 
-function _pkg_notinstalled () {
+function _ct_notinstalled () {
 	_wanted package expl 'remote package' \
-	compadd $(pkg list not-installed)
+	compadd $(ct list not-installed)
 }
 
-function _pkg_args {
+function _ct_args {
 	if (( CURRENT == 2 )) {
 		case ${words[1]} in
 			l|log|f|pull|p|push|r|refresh|rm|remove|s|status)
-				_pkg_installed
+				_ct_installed
 			;;
 			i|info)
-				_pkg_all 
+				_ct_all 
 			;;
 			a|add)
-				_pkg_notinstalled
+				_ct_notinstalled
 			;;
 			e|eval)
 				_message 'shell code for evaluation'
 				_wanted function expl 'internal function' \
-				compadd $(grep -E '^\S*\s*\(\)\s*{' =pkg | cut -d ' ' -f 1) \
-					$(grep -E 'function \S* (\(\) )?{' =pkg | cut -d ' ' -f 2)
+				compadd $(grep -E '^\S*\s*\(\)\s*{' =ct | cut -d ' ' -f 1) \
+					$(grep -E 'function \S* (\(\) )?{' =ct | cut -d ' ' -f 2)
 			;;
 			ls|list)
 				_wanted something expl 'list mode' \
@@ -63,7 +60,7 @@ function _pkg_args {
 		if (( CURRENT == 3 )) {
 			case ${words[2]} in
 				exec_hook|check_prereqs|*_collected|)
-					_pkg_installed
+					_ct_installed
 				;;
 			esac
 		} elif (( CURRENT == 4 )) {
@@ -88,5 +85,5 @@ _arguments \
 	'--no-colours[No colours]' \
 	'--progress[show progress bar]' \
 	'--no-progress[No progress bar]' \
-	':action:_pkg_action' \
-	'*::arguments:_pkg_args'
+	':action:_ct_action' \
+	'*::arguments:_ct_args'

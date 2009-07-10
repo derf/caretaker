@@ -1,11 +1,11 @@
 ## vim:ft=zsh
-echo "# pkg add (ok)"
-pkg add $repo
+echo "# ct add (ok)"
+ct add $repo
 [[ -e $test_pdir/$repo/foo ]]
 [[ -d $test_pdir/$repo/.git ]]
 
-echo "# pkg add (already installed)"
-! pkg add $repo
+echo "# ct add (already installed)"
+! ct add $repo
 
 echo "# populate_collected"
 [[ -L $test_home/bin/$file ]]
@@ -13,9 +13,9 @@ echo "# populate_collected"
 [[ -e $test_pdir/.collected/man/man2/$file.2 ]]
 
 repeat 2 {
-	echo "# pkg list"
-	stringcmp "pkg\n$repo" "$(pkg list local)"
-	stringcmp "$complement\nrb\nrb-bare\nrc\nrc-bare" "$(pkg list not-installed)"
-	stringcmp "pkg\nra\nra-bare\nrb\nrb-bare\nrc\nrc-bare" "$(pkg list remote)"
-	pkg update
+	echo "# ct list"
+	stringcmp "caretaker\n$repo" "$(ct list local)"
+	stringcmp "$complement\nrb\nrb-bare\nrc\nrc-bare" "$(ct list not-installed)"
+	stringcmp "caretaker\nra\nra-bare\nrb\nrb-bare\nrc\nrc-bare" "$(ct list remote)"
+	ct update
 }

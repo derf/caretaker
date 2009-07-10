@@ -1,6 +1,6 @@
-pkg - distributed dotfile and script manager
+caretaker - distributed dotfile and script manager
 
-For setup: perldoc -F man/7/pkg-setup
+For setup: perldoc -F man/7/caretaker-setup.pod
 
 Requires:
  - zsh

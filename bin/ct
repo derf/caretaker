@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-## pkg - /home package manager and zsh playground
+## caretaker - /home package manager and zsh playground
 ## Copyright © 2008-2009 by Daniel Friesel <derf@derf.homelinux.org>
 ##
 ## Permission to use, copy, modify, and/or distribute this software for any
@@ -45,9 +45,15 @@ function clear_line {
 
 # Read local configuration
 : ${XDG_CONFIG_HOME=$HOME/.config}
-if [[ -r $XDG_CONFIG_HOME/pkg/pkg.conf ]] {
+if [[ -r $XDG_CONFIG_HOME/caretaker/caretaker.conf ]] {
+	source $XDG_CONFIG_HOME/caretaker/caretaker.conf
+} elif [[ -r $HOME/.caretaker.conf ]] {
+	source $HOME/.caretaker.conf
+} elif [[ -r $XDG_CONFIG_HOME/pkg/pkg.conf ]] {
+	warn "pkg was renamed to caretaker, so move your config to $XDG_CONFIG_HOME/caretaker/caretaker.conf"
 	source $XDG_CONFIG_HOME/pkg/pkg.conf
 } elif [[ -r $HOME/.pkg.conf ]] {
+	warn "pkg was renamed to caretaker, so move your config to $HOME/.caretaker.conf"
 	source $HOME/.pkg.conf
 }
 
@@ -75,7 +81,7 @@ while [[ $1 == --* ]] {
 action=$1
 ((#)) && shift
 
-[[ -n $PKG_ROOT ]] || die "No PKG_ROOT specified. Please edit your pkg.conf\n"
+[[ -n $PKG_ROOT ]] || die "No PKG_ROOT specified. Please edit your caretaker.conf\n"
 : ${PKG_DIR:="$HOME/packages"}
 : ${PKGLIST_LOCAL=0}
 : ${CL_OPTIONS:=--quiet}
@@ -161,11 +167,11 @@ if [[ $PKG_PROTO == (git|ssh) ]] {
 : ${PKGLIST_PATH:=$PKG_PATH/pkglist}
 
 if ((DEBUG)) {
-	info "pkg: running in debug mode. Infos follow:\n"
+	info "caretaker: running in debug mode. Infos follow:\n"
 	echo "--- running ---"
 	echo "  zsh           $ZSH_VERSION"
 	echo "  git           "${$(git --version)[3]}
-	echo "  pkg           "${$(git --git-dir=$PKG_DIR/${${(s:/:)$(readlink $0)}[-3]}/.git/ log -n 1)[2]}
+	echo "  caretaker     "${$(git --git-dir=$PKG_DIR/${${(s:/:)$(readlink $0)}[-3]}/.git/ log -n 1)[2]}
 	echo "--- settings ---"
 	echo "  PKG_ROOT      $PKG_ROOT"
 	echo "  PKG_PROTO     $PKG_PROTO"
@@ -276,7 +282,7 @@ function vcs_branch_is_master (
 	}
 	if [[ $branch != master ]] {
 		warn "$1: The currently checked out branch is not master, but '$branch'\n" \
-			"Currently, with GIT_USE_ORIGIN=0, pkg can only operate on the branch master\n" \
+			"Currently, with GIT_USE_ORIGIN=0, caretaker can only operate on the branch master\n" \
 			" -> skipping repo, please fix manually\n"
 		return 1
 	}
@@ -820,13 +826,13 @@ cd $PKG_DIR || die "Cannot cd $PKG_DIR"
 case $action in
 	a|add|install)
 		if [[ $action == install ]] {
-			warn "pkg install is deprecated, use pkg add instead\n"
+			warn "ct install is deprecated, use ct add instead\n"
 		}
 		pkg_add $*
 	;;
 	rm|delete|remove)
 		if [[ $action == delete ]] {
-			warn "pkg delete is deprecated, use pkg remove instead\n"
+			warn "ct delete is deprecated, use ct remove instead\n"
 		}
 		pkg_remove $*
 	;;
@@ -842,13 +848,13 @@ case $action in
 	u|update) pkg_update $* ;;
 	f|upgrade|pull)
 		if [[ $action == upgrade ]] {
-			warn "pkg updgrade is deprecated, use pkg pull instead\n"
+			warn "ct updgrade is deprecated, use ct pull instead\n"
 		}
 		(( AUTOUPDATE )) && pkg_update remote
 		wrap pkg_upgrade "$1" 'Looking for updates'
 	;;
 	e|eval) eval $* ;;
-	*) die "wait, what?\npkg: unknown action: '$action'\n" ;;
+	*) die "wait, what?\nct: unknown action: '$action'\n" ;;
 esac
 
 apply_triggers

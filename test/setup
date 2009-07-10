@@ -1,8 +1,8 @@
 ## vim:ft=zsh
 echo "# setting up PKG_ROOT"
 cd $test_proot
-git clone --quiet ${1-git://git.tabularazor.org/~derf/pkg} pkg
-cp pkg/include/pkglist pkglist
+git clone --quiet ${1-git://git.tabularazor.org/~derf/caretaker} caretaker
+cp caretaker/include/pkglist pkglist
 for repo in ra rb rc; (
 	mkdir $repo
 	cd $repo

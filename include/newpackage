@@ -11,7 +11,7 @@ while [[ $1 == --* ]] {
 	shift
 }
 
-[[ -r ~/.pkg.conf ]] && source ~/.pkg.conf
+[[ -r ~/.caretaker.conf ]] && source ~/.caretaker.conf
 [[ -d $PKG_ROOT ]] || exit 1
 
 cd $PKG_ROOT

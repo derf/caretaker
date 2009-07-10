@@ -1,14 +1,14 @@
 =head1 NAME
 
-pkg - distributed dotfile and script manager
+caretaker - distributed dotfile and script manager
 
 =head1 SYNOPSIS
 
-B<pkg> [I<options>] I<action> [I<arguments>]
+B<ct> [I<options>] I<action> [I<arguments>]
 
 =head1 DESCRIPTION
 
-B<pkg> is the basic script for maintaining packages
+B<ct> is the basic script for maintaining packages
 
 I<action> may be one of:
 
@@ -24,7 +24,7 @@ Remove I<package> from the local packages tree
 
 =item B<eval> I<expression>
 
-Evauluate I<expression>. See pkg(7)
+Evauluate I<expression>. See caretaker(7)
 
 =item B<info> I<package>
 
@@ -106,13 +106,13 @@ by prepending a 'no', like '--no-auto-update'.
 
 Options always override the configuration file.
 Also, every option refers to a configuration parameter,
-so please see pkg.conf(5) for more information.
+so please see caretaker.conf(5) for more information.
 
 =head1 FILES
 
 =over
 
-=item F<~/.pkg.conf>
+=item F<~/.caretaker.conf>
 
 Contains configuration vars
 
@@ -122,19 +122,19 @@ Contains configuration vars
 
 =over
 
-=item * B<pkg remote-update; pkg upgrade>
+=item * B<ct remote-update; ct upgrade>
 
 Get new stuff from the packages_root.
-Note: If you haven't disabled AUTOUPDATE, B<pkg upgrade> will suffice here
+Note: If you haven't disabled AUTOUPDATE, B<ct upgrade> will suffice here
 
-=item * B<pkg local-update; pkg push>
+=item * B<ct local-update; ct push>
 
 Push local changes to the packages_root.
-Note: If you haven't disabled AUTOUPDATE, B<pkg push> will suffice here
+Note: If you haven't disabled AUTOUPDATE, B<ct push> will suffice here
 
-=item * B<pkg refresh pkg>
+=item * B<ct refresh caretaker>
 
-'Fake-Upgrade'. Execute the appropiate commands as if the pkg package had been
+'Fake-Upgrade'. Execute the appropiate commands as if the caretaker package had been
 upgraded (useful when you change something but don't want to commit/push yet)
 
 =back
@@ -159,4 +159,4 @@ many ideas and suggestions
 
 =head1 SEE ALSO
 
-L<pkg.conf>(5), pkg(7)
+L<caretaker.conf>(5), caretaker(7)

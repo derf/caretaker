@@ -1,10 +1,10 @@
 =head1 NAME
 
-~/.config/pkg/pkg.conf - L<pkg>(1) configuration
+~/.config/caretaker/caretaker.conf - L<ct>(1) configuration
 
 =head1 DESCRIPTION
 
-Contains configuration parameters for L<pkg>(1)
+Contains configuration parameters for L<ct>(1)
 
 The file consists of multiple lines of the form I<parameter>=I<value>.
 
@@ -16,7 +16,7 @@ reasonable (so I hope) defaults.
 
 =head1 OPTIONS
 
-The text in (braces) refers to the pkg commandline option with which the config
+The text in (braces) refers to the ct commandline option with which the config
 setting may be overridden (if present).
 The text in [these braces] is the default value.
 
@@ -36,7 +36,7 @@ In the default, $PKG_PATH means the path component of $PKG_ROOT.
 
 If true, B<PKLIST_PATH> will always be executed on the local machine, regardless
 of where the B<PKG_ROOT> lies. For possible uses of this setting, see
-L<pkg(7)/"THE PACKAGE LIST">
+L<caretaker(7)/"THE PACKAGE LIST">
 
 =item B<PKG_DIR>=I<path>   (--packagedir I<path>)   [$HOME/packages]
 
@@ -64,22 +64,22 @@ Operate in debug mode if 1
 
 =item B<AUTOUPDATE>=I<boolean>   (--auto-update)   [1]
 
-If 1, automatically execute 'pkg update' before 'pkg push'
-and 'pkg remote-update' before 'pkg upgrade'
+If 1, automatically execute 'ct update' before 'ct push'
+and 'ct remote-update' before 'ct upgrade'
 
 =item B<GIT_USE_ORIGIN>=I<boolean>   [1]
 
-By default, pkg will simply issue a git push/pull, so that git will use the
+By default, caretaker will simply issue a git push/pull, so that git will use the
 repository's origin to determine where to push/pull.
 
 If you regularly change your PKG_ROOT, are too lazy to properly configure your
-git repos or whatever, set this to 0. Then, pkg will always call git pull/push
+git repos or whatever, set this to 0. Then, caretaker will always call git pull/push
 with both the remote repo and the branch as arguments.
 
 =item B<function pkg_hook_>I<hook> {I<content>}
 
 Define the global hook I<hook>, its I<content> will be executed
-together with pkg's global hooks; the name of the package for which the hook is
+together with caretaker's global hooks; the name of the package for which the hook is
 being executed will be given as first parameter and is accessible throug B<$1>.
 The hook is just a zsh function, so you can use any valid syntax you want,
 including newlines.
@@ -111,4 +111,4 @@ Colour for warning and error messages (default: red)
 
 =head1 SEE ALSO
 
-L<pkg>(1), L<checklinks>(1)
+L<ct>(1), L<checklinks>(1)

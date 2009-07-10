@@ -1,19 +1,19 @@
 ## vim:ft=zsh
-echo "# pkg remove (not installed/nonexistent)"
-! pkg remove suckage
-! pkg remove rb
+echo "# ct remove (not installed/nonexistent)"
+! ct remove suckage
+! ct remove rb
 
-echo "# pkg remove (ok)"
-pkg remove $repo
+echo "# ct remove (ok)"
+ct remove $repo
 
 echo "# genocide_collected (~/bin)"
 [[ ! -L $test_home/bin/$file ]]
 [[ ! -e $test_pdir/.collected/man/man2/$file.2 ]]
 
 repeat 2 {
-	echo "# pkg list"
-	stringcmp "pkg" "$(pkg list local)"
-	stringcmp "ra\nra-bare\nrb\nrb-bare\nrc\nrc-bare" "$(pkg list not-installed)"
-	stringcmp "pkg\nra\nra-bare\nrb\nrb-bare\nrc\nrc-bare" "$(pkg list remote)"
-	pkg update
+	echo "# ct list"
+	stringcmp "caretaker" "$(ct list local)"
+	stringcmp "ra\nra-bare\nrb\nrb-bare\nrc\nrc-bare" "$(ct list not-installed)"
+	stringcmp "caretaker\nra\nra-bare\nrb\nrb-bare\nrc\nrc-bare" "$(ct list remote)"
+	ct update
 }

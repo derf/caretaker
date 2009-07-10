@@ -3,7 +3,7 @@ unset -m 'GIT_*' 'XDG_*'
 setopt err_exit
 
 trap "print -P '\n%N:%i: %B%F{red}Test faild!%F{default}%b'" ZERR
-alias pkg='pkg --quiet --no-colours'
+alias ct='ct --quiet --no-colours'
 
 source test/documentation
 
@@ -31,39 +31,39 @@ source $tests/checklinks
 (source $tests/setup)
 
 echo "# bootstrapping PKG_DIR"
-$test_proot/pkg/include/bootstrap $test_proot $test_pdir
+$test_proot/caretaker/include/bootstrap $test_proot $test_pdir
 
 echo "# checking for success"
-[[ -e $test_home/.config/pkg/pkg.conf ]]
-[[ -d $test_proot/pkg ]]
-[[ -d $test_pdir/pkg ]]
-[[ -L $test_home/bin/pkg ]]
+[[ -e $test_home/.config/caretaker/caretaker.conf ]]
+[[ -d $test_proot/caretaker ]]
+[[ -d $test_pdir/caretaker ]]
+[[ -L $test_home/bin/ct ]]
 [[ -L $test_home/bin/checklinks ]]
-[[ -x $(readlink $test_home/bin/pkg) ]]
+[[ -x $(readlink $test_home/bin/ct) ]]
 [[ -x $(readlink $test_home/bin/checklinks) ]]
-[[ -e $test_pdir/.collected/man/man1/pkg.1 ]]
-[[ -e $test_pdir/.collected/man/man5/pkg.conf.5 ]]
-[[ -e $test_pdir/.collected/man/man7/pkg.7 ]]
+[[ -e $test_pdir/.collected/man/man1/ct.1 ]]
+[[ -e $test_pdir/.collected/man/man5/caretaker.conf.5 ]]
+[[ -e $test_pdir/.collected/man/man7/caretaker.7 ]]
 
-echo "# pkg list local"
-stringcmp "pkg" "$(pkg list)"
-stringcmp "pkg" "$(pkg list local)"
+echo "# ct list local"
+stringcmp "caretaker" "$(ct list)"
+stringcmp "caretaker" "$(ct list local)"
 
-echo "# pkg list not-installed"
-stringcmp "ra\nra-bare\nrb\nrb-bare\nrc\nrc-bare" "$(pkg list not-installed)"
+echo "# ct list not-installed"
+stringcmp "ra\nra-bare\nrb\nrb-bare\nrc\nrc-bare" "$(ct list not-installed)"
 
-echo "# pkg list all"
-stringcmp "pkg\nra\nra-bare\nrb\nrb-bare\nrc\nrc-bare" "$(pkg list all)"
+echo "# ct list all"
+stringcmp "caretaker\nra\nra-bare\nrb\nrb-bare\nrc\nrc-bare" "$(ct list all)"
 
-echo "# pkg add (no such repo)"
-! pkg add weltfrieden
+echo "# ct add (no such repo)"
+! ct add weltfrieden
 
-echo "# pkg add (already installed)"
-! pkg add pkg
+echo "# ct add (already installed)"
+! ct add caretaker
 
 for conf_origin in 0 1; {
 	echo "## GIT_USE_ORIGIN=$conf_origin"
-	echo "GIT_USE_ORIGIN=$conf_origin" >> $test_home/.config/pkg/pkg.conf
+	echo "GIT_USE_ORIGIN=$conf_origin" >> $test_home/.config/caretaker/caretaker.conf
 	for repo in ra ra-bare; {
 		file=${repo%-*}
 		if [[ $repo == *-bare ]] {

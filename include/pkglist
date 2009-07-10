@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 ## on the PKG_HOST: list available packages
-## used by pkg remote-update
+## used by ct remote-update
 # the PKG_PATH (package root path) is given as first argument ($1)
 
 if [[ ! -d $1 ]] {

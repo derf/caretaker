@@ -164,9 +164,9 @@ which have a status of "ok" or "absolute", level 2 will filter anything except
 =item B<-p>, B<--parameter> I<parameter>=I<value>
 
 While reading the links file, replace $I<parameter> with I<value>.
-When used in conjuction with pkg(1), $package will be set to the current
-package's relative path (as seen from $HOME, like C<packages/pkg>),
-and $etc will be set to $package/etc (like C<packages/pkg/etc>)
+When used in conjuction with ct(1), $package will be set to the current
+package's relative path (as seen from $HOME, like C<packages/caretaker>),
+and $etc will be set to $package/etc (like C<packages/caretaker/etc>)
 
 =item B<-q>, B<--quiet>
 
