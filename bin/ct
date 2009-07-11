@@ -50,10 +50,10 @@ if [[ -r $XDG_CONFIG_HOME/caretaker/caretaker.conf ]] {
 } elif [[ -r $HOME/.caretaker.conf ]] {
 	source $HOME/.caretaker.conf
 } elif [[ -r $XDG_CONFIG_HOME/pkg/pkg.conf ]] {
-	warn "pkg was renamed to caretaker, so move your config to $XDG_CONFIG_HOME/caretaker/caretaker.conf"
+	warn "pkg was renamed to caretaker, so move your config to $XDG_CONFIG_HOME/caretaker/caretaker.conf\n"
 	source $XDG_CONFIG_HOME/pkg/pkg.conf
 } elif [[ -r $HOME/.pkg.conf ]] {
-	warn "pkg was renamed to caretaker, so move your config to $HOME/.caretaker.conf"
+	warn "pkg was renamed to caretaker, so move your config to $HOME/.caretaker.conf\n"
 	source $HOME/.pkg.conf
 }
 
