@@ -1,3 +1,15 @@
+caretaker 1.2 - Sat Jul 11 2009
+
+    * checklinks: Added --msglevel option (similar to --quiet)
+    * Renamed pkg to caretaker (ct)
+    * Added COLOURS and PROGRESS configuration parameters
+    * Added PKGLIST_LOCAL configuration parameter
+    * Added experimental support for git:// package roots
+    * prereqs are now sourced in function scope
+    * manuals in man/ should be postfixed with .pod
+    * Added short alternatives to the ct action names
+    * Various source code fixes and cleanup
+
 pkg 1.1 - Wed Jul 1 2009
 
     * checklinks: style and documentation improvements
