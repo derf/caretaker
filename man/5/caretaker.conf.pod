@@ -65,7 +65,7 @@ Operate in debug mode if 1
 =item B<AUTOUPDATE>=I<boolean>   (--auto-update)   [1]
 
 If 1, automatically execute 'ct update' before 'ct push'
-and 'ct remote-update' before 'ct upgrade'
+and 'ct update remote' before 'ct upgrade'
 
 =item B<GIT_USE_ORIGIN>=I<boolean>   [1]
 

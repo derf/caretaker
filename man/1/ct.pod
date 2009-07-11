@@ -16,7 +16,7 @@ I<action> may be one of:
 
 =item B<add> I<package>
 
-fetch given I<package> from the package_root and install it
+fetch I<package> from the package_root and install it
 
 =item B<remove> I<package>
 
@@ -121,16 +121,6 @@ Contains configuration vars
 =head1 EXAMPLES
 
 =over
-
-=item * B<ct remote-update; ct upgrade>
-
-Get new stuff from the packages_root.
-Note: If you haven't disabled AUTOUPDATE, B<ct upgrade> will suffice here
-
-=item * B<ct local-update; ct push>
-
-Push local changes to the packages_root.
-Note: If you haven't disabled AUTOUPDATE, B<ct push> will suffice here
 
 =item * B<ct refresh caretaker>
 

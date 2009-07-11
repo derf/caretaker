@@ -40,12 +40,12 @@ from this, they will be ignored by caretaker.
 
 =head1 THE PACKAGE ROOT
 
-The packages_root, in caretaker referred to as $PKG_ROOT, is structured just like
-the packages directory $PKG_DIR, except that it neither contains .list nor
-.list-remote. The packages root is the central point where caretaker fetches
+The package root, in caretaker referred to as $PKG_ROOT, is structured just like
+the package directory $PKG_DIR, except that it neither contains .list nor
+.list-remote. It is the central point where caretaker fetches
 packages from and pushes packages to.
 
-The package root should contain the pkglist script shipped in include/.
+It should contain the pkglist script shipped in include/.
 If it doesn't, PKGLIST_PATH in .caretaker.conf must be set to the appropiate
 location on the package root host.
 
@@ -53,7 +53,7 @@ location on the package root host.
 
 The package list lives in the files B<.list> and B<.list-remote> mentioned
 above. It's used to decide whether a package needs to be pulled / pushed.
-Also, the 'caretaker add' completion relies on .list-remote, and back in the days when
+Also, the 'ct add' completion relies on .list-remote, and back in the days when
 caretaker supported more than one DVCS, it was used to determine which DVCS to use
 for which package.
 
