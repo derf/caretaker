@@ -23,20 +23,20 @@ c_error=$'\e[0;31m'
 c_reset=$'\e[0m'
 
 function info {
-	echo -ne "${c_info}$*${c_reset}"
+	echo -ne - "${c_info}$*${c_reset}"
 }
 
 function warn {
-	echo -ne "${c_error}$*${c_reset}" > /dev/stderr
+	echo -ne - "${c_error}$*${c_reset}" > /dev/stderr
 }
 
 function die {
-	echo -ne "${c_error}$*${c_reset}" > /dev/stderr
+	echo -ne - "${c_error}$*${c_reset}" > /dev/stderr
 	exit 100
 }
 
 function say {
-	echo $*
+	echo - $*
 }
 
 function clear_line {
@@ -73,6 +73,7 @@ while [[ $1 == --* ]] {
 		--packageroot) PKG_ROOT=$2; shift ;;
 		--progress) PROGRESS=1 ;;
 		--no-progress) PROGRESS=0 ;;
+		--) shift; break ;;
 		*) die "Unknown argument: '$1'\n" ;;
 	esac
 	shift
@@ -94,23 +95,22 @@ action=$1
 export PKG_DIR
 export PKG_ROOT
 
-function debug {
-	typeset func line
-	if (( $# >= 3 )) {
-		func=$1
-		line=$2
-		shift 2
+
+if (( DEBUG )) {
+	function debug {
+		typeset func line
+		if (( $# >= 3 )) {
+			func=$1
+			line=$2
+			shift 2
+		}
+		echo "(debug) $func:$line: $*" >&2
 	}
-	echo "(debug) $func:$line: $*" >&2
-}
 
-# I need function name and line number of the function _calling_ debug,
-# so I can't get them from inside the debug function.
-alias debug='debug ${(z%):-%N %i}'
-
-# Avoid calling debug without debug mode... just in case one needs more speed
-if (( !DEBUG )) {
-	unalias debug
+	# I need function name and line number of the function _calling_ debug,
+	# so I can't get them from inside the debug function.
+	alias debug='debug ${(z%):-%N %i}'
+} else {
 	function debug {}
 }
 
@@ -124,14 +124,14 @@ if (( SILENT )) {
 	PROGRESS=0
 }
 
-if (( !COLOURS )) {
+if (( ! COLOURS )) {
 	c_info=''
 	c_reset=''
 	c_error=''
 }
 
 if [[ ! -d $PKG_DIR ]] {
-	die "Error: Package directory '$PKG_DIR' not found\n"
+	die "Error: Package directory '$PKG_DIR' does not exist\n"
 }
 
 
@@ -140,15 +140,12 @@ if [[ ! -d $PKG_DIR ]] {
 ##
 
 # Protocol
-if [[ $PKG_ROOT == ssh://* ]] {
-	PKG_PROTO='ssh'
-} elif [[ $PKG_ROOT == git://* ]] {
-	PKG_PROTO='git'
-} elif [[ $PKG_ROOT == /* ]] {
-	PKG_PROTO='file'
-} else {
-	die "Error: Unknown protocol in PKG_ROOT '$PKG_ROOT'\n"
-}
+case $PKG_ROOT in
+	ssh://*) PKG_PROTO='ssh' ;;
+	git://*) PKG_PROTO='git' ;;
+	/*)      PKG_PROTO='file' ;;
+	*) die "Error: Unknown protocol in PKG_ROOT '$PKG_ROOT'\n" ;;
+esac
 
 # user, host, path
 if [[ $PKG_PROTO == (git|ssh) ]] {
@@ -198,7 +195,7 @@ function check_valid {
 
 # Default reply: Yes
 function confirm_yes {
-	echo -n "$* [Y/n] "
+	echo -n - "$* [Y/n] "
 	read -k 1
 	[[ $REPLY != $'\n' ]] && echo
 	[[ $REPLY == (y|Y|$'\n') ]]
@@ -206,7 +203,7 @@ function confirm_yes {
 
 # Default reply: No
 function confirm_no {
-	echo -n "$* [y/N] "
+	echo -n - "$* [y/N] "
 	read -q
 }
 
@@ -252,7 +249,7 @@ function vcs_setup {
 function vcs_to_list (
 	vcs_setup $1
 	if [[ -d $PKG_DIR/$1/.git ]] {
-		echo -n "$1 git "
+		echo -n - "$1 git "
 		echo ${$(git log -n 1 master)[2]}
 	} else {
 		warn "No git repository found: $1\n"
@@ -347,11 +344,11 @@ function list_incoming {
 }
 
 function list_type {
-	echo ${$(grep "^$1 " $PKG_DIR/.list-remote)[2]}
+	echo - ${$(grep "^$1 " $PKG_DIR/.list-remote)[2]}
 }
 
 function list_type_local {
-	echo ${$(grep "^$1 " $PKG_DIR/.list)[2]}
+	echo - ${$(grep "^$1 " $PKG_DIR/.list)[2]}
 }
 
 function list_update_remote {
@@ -365,16 +362,17 @@ function list_update_remote {
 	}
 	if [[ -n $(cat $tmpfile) ]] {
 		cp $tmpfile .list-remote
+		rm $tmpfile
 	} else {
+		rm $tmpfile
 		die "remote list update failed\n"
 	}
-	rm $tmpfile
 }
 
 function list_update_local {
-	typeset all=${#$(echo $PKG_DIR/*(/))}
+	typeset -i all=${#$(echo $PKG_DIR/*(/))}
 	typeset -i current=0
-	typeset i
+	typeset package
 	rm -f $PKG_DIR/.list
 	for package in *(-/); {
 		(( current++ ))
@@ -386,14 +384,14 @@ function list_update_local {
 function list_package_update {
 	typeset list
 	list=$(grep -v "^$1 " $PKG_DIR/.list)
-	echo $list > $PKG_DIR/.list
+	echo - $list > $PKG_DIR/.list
 	vcs_to_list $1 >> $PKG_DIR/.list
 }
 
 function list_package_remove {
 	typeset list
 	list=$(grep -v "^$1 " $PKG_DIR/.list)
-	echo $list > $PKG_DIR/.list
+	echo - $list > $PKG_DIR/.list
 }
 
 function list_version_local {
@@ -413,7 +411,7 @@ function priority_name {
 		3) echo 'standard' ;;
 		2) echo 'optional' ;;
 		1) echo 'extra' ;;
-		*) warn "invalid priority: $!" ;;
+		*) warn "invalid priority: $1" ;;
 	esac
 }
 
@@ -598,8 +596,8 @@ function genocide_collected {
 	for man in man/*/*(N); {
 		section=${man:h:t}
 		manual=${man:t}
-		if [[ -e $PKG_DIR/.collected/man/man$section/$manual.$section ]] {
-			rm $PKG_DIR/.collected/man/man$section/$manual.$section
+		if [[ -e $PKG_DIR/.collected/man/man$section/${manual%.pod}.$section ]] {
+			rm $PKG_DIR/.collected/man/man$section/${manual%.pod}.$section
 		}
 	}
 	for file in bin/*(N); {
@@ -661,11 +659,11 @@ function wrap {
 ##
 
 function pkg_add {
+	check_valid $1
 	if [[ -d $PKG_DIR/$1 ]] {
 		info "Package '$1' is already installed!\n"
 		exit 1
 	}
-	check_valid $1
 	info "Retrieving package $1...\n"
 	vcs_add $1 || return 255
 	global_hook $1 post-add
@@ -701,7 +699,7 @@ function pkg_upgrade {
 	if [[ $(list_type $1) != $(list_type_local $1) ]] {
 		clear_line
 		warn "Incompatible systems. Please reinstall: $1\n"
-		warn "  remote '$(list_type $1)' <-> local '$(list_type_local)'\n"
+		warn "  remote '$(list_type $1)' <-> local '$(list_type_local $1)'\n"
 		return 9
 	}
 	if list_incoming $1; then
