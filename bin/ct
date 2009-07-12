@@ -670,8 +670,7 @@ function pkg_add {
 
 function pkg_push {
 	check_installed $1
-	check_valid $1
-	if list_incoming $1; then
+	if list_incoming $1 || ! list_exists $1; then
 		clear_line
 		info "Pushing $1\n"
 		global_hook $1 pre-update
@@ -694,14 +693,13 @@ function pkg_remove {
 
 function pkg_upgrade {
 	check_installed $1
-	check_valid $1
-	if [[ $(list_type $1) != $(list_type_local $1) ]] {
+	if list_exists $1 && [[ $(list_type $1) != $(list_type_local $1) ]]; then
 		clear_line
 		warn "Incompatible systems. Please reinstall: $1\n"
 		warn "  remote '$(list_type $1)' <-> local '$(list_type_local $1)'\n"
 		return 9
-	}
-	if list_incoming $1; then
+	fi
+	if list_incoming $1 || ! list_exists $1; then
 		clear_line
 		info "Updating $1 to $(list_version_remote $1)\n"
 		global_hook $1 pre-update
@@ -761,7 +759,7 @@ function pkg_update {
 }
 
 function pkg_info {
-	check_valid $1
+	list_is_installed $1 || list_exists $1 || die "No such package: $1\n"
 
 	typeset name=$1
 	typeset repo_type=$(list_type $1)

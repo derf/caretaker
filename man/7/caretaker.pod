@@ -141,6 +141,12 @@ Packages with a priority above 3 require user confirmation to be removed
 
 =back
 
+=head1 UNLISTED PACKAGES
+
+It is possible to have local packages which do not exist in the package root,
+as long as they have a working git origin.  Note that they will always be
+pulled/pushed when doing batch pull/push, though.
+
 =head1 PREREQUISITES
 
 The prerequisites are stored in a package in the file F<prereqs>.
