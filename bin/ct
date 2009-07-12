@@ -354,11 +354,10 @@ function list_type_local {
 function list_update_remote {
 	typeset tmpfile=$(mktemp -t pkglist.XXXXXX)
 	typeset -i ret=0
-	export PKG_DIR
 	if [[ $PKGLIST_LOCAL == 1 || $PKG_PROTO == 'file' ]] {
 		$PKGLIST_PATH $PKG_PATH > $tmpfile
 	} elif [[ $PKG_PROTO == 'ssh' ]] {
-		ssh $PKG_USER@$PKG_HOST "PKG_DIR='$PKG_DIR' $PKGLIST_PATH $PKG_PATH" > $tmpfile
+		ssh $PKG_USER@$PKG_HOST "$PKGLIST_PATH $PKG_PATH" > $tmpfile
 	}
 	if [[ -n $(cat $tmpfile) ]] {
 		cp $tmpfile .list-remote
