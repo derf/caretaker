@@ -69,7 +69,7 @@ cd caretaker
 echo 'Writing caretaker.conf'
 mkdir -p $XDG_CONFIG_HOME/caretaker
 cat > $XDG_CONFIG_HOME/caretaker/caretaker.conf <<- flurbl
-	PKG_ROOT='$PKG_ROOT'
+	PKG_ROOT=($PKG_ROOT)
 	PKG_DIR="${PKG_DIR/$HOME/\$HOME}"
 flurbl
 if ((pkglist_cgi)) {
