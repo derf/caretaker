@@ -309,8 +309,6 @@ function vcs_branch_is_master (
 function vcs_pull (
 	vcs_setup $1
 	if ((GIT_USE_ORIGIN)) {
-		# the package might be newly created and not have an origin yet
-		vcs_fix_origin $1
 		git pull
 	} else {
 		pkgroot_parse $(list_get_root $1)
@@ -322,8 +320,6 @@ function vcs_pull (
 function vcs_push (
 	vcs_setup $1
 	if ((GIT_USE_ORIGIN)) {
-		# see above
-		vcs_fix_origin $1
 		git push
 	} else {
 		pkgroot_parse $(list_get_root $1)
@@ -335,18 +331,6 @@ function vcs_status (
 	vcs_setup $1
 	git status
 )
-
-function vcs_fix_origin (
-	vcs_setup $1
-	if [[ ! -r .git/remotes/origin && ! -r .git/refs/remotes/origin/HEAD ]] {
-		if ! fgrep -q '[remote "origin"]' .git/config; then
-			pkgroot_parse $(list_get_root $1)
-			git remote add origin $PKG_ROOT/$1
-			pkgroot_clean
-		fi
-	}
-)
-
 
 ## List stuff
 
