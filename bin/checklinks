@@ -52,7 +52,7 @@ sub remove_link {
 
 	if (-l "$base/$link") {
 		unlink("$base/$link") or warn("cannot unlink $base/$link: $!");
-		print_format('removed', $link, '', 'red', 0);
+		print_format('removed', $link, '', 'red', 1);
 	}
 }
 
