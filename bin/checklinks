@@ -7,7 +7,6 @@ use Getopt::Long;
 use Term::ANSIColor;
 
 my $base = $ENV{HOME};
-my ($type, $src, $dst);
 my $msglevel = 0;
 my $remove = 0;
 my %substitute;
@@ -35,7 +34,7 @@ while(<$links>) {
 	foreach my $key (keys(%substitute)) {
 		s/\$$key/$substitute{$key}/g;
 	}
-	($type, $src, $dst) = split;
+	my ($type, $src, $dst) = split;
 	next unless ($type eq 'soft' or $type eq 'hard');
 	if ($remove) {
 		remove_link($src);
@@ -54,6 +53,7 @@ sub remove_link {
 		unlink("$base/$link") or warn("cannot unlink $base/$link: $!");
 		print_format('removed', $link, '', 'red', 1);
 	}
+	return;
 }
 
 sub check_symlink {
@@ -79,6 +79,7 @@ sub check_symlink {
 		symlink($dst, "$base/$src");
 		print_format('fixed', $src, $dst, 'cyan', 1);
 	}
+	return;
 }
 
 sub check_hardlink {
@@ -101,6 +102,7 @@ sub check_hardlink {
 	elsif ((stat("$base/$src"))[1] == (stat("$base/$dst"))[1]) {
 		print_format('ok', $src, $dst, 'green', 0);
 	}
+	return;
 }
 
 sub mkdirs {
@@ -116,6 +118,7 @@ sub mkdirs {
 		}
 		$path .= $_;
 	}
+	return;
 }
 
 sub print_format {
@@ -132,6 +135,7 @@ sub print_format {
 		printf('%-9s', $message);
 	}
 	printf(" %-15s -> %-15s\n", $src, $dst);
+	return;
 }
 
 exit($exit);
