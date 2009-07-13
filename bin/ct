@@ -16,7 +16,7 @@
 
 setopt extended_glob
 typeset -a -U triggers
-typeset -a CL_OPTIONS
+typeset -a PKG_ROOTS CL_OPTIONS
 
 c_info=$'\e[0;36m'
 c_error=$'\e[0;31m'
@@ -82,7 +82,14 @@ while [[ $1 == --* ]] {
 action=$1
 ((#)) && shift
 
-[[ -n $PKG_ROOT ]] || die "No PKG_ROOT specified. Please edit your caretaker.conf\n"
+if [[ -n $PKG_ROOT ]] {
+	PKG_ROOTS+=($PKG_ROOT)
+	unset PKG_ROOT
+}
+
+if (( $#PKG_ROOTS == 0 )) {
+	die "No PKG_ROOT specified. Please edit your caretaker.conf\n"
+}
 : ${PKG_DIR:="$HOME/packages"}
 : ${PKGLIST_LOCAL=0}
 : ${CL_OPTIONS:=--quiet}
@@ -139,29 +146,36 @@ if [[ ! -d $PKG_DIR ]] {
 ## Setup some additional variables related to PKG_ROOT
 ##
 
-# Protocol
-case $PKG_ROOT in
-	ssh://*) PKG_PROTO='ssh' ;;
-	git://*) PKG_PROTO='git' ;;
-	/*)      PKG_PROTO='file' ;;
-	*) die "Error: Unknown protocol in PKG_ROOT '$PKG_ROOT'\n" ;;
-esac
+function pkgroot_parse {
+	PKG_ROOT=$1
+	# Protocol
+	case $PKG_ROOT in
+		ssh://*) PKG_PROTO='ssh' ;;
+		git://*) PKG_PROTO='git' ;;
+		/*)      PKG_PROTO='file' ;;
+		*) die "Error: Unknown protocol in PKG_ROOT '$PKG_ROOT'\n" ;;
+	esac
 
-# user, host, path
-if [[ $PKG_PROTO == (git|ssh) ]] {
-	PKG_HOST=${${PKG_ROOT#"${PKG_PROTO}://"}%%/*}
-	PKG_PATH=${PKG_ROOT#"${PKG_PROTO}://$PKG_HOST"}
-	if [[ $PKG_HOST == *@* ]] {
-		PKG_USER=${PKG_HOST%%@*}
-		PKG_HOST=${PKG_HOST#*@}
-	} else {
-		PKG_USER=$USERNAME
+	# user, host, path
+	if [[ $PKG_PROTO == (git|ssh) ]] {
+		PKG_HOST=${${PKG_ROOT#"${PKG_PROTO}://"}%%/*}
+		PKG_PATH=${PKG_ROOT#"${PKG_PROTO}://$PKG_HOST"}
+		if [[ $PKG_HOST == *@* ]] {
+			PKG_USER=${PKG_HOST%%@*}
+			PKG_HOST=${PKG_HOST#*@}
+		} else {
+			PKG_USER=$USERNAME
+		}
+	} elif [[ $PKG_PROTO == 'file' ]] {
+		PKG_PATH=$PKG_ROOT
 	}
-} elif [[ $PKG_PROTO == 'file' ]] {
-	PKG_PATH=$PKG_ROOT
+	: ${PKGLIST_PATH:=$PKG_PATH/pkglist}
 }
 
-: ${PKGLIST_PATH:=$PKG_PATH/pkglist}
+function pkgroot_clean {
+	unset PKG_ROOT PKG_PROTO PKG_HOST PKG_PATH PKG_USER
+	((PKGLIST_LOCAL)) || unset PKGLIST_PATH
+}
 
 if ((DEBUG)) {
 	info "caretaker: running in debug mode. Infos follow:\n"
@@ -170,12 +184,16 @@ if ((DEBUG)) {
 	echo "  git           "${$(git --version)[3]}
 	echo "  caretaker     "${$(git --git-dir=$PKG_DIR/${${(s:/:)$(readlink $0)}[-3]}/.git/ log -n 1)[2]}
 	echo "--- settings ---"
-	echo "  PKG_ROOT      $PKG_ROOT"
-	echo "  PKG_PROTO     $PKG_PROTO"
-	echo "  PKG_USER      $PKG_USER"
-	echo "  PKG_HOST      $PKG_HOST"
-	echo "  PKGLIST_PATH  $PKGLIST_PATH"
 	echo "  PKGLIST_LOCAL $PKGLIST_LOCAL"
+	for PKG_ROOT in $PKG_ROOTS; {
+		pkgroot_parse $PKG_ROOT
+		echo "  PKG_ROOT      $PKG_ROOT"
+		echo "    PKG_PROTO   $PKG_PROTO"
+		echo "    PKG_USER    $PKG_USER"
+		echo "    PKG_HOST    $PKG_HOST"
+		echo "    PKGLIST_PATH $PKGLIST_PATH"
+		pkgroot_clean
+	}
 	echo "  PKG_DIR       $PKG_DIR"
 	echo "  CL_OPTIONS    $CL_OPTIONS"
 	echo "  SILENT        $SILENT"
@@ -257,6 +275,8 @@ function vcs_to_list (
 )
 
 function vcs_add (
+	pkgroot_parse $(list_get_root $1)
+	cd $PKG_DIR
 	if [[ $(list_type $1) == git ]] {
 		git clone "$PKG_ROOT/$1"
 		vcs_setup $1
@@ -264,6 +284,7 @@ function vcs_add (
 	} else {
 		 die "$1: Cannot handle repository format '$(list_type $1)'\n"
 	}
+	pkgroot_clean
 )
 
 function vcs_log (
@@ -292,7 +313,9 @@ function vcs_pull (
 		vcs_fix_origin $1
 		git pull
 	} else {
+		pkgroot_parse $(list_get_root $1)
 		vcs_branch_is_master $1 && git pull $PKG_ROOT/${PWD:t} master
+		pkgroot_clean
 	}
 )
 
@@ -303,6 +326,7 @@ function vcs_push (
 		vcs_fix_origin $1
 		git push
 	} else {
+		pkgroot_parse $(list_get_root $1)
 		vcs_branch_is_master $1 && git push $PKG_ROOT/${PWD:t} master
 	}
 )
@@ -315,8 +339,11 @@ function vcs_status (
 function vcs_fix_origin (
 	vcs_setup $1
 	if [[ ! -r .git/remotes/origin && ! -r .git/refs/remotes/origin/HEAD ]] {
-		fgrep -q '[remote "origin"]' .git/config ||
+		if ! fgrep -q '[remote "origin"]' .git/config; then
+			pkgroot_parse $(list_get_root $1)
 			git remote add origin $PKG_ROOT/$1
+			pkgroot_clean
+		fi
 	}
 )
 
@@ -343,6 +370,10 @@ function list_incoming {
 	[[ $(list_version_local $1) != $(list_version_remote $1) ]]
 }
 
+function list_get_root {
+	echo - ${$(grep "^$1 " $PKG_DIR/.list-remote)[4]}
+}
+
 function list_type {
 	echo - ${$(grep "^$1 " $PKG_DIR/.list-remote)[2]}
 }
@@ -352,12 +383,16 @@ function list_type_local {
 }
 
 function list_update_remote {
-	typeset tmpfile=$(mktemp -t pkglist.XXXXXX)
+	typeset tmpfile=$(mktemp -t pkglist.XXXXXX) PKG_ROOT
 	typeset -i ret=0
-	if [[ $PKGLIST_LOCAL == 1 || $PKG_PROTO == 'file' ]] {
-		$PKGLIST_PATH $PKG_PATH > $tmpfile
-	} elif [[ $PKG_PROTO == 'ssh' ]] {
-		ssh $PKG_USER@$PKG_HOST "$PKGLIST_PATH $PKG_PATH" > $tmpfile
+	for PKG_ROOT in $PKG_ROOTS; {
+		pkgroot_parse $PKG_ROOT
+		if [[ $PKGLIST_LOCAL == 1 || $PKG_PROTO == 'file' ]] {
+			$PKGLIST_PATH $PKG_PATH $PKG_ROOT >> $tmpfile
+		} elif [[ $PKG_PROTO == 'ssh' ]] {
+			ssh $PKG_USER@$PKG_HOST "$PKGLIST_PATH $PKG_PATH $PKG_ROOT" >> $tmpfile
+		}
+		pkgroot_clean
 	}
 	if [[ -n $(cat $tmpfile) ]] {
 		cp $tmpfile .list-remote
@@ -761,10 +796,12 @@ function pkg_update {
 function pkg_info {
 	list_is_installed $1 || list_exists $1 || die "No such package: $1\n"
 
-	typeset name=$1
+	list_exists $1 && pkgroot_parse $(list_get_root $1)
+	typeset name=$1 package_root=$PKG_ROOT
 	typeset repo_type=$(list_type $1)
 	typeset priority priority_name
 	typeset hooks makefile discription state
+	pkgroot_clean
 	if [[ -d $1 ]] {
 		cd $1
 		if [[ -r priority ]] {
@@ -798,6 +835,7 @@ function pkg_info {
 	}
 
 	show_info 'Package' $name
+	show_info 'Source' $package_root
 	show_info 'State' $state
 	[[ -n $priority ]] && show_info 'Priority' "$priority ($priority_name)"
 	show_info 'Local Version' $(list_version_local $1)

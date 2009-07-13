@@ -8,16 +8,21 @@ if [[ ! -d $1 ]] {
 	exit 1
 }
 
+setopt err_exit
+
 # change into package root directory (first argument)
 cd $1
+shift
 
 for i in *(-/); {
 	if [[ -d $i/.git ]] {
 		echo -n "$i git "
-		echo ${$(git --git-dir=$i/.git log -n 1)[2]}
+		echo -n ${$(git --git-dir=$i/.git log -n 1)[2]}
+		echo " $*"
 	} elif [[ -d $i/objects && -d $i/refs ]] {
 		echo -n "$i git "
-		echo ${$(git --git-dir=$i log -n 1)[2]}
+		echo -n ${$(git --git-dir=$i log -n 1)[2]}
+		echo " $*"
 	} else {
 		echo "$i: Unsupported or no repository" >&2
 	}

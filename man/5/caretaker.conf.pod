@@ -22,10 +22,11 @@ The text in [these braces] is the default value.
 
 =over
 
-=item B<PKG_ROOT>=I<url>   (--packageroot I<url>)
+=item B<PKG_ROOTS>=(I<url1> I<url2> I<...>)   (--packageroot I<url>)
 
-the package root path.
+the package root paths.
 I<url> may either be of the form C<ssh://host/path> or C</path>.
+At least one must be set.
 
 =item B<PKGLIST_PATH>=I<path>   [$PKG_PATH/pkglist]
 
