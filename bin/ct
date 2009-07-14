@@ -244,8 +244,8 @@ function progress {
 	typeset -i currentper=$(( (current*100)/max ))
 	typeset item j c a
 	function item {
-		for j in {0..$1}; {
-			(( j > 0 )) && output+=$2
+		repeat $1; {
+			output+=$2
 		}
 	}
 	c=$(( currentper/5 ))
