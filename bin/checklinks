@@ -37,7 +37,7 @@ while(<$links>) {
 	my ($type, $src, $dst) = split;
 	next unless ($type eq 'soft' or $type eq 'hard');
 	if ($remove) {
-		remove_link($src);
+		remove_link($type, $src, $dst);
 	} elsif ($type eq 'soft') {
 		check_symlink($src, $dst);
 	} elsif ($type eq 'hard') {
@@ -47,11 +47,14 @@ while(<$links>) {
 close($links);
 
 sub remove_link {
-	my $link = shift;
+	my ($type, $src, $dst) = @_;
 
-	if (-l "$base/$link") {
-		unlink("$base/$link") or warn("cannot unlink $base/$link: $!");
-		print_format('removed', $link, '', 'red', 1);
+	if (
+	       ($type eq 'soft' and -l "$base/$src")
+	    or ($type eq 'hard' and -e "$base/$src" and -e "$base/$dst")
+	) {
+		unlink("$base/$src") or warn("cannot unlink $base/$src: $!");
+		print_format('removed', $src, '', 'red', 1);
 	}
 	return;
 }
@@ -178,7 +181,7 @@ Shortcut for C<< --msglevel=1 >>
 
 =item B<-r>, B<--remove>
 
-Remove all symlinks. Hardlinks will be left as they are.
+Remove all link sources (hardlinks: only if their destination exists)
 
 =back
 
