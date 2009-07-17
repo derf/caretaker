@@ -15,3 +15,44 @@ Now you can add your own packages as git repos in PKG_ROOT.
 
 To use caretaker with your packages on a machine, download and execute
 the bootstrap script (include/bootstrap).
+
+=head1 CREATING A PACKAGE
+
+Example: a vim package
+
+First of all, you'll need to create the package's git repository.  Ideally you do not do
+this in the package root itself, since it's recommended to have bare git repos there.
+
+  client ~ > cd /tmp
+  client /tmp > mkdir vim; cd vim
+  /client tmp/vim > git init
+  Initialized empty Git repository in /tmp/vim/.git/
+  /client tmp/vim > mkdir etc
+  /client tmp/vim > cp $your_fancy_vimrc etc/vimrc
+  /client tmp/vim > echo 'soft .vimrc $etc/vimrc' > links
+  /client tmp/vim > git add .
+  /client tmp/vim > git commit -m 'initial commit. Now with extra cake'
+  [master (root-commit) 4359548] initial commit. Now with extra cake
+   2 files changed, 51 insertions(+), 0 deletions(-)
+   create mode 100644 etc/vimrc
+   create mode 100644 links
+
+You now have a working vim package, it just is not accessible to caretaker yet.
+So let's fix that.
+
+  server $PKG_ROOT > mkdir vim; cd vim
+  server $PKG_ROOT/vim > git --bare init
+
+  client /tmp/vim > git push server:$PKG_ROOT/vim master
+
+Now you can install the vim package the normal way
+
+  client ~ > ct update
+  Updating local package list
+  Updating remote package list
+  client ~ > ct add vim
+  Retrieving package vim...
+  [...]
+  created   .vimrc          -> packages/vim/etc/vimrc
+
+And that's it. You can safely rm -rf /tmp/vim now.
