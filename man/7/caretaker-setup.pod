@@ -40,8 +40,7 @@ this in the package root itself, since it's recommended to have bare git repos t
 You now have a working vim package, it just is not accessible to caretaker yet.
 So let's fix that.
 
-  server $PKG_ROOT > mkdir vim; cd vim
-  server $PKG_ROOT/vim > git --bare init
+  server $PKG_ROOT > GIT_DIR=vim git --bare init
 
   client /tmp/vim > git push server:$PKG_ROOT/vim master
 
