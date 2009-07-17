@@ -24,9 +24,10 @@ The text in [these braces] is the default value.
 
 =item B<PKG_ROOTS>=(I<url1> I<url2> I<...>)   (--packageroot I<url>)
 
-the package root paths.
-I<url> may either be of the form C<ssh://host/path> or C</path>.
-At least one must be set.
+the package root paths, at least one must be set.
+I<url> may either be of the form C<protocol://host/path> or C</path>,
+the supported protocols are C<git> and C<ssh>.
+Note that pushing is not possible when the C<git> protocol is used.
 
 =item B<PKGLIST_PATH>=I<path>   [$PKG_PATH/pkglist]
 
