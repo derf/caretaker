@@ -163,8 +163,10 @@ function pkgroot_parse {
 		if [[ $PKG_HOST == *@* ]] {
 			PKG_USER=${PKG_HOST%%@*}
 			PKG_HOST=${PKG_HOST#*@}
+			PKG_UAH=${PKG_USER}@${PKG_HOST}
 		} else {
 			PKG_USER=$USERNAME
+			PKG_UAH=${PKG_HOST}
 		}
 	} elif [[ $PKG_PROTO == 'file' ]] {
 		PKG_PATH=$PKG_ROOT
@@ -173,7 +175,7 @@ function pkgroot_parse {
 }
 
 function pkgroot_clean {
-	unset PKG_ROOT PKG_PROTO PKG_HOST PKG_PATH PKG_USER
+	unset PKG_ROOT PKG_PROTO PKG_HOST PKG_PATH PKG_USER PKG_UAH
 	((PKGLIST_LOCAL)) || unset PKGLIST_PATH
 }
 
@@ -191,6 +193,7 @@ if ((DEBUG)) {
 		echo "    PKG_PROTO   $PKG_PROTO"
 		echo "    PKG_USER    $PKG_USER"
 		echo "    PKG_HOST    $PKG_HOST"
+		echo "    PKG_UAH     $PKG_UAH"
 		echo "    PKGLIST_PATH $PKGLIST_PATH"
 		pkgroot_clean
 	}
@@ -374,7 +377,7 @@ function list_update_remote {
 		if [[ $PKGLIST_LOCAL == 1 || $PKG_PROTO == 'file' ]] {
 			$PKGLIST_PATH $PKG_PATH $PKG_ROOT >> $tmpfile
 		} elif [[ $PKG_PROTO == 'ssh' ]] {
-			ssh $PKG_USER@$PKG_HOST "$PKGLIST_PATH $PKG_PATH $PKG_ROOT" >> $tmpfile
+			ssh $PKG_UAH "$PKGLIST_PATH $PKG_PATH $PKG_ROOT" >> $tmpfile
 		}
 		pkgroot_clean
 	}
