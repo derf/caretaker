@@ -578,7 +578,10 @@ function populate_collected {
 	typeset man section manpage file
 
 	wrap_info $1
-	info "Enabling documentation\n"
+	if [[ ! -d bin && ! -d man ]] {
+		return
+	}
+	info "Processing documentation\n"
 	for man in man/*/*(N); {
 		section=${man:h:t}
 		manpage=${man:t}
