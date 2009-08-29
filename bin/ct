@@ -331,8 +331,11 @@ function vcs_push (
 )
 
 function vcs_status (
+	typeset gitstatus
 	vcs_setup $1
-	git status
+	gitstatus=$(git status)
+	[[ $gitstatus == *'nothing to commit (working directory clean)' ]] && gitstatus=''
+	echo $gitstatus
 )
 
 ## List stuff
@@ -754,7 +757,7 @@ function pkg_status {
 	typeset vcs_status
 	check_installed $1
 	vcs_status=$(PAGER='' vcs_status $1)
-	if [[ -n $vcs_status && $vcs_status != *'nothing to commit (working directory clean)' ]] {
+	if [[ -n $vcs_status ]] {
 		if ((SILENT)) {
 			echo $1
 		} else {
