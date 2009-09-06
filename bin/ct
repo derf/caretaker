@@ -578,7 +578,7 @@ function check_prereqs {
 function populate_collected {
 	cd $PKG_DIR/$1 || return
 	typeset -i bins=0 bino=0 mans=0 mano=0
-	typeset man section manpage file
+	typeset man section manpage file target
 
 	wrap_info $1
 	if [[ ! -d bin && ! -d man ]] {
@@ -588,8 +588,11 @@ function populate_collected {
 	for man in man/*/*(N); {
 		section=${man:h:t}
 		manpage=${man:t}
+		target=$PKG_DIR/.collected/man/man$section/${manpage%.pod}.$section
 		if podchecker man/$section/$manpage &> /dev/null; then
-			pod2man -u -s $section -c "$1 package" -r $HOME man/$section/$manpage > $PKG_DIR/.collected/man/man$section/${manpage%.pod}.$section
+			pod2man -u -s $section -c "$1 package" -r $HOME man/$section/$manpage > $target
+		elif [[ $manpage != *.pod && ! -e $target ]]; then
+			ln -s ../../../$1/man/$section/$manpage $target
 		fi
 	}
 	for file in bin/*(N); {
