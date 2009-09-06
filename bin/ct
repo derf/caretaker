@@ -88,7 +88,8 @@ if [[ -n $PKG_ROOT ]] {
 }
 
 if (( $#PKG_ROOTS == 0 )) {
-	die "No PKG_ROOT specified. Please edit your caretaker.conf\n"
+	die "No package root(s) specified.\n" \
+	    "Please edit the PKG_ROOTS value in your config file\n"
 }
 : ${PKG_DIR:="$HOME/packages"}
 : ${PKGLIST_LOCAL=0}
@@ -207,11 +208,11 @@ if ((DEBUG)) {
 }
 
 function check_installed {
-	[[ -n $1 && -d $PKG_DIR/$1 ]] || die "Package not installed: '$1'\n"
+	[[ -n $1 && -d $PKG_DIR/$1 ]] || die "Package is not installed: '$1'\n"
 }
 
 function check_valid {
-	list_exists $1 || die "Package does not exist: '$1'\n"
+	list_exists $1 || die "Unknown package name: '$1' (not in package list)\n"
 }
 
 # Default reply: Yes
@@ -273,7 +274,7 @@ function vcs_to_list (
 		echo -n - "$1 git "
 		echo ${$(git log -n 1 master)[2]}
 	} else {
-		warn "No git repository found: $1\n"
+		warn "No git repository found: '$1'\n"
 	}
 )
 
@@ -435,7 +436,7 @@ function priority_name {
 		3) echo 'standard' ;;
 		2) echo 'optional' ;;
 		1) echo 'extra' ;;
-		*) warn "invalid priority: $1" ;;
+		*) warn "invalid priority: '$1'\n" ;;
 	esac
 }
 
@@ -611,7 +612,8 @@ function populate_collected {
 				}
 			}
 		} else {
-			warn "populate_collected: Not updating ~/$file since it's not a symlink\n"
+			warn "populate_collected: ~/$file is not a symlink - skipping $1/$file\n" \
+			     "Please fix manually and then call '$0 refresh $1'\n"
 		}
 	}
 }
