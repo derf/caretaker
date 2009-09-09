@@ -110,9 +110,11 @@ Scripts used by the package that don't belong into B<bin/>. Not treated speciall
 
 =item man/
 
-Manual files in POD format, separated by section (like man/7/caretaker.pod).
-To be prepared for possible future support of other manual formats, it is
-recommended to postfix each file with .pod
+Manual files, separated by section (like man/7/caretaker.pod).
+Files with valid POD will be processed with pod2man, all other files which do
+not have a .pod suffix are assumed to be *roff source and directly put into
+the manual directory (with a symlink).
+See also L</"COLLECTED PACKAGE FILES">.
 
 =item provides/
 
@@ -242,7 +244,7 @@ These files reside in F<$PKG_DIR/.collected> (subject to change).
 The directory is somewhat similar to F<~/bin> - it is automatically populated
 by caretaker. However, this one does not contain symlinks.
 
-Currently, it only contains the directory F<man/>, which holds the "compiled"
+Currently, it contains only the directory F<man/>, which holds the
 manual pages from the packages (extracted from F<bin/> and F<man/>).
 This way, you can put F<.../.collected/man> into you MANPATH to access manuals
 provided by packages.
