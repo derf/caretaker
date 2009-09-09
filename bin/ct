@@ -49,12 +49,6 @@ if [[ -r $XDG_CONFIG_HOME/caretaker/caretaker.conf ]] {
 	source $XDG_CONFIG_HOME/caretaker/caretaker.conf
 } elif [[ -r $HOME/.caretaker.conf ]] {
 	source $HOME/.caretaker.conf
-} elif [[ -r $XDG_CONFIG_HOME/pkg/pkg.conf ]] {
-	warn "pkg was renamed to caretaker, so move your config to $XDG_CONFIG_HOME/caretaker/caretaker.conf\n"
-	source $XDG_CONFIG_HOME/pkg/pkg.conf
-} elif [[ -r $HOME/.pkg.conf ]] {
-	warn "pkg was renamed to caretaker, so move your config to $HOME/.caretaker.conf\n"
-	source $HOME/.pkg.conf
 }
 
 # Parse commandline options
@@ -855,18 +849,8 @@ cd $PKG_DIR || die "Cannot cd $PKG_DIR"
 # Note:
 # wrap foobar "$1" <- the "" are neccessary here, since $1 is optional (and therefore may be empty)
 case $action in
-	a|add|install)
-		if [[ $action == install ]] {
-			warn "ct install is deprecated, use ct add instead\n"
-		}
-		pkg_add $*
-	;;
-	rm|delete|remove)
-		if [[ $action == delete ]] {
-			warn "ct delete is deprecated, use ct remove instead\n"
-		}
-		pkg_remove $*
-	;;
+	a|add) pkg_add $* ;;
+	rm|remove) pkg_remove $* ;;
 	i|info) pkg_info $* ;;
 	ls|list) pkg_list $* ;;
 	l|log) pkg_log $* ;;
@@ -877,10 +861,7 @@ case $action in
 	r|refresh) wrap pkg_refresh "$1" 'Refreshing' ;;
 	s|status) wrap pkg_status "$1" 'Checking package status' ;;
 	u|update) pkg_update $* ;;
-	f|upgrade|pull)
-		if [[ $action == upgrade ]] {
-			warn "ct updgrade is deprecated, use ct pull instead\n"
-		}
+	f|pull)
 		(( AUTOUPDATE )) && pkg_update remote
 		wrap pkg_upgrade "$1" 'Looking for updates'
 	;;
