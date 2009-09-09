@@ -579,7 +579,7 @@ function populate_collected {
 	if [[ ! -d bin && ! -d man ]] {
 		return
 	}
-	info "Processing documentation\n"
+	info "Processing documentation and binaries\n"
 	for man in man/*/*(N); {
 		section=${man:h:t}
 		manpage=${man:t}
@@ -617,8 +617,11 @@ function populate_collected {
 function genocide_collected {
 	typeset i file man manual section
 	cd $PKG_DIR/$1 || return
+	if [[ ! -d bin && ! -d man ]] {
+		return
+	}
 	wrap_info $1
-	info "Removing documentation"
+	info "Removing documentation and binaries\n"
 	for man in man/*/*(N); {
 		section=${man:h:t}
 		manual=${man:t}
@@ -629,7 +632,6 @@ function genocide_collected {
 	for file in bin/*(N); {
 		rm -f $PKG_DIR/.collected/man/man1/${file:t}.1
 	}
-	clear_line
 	for file in bin/*(-*N); {
 		if [[ $(readlink $HOME/$file) == (../${PKG_DIR//$HOME\/}|$PKG_DIR)/$1/$file ]] {
 			rm -f $HOME/$file
