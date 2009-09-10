@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 ## on the PKG_HOST: list available packages
-## used by ct remote-update
-# the PKG_PATH (package root path) is given as first argument ($1)
+## used by ct update remote
+## the PKG_PATH (package root path) is given as first argument ($1)
 
 if [[ ! -d $1 ]] {
 	echo "$0: package root directory '$1' does not exist!" >&2
@@ -10,19 +10,24 @@ if [[ ! -d $1 ]] {
 
 setopt err_exit
 
-# change into package root directory (first argument)
 cd $1
 shift
 
 for i in *(-/); {
+
+	# git repo
 	if [[ -d $i/.git ]] {
 		echo -n "$i git "
 		echo -n ${$(git --git-dir=$i/.git log -n 1)[2]}
 		echo " $*"
+
+	# bare git repo
 	} elif [[ -d $i/objects && -d $i/refs ]] {
 		echo -n "$i git "
 		echo -n ${$(git --git-dir=$i log -n 1)[2]}
 		echo " $*"
+
+	# unknown
 	} else {
 		echo "$i: Unsupported or no repository" >&2
 	}
