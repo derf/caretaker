@@ -60,10 +60,6 @@ Show a progress bar when performing tasks on all packages
 
 Operate in silent mode. If B<1>, it also sets PROGRESS=0
 
-=item B<DEBUG>=I<boolean>   (--debug)   [0]
-
-Operate in debug mode if 1
-
 =item B<AUTOUPDATE>=I<boolean>   (--auto-update)   [1]
 
 If 1, automatically execute 'ct update' before 'ct push'

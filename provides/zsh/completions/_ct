@@ -6,7 +6,7 @@ typeset expl
 
 function _ct_action () {
 	_wanted action expl 'action' \
-	compadd add eval remove info list \
+	compadd add debug eval remove info list \
 	log pull push refresh status update
 }
 
@@ -76,7 +76,6 @@ function _ct_args {
 
 _arguments \
 	'--quiet[quiet mode]' \
-	'--debug[debugmode]' \
 	'--auto-update[automatically update package list]' \
 	'*--checklinks-options[options for checklinks]:option' \
 	'--packagedir[package directory]:directory:_files -/' \

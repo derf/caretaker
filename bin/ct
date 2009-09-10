@@ -17,6 +17,7 @@
 setopt extended_glob
 typeset -a -U triggers
 typeset -a PKG_ROOTS CL_OPTIONS
+typeset self=$0
 
 c_info=$'\e[0;36m'
 c_error=$'\e[0;31m'
@@ -58,8 +59,6 @@ while [[ $1 == --* ]] {
 		--no-colours) COLOURS=0 ;;
 		--quiet) SILENT=1 ;;
 		--no-quiiet) SILENT=0 ;;
-		--debug) DEBUG=1 ;;
-		--no-debug) DEBUG=0 ;;
 		--auto-update) AUTOUPDATE=1 ;;
 		--no-auto-update) AUTOUPDATE=0 ;;
 		--checklinks-options) CL_OPTIONS+=$2; shift ;;
@@ -89,7 +88,6 @@ if (( $#PKG_ROOTS == 0 )) {
 : ${PKGLIST_LOCAL=0}
 : ${CL_OPTIONS:=--quiet}
 : ${SILENT=0}
-: ${DEBUG=0}
 : ${AUTOUPDATE=1}
 : ${GIT_USE_ORIGIN=1}
 : ${COLOURS=1}
@@ -97,24 +95,6 @@ if (( $#PKG_ROOTS == 0 )) {
 export PKG_DIR
 export PKG_ROOT
 
-
-if (( DEBUG )) {
-	function debug {
-		typeset func line
-		if (( $# >= 3 )) {
-			func=$1
-			line=$2
-			shift 2
-		}
-		echo "(debug) $func:$line: $*" >&2
-	}
-
-	# I need function name and line number of the function _calling_ debug,
-	# so I can't get them from inside the debug function.
-	alias debug='debug ${(z%):-%N %i}'
-} else {
-	function debug {}
-}
 
 if (( SILENT )) {
 	# The goal is not to override anything set by the user...
@@ -174,32 +154,6 @@ function pkgroot_clean {
 	((PKGLIST_LOCAL)) || unset PKGLIST_PATH
 }
 
-if ((DEBUG)) {
-	info "caretaker: running in debug mode. Infos follow:\n"
-	echo "--- running ---"
-	echo "  zsh           $ZSH_VERSION"
-	echo "  git           "${$(git --version)[3]}
-	echo "  caretaker     "${$(git --git-dir=$PKG_DIR/${${(s:/:)$(readlink $0)}[-3]}/.git/ log -n 1)[2]}
-	echo "--- settings ---"
-	echo "  PKGLIST_LOCAL $PKGLIST_LOCAL"
-	for PKG_ROOT in $PKG_ROOTS; {
-		pkgroot_parse $PKG_ROOT
-		echo "  PKG_ROOT      $PKG_ROOT"
-		echo "    PKG_PROTO   $PKG_PROTO"
-		echo "    PKG_USER    $PKG_USER"
-		echo "    PKG_HOST    $PKG_HOST"
-		echo "    PKG_UAH     $PKG_UAH"
-		echo "    PKGLIST_PATH $PKGLIST_PATH"
-		pkgroot_clean
-	}
-	echo "  PKG_DIR       $PKG_DIR"
-	echo "  CL_OPTIONS    $CL_OPTIONS"
-	echo "  SILENT        $SILENT"
-	echo "  COLOURS       $COLOURS"
-	echo "  PROGRESS      $PROGRESS"
-	echo "  AUTOUPDATE    $AUTOUPDATE"
-	echo "  GIT_USE_ORIGIN $GIT_USE_ORIGIN"
-}
 
 function check_installed {
 	[[ -n $1 && -d $PKG_DIR/$1 ]] || die "Package is not installed: '$1'\n"
@@ -840,6 +794,32 @@ function pkg_info {
 	show_info 'Description' $description
 }
 
+function pkg_debug {
+	echo "--- running ---"
+	echo "  zsh           $ZSH_VERSION"
+	echo "  git           "${$(git --version)[3]}
+	echo "  caretaker     "${$(git --git-dir=$PKG_DIR/${${(s:/:)$(readlink $self)}[-3]}/.git/ log -n 1)[2]}
+	echo "--- settings ---"
+	echo "  PKGLIST_LOCAL $PKGLIST_LOCAL"
+	for PKG_ROOT in $PKG_ROOTS; {
+		pkgroot_parse $PKG_ROOT
+		echo "  PKG_ROOT      $PKG_ROOT"
+		echo "    PKG_PROTO   $PKG_PROTO"
+		echo "    PKG_USER    $PKG_USER"
+		echo "    PKG_HOST    $PKG_HOST"
+		echo "    PKG_UAH     $PKG_UAH"
+		echo "    PKGLIST_PATH $PKGLIST_PATH"
+		pkgroot_clean
+	}
+	echo "  PKG_DIR       $PKG_DIR"
+	echo "  CL_OPTIONS    $CL_OPTIONS"
+	echo "  SILENT        $SILENT"
+	echo "  COLOURS       $COLOURS"
+	echo "  PROGRESS      $PROGRESS"
+	echo "  AUTOUPDATE    $AUTOUPDATE"
+	echo "  GIT_USE_ORIGIN $GIT_USE_ORIGIN"
+}
+
 function pkg_log {
 	check_installed $1
 	vcs_log $1
@@ -868,6 +848,7 @@ case $action in
 		wrap pkg_upgrade "$1" 'Looking for updates'
 	;;
 	e|eval) eval $* ;;
+	debug) pkg_debug $* ;;
 	*) die "wait, what?\nct: unknown action: '$action'\n" ;;
 esac
 

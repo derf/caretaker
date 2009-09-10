@@ -78,6 +78,11 @@ Update local/remote package list (both if no argument is given)
 retrieve and install newest available version of I<package>.
 If no argument is given, updates all installed packages
 
+=item B<debug>
+
+Show some information useful for debugging.
+For real debugging, use zsh -x path/to/ct [...]
+
 =back
 
 =head2 SHORT ACTIONS
