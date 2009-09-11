@@ -95,7 +95,7 @@ if ((pkglist_cgi)) {
 echo 'Installing caretaker package'
 rehash
 bin/checklinks
-bin/ct eval populate_collected caretaker
+bin/ct eval update_collected caretaker
 bin/ct eval exec_hook caretaker post-add
 
 bin/ct update

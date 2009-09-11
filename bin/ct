@@ -422,7 +422,7 @@ function global_hook {
 			checklinks $CL_OPTIONS \
 				--parameter package=${${PWD#$HOME}#/##} \
 				--parameter etc=${${PWD#$HOME}#/##}/etc
-			populate_collected $1
+			update_collected $1
 			update_provides $1
 			list_package_update $1
 		;;
@@ -528,7 +528,7 @@ function check_prereqs {
 
 # Write a package's documentation to .collected
 # and symlink its binaries from ~/bin
-function populate_collected {
+function update_collected {
 	cd $PKG_DIR/$1 || return
 	typeset -i bins=0 bino=0 mans=0 mano=0
 	typeset man section manpage file target
@@ -553,6 +553,13 @@ function populate_collected {
 			pod2man -u $file > $PKG_DIR/.collected/man/man1/${file:t}.1
 		fi
 	}
+	for file in ~/bin/*(@N); {
+		if [[ $(readlink $file) == (../${PKG_DIR//$HOME\/}|$PKG_DIR)/$1/bin/${file:t} ]] {
+			if [[ ! -e $PKG_DIR/$1/bin/${file:t} ]] {
+				rm $file
+			}
+		}
+	}
 	for file in bin/*(-*N); {
 		if [[ -L $HOME/$file || ! -e $HOME/$file ]] {
 			if [[ $(readlink $HOME/$file) != (../${PKG_DIR//$HOME\/}|$PKG_DIR)/$1/$file ]] {
@@ -564,7 +571,7 @@ function populate_collected {
 				}
 			}
 		} else {
-			warn "populate_collected: ~/$file is not a symlink - skipping $1/$file\n" \
+			warn "update_collected: ~/$file is not a symlink - skipping $1/$file\n" \
 			     "Please fix manually and then call '$0 refresh $1'\n"
 		}
 	}

@@ -7,7 +7,7 @@ ct add $repo
 echo "# ct add (already installed)"
 ! ct add $repo
 
-echo "# populate_collected"
+echo "# update_collected"
 [[ -L $test_home/bin/$file ]]
 [[ -x $(readlink $test_home/bin/$file) ]]
 [[ -e $test_pdir/.collected/man/man2/$file.2 ]]
