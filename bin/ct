@@ -464,19 +464,13 @@ function check_prereqs {
 	function perlmodule {
 		perl -M$1 < /dev/null 2> /dev/null
 	}
-	function executable file_in_path {
-		if [[ $0 == file_in_path ]] {
-			warn "'file_in_path' is deprecated, use 'executable' instead\n"
-		}
+	function executable {
 		which $1 > /dev/null
 	}
 	function offer_install {
 		install+=$1
 	}
-	function depend require {
-		if [[ $0 == require ]] {
-			warn "'require' is depracated, use 'depend' instead\n"
-		}
+	function depend {
 		if [[ $1 == 'package' ]] {
 			is_installed $2 || offer_install $2
 		} else {
