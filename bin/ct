@@ -270,7 +270,7 @@ function vcs_push (
 )
 
 function vcs_setup {
-	cd $PKG_DIR/$1
+	cd $PKG_DIR/$1 || die "vcs_setup: Cannot cd $PKG_DIR/$1"
 }
 
 function vcs_status (
