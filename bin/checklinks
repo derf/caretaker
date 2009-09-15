@@ -163,10 +163,12 @@ Create or update links based on a file
 
 =item B<-m>, B<--msglevel>=I<level>
 
-Set the level of status messages.
-If I<level> is B<0>, all will be shown. A level of 1 will filter out messages
-which have a status of "ok" or "absolute", level 2 will filter anything except
-"EXISTS" and "no dst", and anything higher will filter all output.
+Set the level threshold to show status messages.
+
+   0  show everything
+   1  filter "ok" and "absolute" messages
+   2  filter everything but "EXISTS" and "no dst"
+  >2  no messages
 
 =item B<-p>, B<--parameter> I<parameter>=I<value>
 
