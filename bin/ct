@@ -219,12 +219,12 @@ function progress {
 function vcs_add (
 	pkgroot_parse $(list_get_root $1)
 	cd $PKG_DIR
-	if [[ $(list_type $1) == git ]] {
+	if [[ $(list_get_type $1) == git ]] {
 		git clone "$PKG_ROOT/$1"
 		vcs_setup $1
 		git config push.default matching
 	} else {
-		 die "$1: Cannot handle repository format '$(list_type $1)'\n"
+		 die "$1: Cannot handle repository format '$(list_get_type $1)'\n"
 	}
 	pkgroot_clean
 )
@@ -301,8 +301,24 @@ function list_get_root {
 	echo - ${$(grep "^$1 " $PKG_DIR/.list-remote)[4]}
 }
 
+function list_get_type {
+	echo - ${$(grep "^$1 " $PKG_DIR/.list-remote)[2]}
+}
+
+function list_get_type_local {
+	echo - ${$(grep "^$1 " $PKG_DIR/.list)[2]}
+}
+
+function list_get_version_local {
+	echo ${$(grep "^$1 " $PKG_DIR/.list)[3]}
+}
+
+function list_get_version_remote {
+	echo ${$(grep "^$1 " $PKG_DIR/.list-remote)[3]}
+}
+
 function list_incoming {
-	[[ $(list_version_local $1) != $(list_version_remote $1) ]]
+	[[ $(list_get_version_local $1) != $(list_get_version_remote $1) ]]
 }
 
 function list_is_installed {
@@ -328,14 +344,6 @@ function list_packages_local {
 
 function list_packages_remote {
 	cut -d ' ' -f 1 $PKG_DIR/.list-remote
-}
-
-function list_type {
-	echo - ${$(grep "^$1 " $PKG_DIR/.list-remote)[2]}
-}
-
-function list_type_local {
-	echo - ${$(grep "^$1 " $PKG_DIR/.list)[2]}
 }
 
 function list_update_local {
@@ -369,14 +377,6 @@ function list_update_remote {
 		rm $tmpfile
 		die "remote list update failed\n"
 	}
-}
-
-function list_version_local {
-	echo ${$(grep "^$1 " $PKG_DIR/.list)[3]}
-}
-
-function list_version_remote {
-	echo ${$(grep "^$1 " $PKG_DIR/.list-remote)[3]}
 }
 
 
@@ -687,7 +687,7 @@ function pkg_info {
 
 	list_exists $1 && pkgroot_parse $(list_get_root $1)
 	typeset name=$1 package_root=$PKG_ROOT
-	typeset repo_type=$(list_type $1)
+	typeset repo_type=$(list_get_type $1)
 	typeset priority priority_name
 	typeset hooks makefile discription state
 	pkgroot_clean
@@ -703,7 +703,7 @@ function pkg_info {
 		if [[ -r Makefile ]] {
 			makefile=1
 		}
-		size=$(du -sh .$(list_type $1) | grep -o '.*[KMG]')
+		size=$(du -sh .$(list_get_type $1) | grep -o '.*[KMG]')
 		if [[ -r description ]] {
 			description=$(cat description)
 		}
@@ -727,8 +727,8 @@ function pkg_info {
 	show_info 'Source' $package_root
 	show_info 'State' $state
 	[[ -n $priority ]] && show_info 'Priority' "$priority ($priority_name)"
-	show_info 'Local Version' $(list_version_local $1)
-	show_info 'Remote Version' $(list_version_remote $1)
+	show_info 'Local Version' $(list_get_version_local $1)
+	show_info 'Remote Version' $(list_get_version_remote $1)
 	show_info 'Repository Type' $repo_type
 	show_info 'Repository Size' $size
 	show_info 'Hooks' $hooks
@@ -815,15 +815,15 @@ function pkg_update {
 
 function pkg_upgrade {
 	check_installed $1
-	if list_exists $1 && [[ $(list_type $1) != $(list_type_local $1) ]]; then
+	if list_exists $1 && [[ $(list_get_type $1) != $(list_get_type_local $1) ]]; then
 		clear_line
 		warn "Incompatible systems. Please reinstall: $1\n"
-		warn "  remote '$(list_type $1)' <-> local '$(list_type_local $1)'\n"
+		warn "  remote '$(list_get_type $1)' <-> local '$(list_get_type_local $1)'\n"
 		return 9
 	fi
 	if list_incoming $1 || ! list_exists $1; then
 		clear_line
-		info "Updating $1 to $(list_version_remote $1)\n"
+		info "Updating $1 to $(list_get_version_remote $1)\n"
 		global_hook $1 pre-update
 		vcs_pull $1
 		global_hook $1 post-update
