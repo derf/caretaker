@@ -223,17 +223,17 @@ Currently, the following hooks exist:
 
 =item post-add
 
-Sourced after a package was installed (e.g. with ct add/ct install)
+Sourced after a package was installed
 
 =item post-update
 
-Sourced after a package was updated (ct pull).
+Sourced after a package was updated.
 It is also sourced when adding a package (after post-add) and
 when calling ct refresh.
 
 =item pre-remove
 
-Sourced before a package is removed (ct remove)
+Sourced before a package is removed
 
 =back
 
