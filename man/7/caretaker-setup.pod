@@ -55,3 +55,17 @@ Now you can install the vim package the normal way
   created   .vimrc          -> packages/vim/etc/vimrc
 
 And that's it. You can safely rm -rf /tmp/vim now.
+
+=head2 THE LINKS FILE
+
+Note that the '$etc' used in this example is a B<relative> symlink.
+So if you want to symlink something which is in a subdirectory of your home,
+you will have to set the target to C<< ../$etc/something >> (or similar).
+
+Example:
+
+  soft .ssh/config ../$etc/config
+
+=head1 SEE ALSO
+
+checklinks(1), ct(1), caretaker(7)
