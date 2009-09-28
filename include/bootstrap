@@ -49,7 +49,6 @@ if ! [[ -e ~/.zshrc ]] {
 	touch ~/.zshrc
 }
 
-# Make basic dirctories
 echo 'Creating the basic directory structure'
 mkdir -p ~/bin
 path=(~/bin $path)
@@ -68,11 +67,14 @@ cd caretaker
 
 echo "Writing $XDG_CONFIG_HOME/caretaker/caretaker.conf"
 mkdir -p $XDG_CONFIG_HOME/caretaker
+
 cat > $XDG_CONFIG_HOME/caretaker/caretaker.conf <<- flurbl
 	PKG_ROOT=($PKG_ROOT)
 	PKG_DIR="${PKG_DIR/$HOME/\$HOME}"
 flurbl
-if ((pkglist_cgi)) {
+
+if (( pkglist_cgi )) {
+
 	if which curl &> /dev/null; then
 		getcmd='curl -s'
 	elif which wget &> /dev/null; then
@@ -81,23 +83,26 @@ if ((pkglist_cgi)) {
 		print STDERR "Unable to find a proper download program, fix $PKG_DIR/.pkglist\n"
 		getcmd='echo fixme >&2; exit 1;'
 	fi
+
 	cat >> $XDG_CONFIG_HOME/caretaker/caretaker.conf <<-flurbl
 		PKGLIST_LOCAL=1
 		PKGLIST_PATH=$PKG_DIR/.pkglist
 	flurbl
+
 	cat > $PKG_DIR/.pkglist <<-flurbl
 		#!/bin/sh
 		$getcmd $pkglist_cgi_url
 	flurbl
+
 	chmod +x $PKG_DIR/.pkglist
 }
 
 echo 'Installing caretaker package'
 rehash
+
 bin/checklinks
 bin/ct eval update_collected caretaker
 bin/ct eval exec_hook caretaker post-add
-
 bin/ct update
 
 if (( rcempty )) {
