@@ -663,27 +663,47 @@ function apply_triggers {
 
 # Iterate a function over every installed package
 function wrap {
-	typeset function=$1
-	typeset arg=$2
-	typeset progress=$3
-	typeset i
-	typeset -i all current
+	typeset -i loop_all=0
 
-	if [[ -n $2 ]] {
-		$function $2
+	while [[ $1 == -* ]] {
+		case $1 in
+			-a) loop_all=1 ;;
+		esac
+		shift
+	}
+
+	typeset function=$1
+	typeset progress=$2
+	typeset package
+	typeset -i all current
+	typeset -a packages
+	shift 2
+
+	if (( $# == 1 )) {
+		$function $1
 	} else {
+
 		function wrap_info {
 			clear_line
 			info "$1: "
 		}
+
+		if (( loop_all )) {
+			packages=(*(-/))
+		} else {
+			packages=($*)
+		}
+
 		[[ -n $progress ]] && all=$(list_packages_local | wc -l)
 		[[ -n $progress ]] && current=0
-		for package in *(-/); {
+
+		for package in $packages; {
 			cd $PKG_DIR
 			(( current++ ))
-			[[ -n $progress ]] && progress $current $all $progress $package
+			[[ -n $progress && $loop_all == 1 ]] && progress $current $all $progress $package
 			$function $package
 		}
+
 		[[ -n $progress ]] && clear_line
 	}
 }
@@ -907,7 +927,6 @@ cd $PKG_DIR || die "Cannot cd $PKG_DIR"
 # Note:
 # wrap foobar "$1" <- the "" are neccessary here, since $1 is optional (and therefore may be empty)
 case $action in
-	a|add)   pkg_add   $* ;;
 	debug)   pkg_debug $* ;;
 	e|eval)  eval      $* ;;
 	i|info)  pkg_info  $* ;;
@@ -916,17 +935,18 @@ case $action in
 
 	f|pull)
 		(( AUTOUPDATE )) && pkg_update remote
-		wrap pkg_upgrade "$1" 'Looking for updates'
+		wrap -a pkg_upgrade 'Looking for updates' $*
 	;;
 	p|push)
 		(( AUTOUPDATE )) && pkg_update
-		wrap pkg_push "$1" 'Pushing'
+		wrap -a pkg_push 'Pushing' $*
 	;;
 
-	r|refresh) wrap pkg_refresh "$1" 'Refreshing' ;;
-	rm|remove)      pkg_remove   $* ;;
-	s|status)  wrap pkg_status  "$1" 'Checking package status' ;;
-	u|update)       pkg_update   $* ;;
+	a|add)     wrap    pkg_add     'Adding' $* ;;
+	r|refresh) wrap -a pkg_refresh 'Refreshing' $* ;;
+	rm|remove) wrap    pkg_remove  'Removing' $* ;;
+	s|status)  wrap -a pkg_status  'Checking package status' $* ;;
+	u|update)          pkg_update   $* ;;
 
 	*) die "wait, what?\nct: unknown action: '$action'\n" ;;
 esac

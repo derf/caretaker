@@ -14,9 +14,9 @@ I<action> may be one of:
 
 =over
 
-=item B<add> I<package>
+=item B<add> I<packages>
 
-fetch I<package> from the package_root and install it
+fetch I<packages> from the package_root and install it
 
 =item B<debug>
 
@@ -70,9 +70,9 @@ If no argument is given, pushes all installed packages
 Check prereqs and update symlinks of I<package>.
 If no argument is given, refreshs all installed packages
 
-=item B<remove> I<package>
+=item B<remove> I<packages>
 
-Remove I<package> from the local packages tree
+Remove I<packages> from the local packages tree
 
 =item B<status> [ I<package> ]
 

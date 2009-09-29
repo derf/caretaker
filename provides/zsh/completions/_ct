@@ -71,6 +71,10 @@ function _ct_args {
 				;;
 			esac
 		}
+	} elif [[ ${words[1]} == (a|add) ]] {
+		_ct_notinstalled
+	} elif [[ ${words[1]} == (rm|remove) ]] {
+		_ct_installed
 	}
 }
 
