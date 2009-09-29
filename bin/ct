@@ -18,9 +18,6 @@ setopt extended_glob
 typeset -a -U triggers
 typeset -a PKG_ROOTS CL_OPTIONS
 
-# required by pkg_debug, since functions have their name as $0
-self=$0
-
 c_info=$'\e[0;36m'
 c_error=$'\e[0;31m'
 c_reset=$'\e[0m'
@@ -68,6 +65,9 @@ while [[ $1 == --* ]] {
 		--quiet)          (( SILENT   = 1  )) ;;
 		--no-quiiet)      (( SILENT   = 0  )) ;;
 
+		--version) die "see '$0 version'\n" ;;
+		--help) die "see '$0 help'\n" ;;
+
 		--packagedir)  PKG_DIR=$2; shift ;;
 		--packageroot) PKG_ROOT=$2; shift ;;
 		--checklinks-options) CL_OPTIONS+=$2; shift ;;
@@ -100,6 +100,8 @@ if (( $#PKG_ROOTS == 0 )) {
 export PKG_DIR
 export PKG_ROOT
 
+self=$0
+self_path=$PKG_DIR/${${(s:/:)$(readlink $self)}[-3]}
 
 if (( SILENT )) {
 	# The goal is not to override anything set by the user...
@@ -752,6 +754,10 @@ function pkg_debug {
 	echo "  GIT_USE_ORIGIN $GIT_USE_ORIGIN"
 }
 
+function pkg_help {
+	echo "See 'man ${self:t}' or 'perldoc -F $self_path/man/1/ct'"
+}
+
 function pkg_info {
 	list_is_installed $1 || list_exists $1 || die "No such package: $1\n"
 	list_exists $1 && pkgroot_parse $(list_get_root $1)
@@ -921,6 +927,10 @@ function pkg_upgrade {
 	fi
 }
 
+function pkg_version {
+	print "${self:t} version "${$(git --git-dir=${self_path}/.git/ log -n 1)[2]}
+}
+
 
 cd $PKG_DIR || die "Cannot cd $PKG_DIR"
 
@@ -929,9 +939,11 @@ cd $PKG_DIR || die "Cannot cd $PKG_DIR"
 case $action in
 	debug)   pkg_debug $* ;;
 	e|eval)  eval      $* ;;
+	help)    pkg_help     ;;
 	i|info)  pkg_info  $* ;;
 	ls|list) pkg_list  $* ;;
 	l|log)   pkg_log   $* ;;
+	version) pkg_version  ;;
 
 	f|pull)
 		(( AUTOUPDATE )) && pkg_update remote
