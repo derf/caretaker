@@ -196,10 +196,6 @@ function confirm_no {
 ## Major internal functions
 ##
 
-# this function only has content when wrap is used.
-# but since it's always called, it will be empty by default
-function wrap_info {}
-
 function progress {
 	(( PROGRESS )) || return
 
@@ -443,8 +439,7 @@ function global_hook {
 			triggers+=$1
 			check_prereqs $1
 			if [[ -r Makefile ]] {
-				wrap_info $1
-				info "Running make\n"
+				info "$1: Running make\n"
 				make
 			}
 			checklinks $CL_OPTIONS \
@@ -474,8 +469,7 @@ function check_prereqs {
 
 	[[ -r $PKG_DIR/$package/prereqs ]] || return 0
 	cd $PKG_DIR/$package
-	wrap_info $1
-	info "checking prerequisites\n"
+	info "$1: checking prerequisites\n"
 
 	# function scope → typeset and localoptions are possible
 	function source_prereqs {
@@ -563,13 +557,11 @@ function update_collected {
 	typeset -i bins=0 bino=0 mans=0 mano=0
 	typeset man section manpage file target
 
-	wrap_info $1
-
 	if [[ ! -d bin && ! -d man ]] {
 		return
 	}
 
-	info "Processing documentation and binaries\n"
+	info "$1: Processing documentation and binaries\n"
 
 	for man in man/*/*(N); {
 		section=${man:h:t}
@@ -623,8 +615,7 @@ function genocide_collected {
 		return
 	}
 
-	wrap_info $1
-	info "Removing documentation and binaries\n"
+	info "$1: Removing documentation and binaries\n"
 
 	for man in man/*/*(N); {
 		section=${man:h:t}
@@ -685,11 +676,6 @@ function wrap {
 		$function $1
 	} else {
 
-		function wrap_info {
-			clear_line
-			info "$1: "
-		}
-
 		if (( loop_all )) {
 			packages=(*(-/))
 		} else {
@@ -721,7 +707,7 @@ function pkg_add {
 		exit 1
 	}
 
-	info "Retrieving package $1...\n"
+	info "$1: Retrieving package\n"
 	vcs_add $1 || return 255
 	global_hook $1 post-add
 }
@@ -875,7 +861,7 @@ function pkg_remove {
 
 	global_hook $1 pre-remove
 	rm -rf $PKG_DIR/$1
-	info "Package removed.\n"
+	info "$1: Package removed\n"
 }
 
 function pkg_status {
