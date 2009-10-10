@@ -205,7 +205,6 @@ function progress {
 	typeset desc2=$4
 	typeset output=''
 	typeset -i currentper=$(( (current * 100) / max ))
-	typeset item
 	typeset -i item_current item_remain
 
 	function item {
@@ -378,7 +377,6 @@ function list_update_local {
 
 function list_update_remote {
 	typeset tmpfile=$(mktemp -t pkglist.XXXXXX) PKG_ROOT
-	typeset -i ret=0
 
 	for PKG_ROOT in $PKG_ROOTS; {
 		pkgroot_parse $PKG_ROOT
@@ -464,7 +462,7 @@ function global_hook {
 
 function check_prereqs {
 	typeset -a -U install maybe_install
-	typeset warn info i
+	typeset warn info
 	typeset package=$1
 
 	[[ -r $PKG_DIR/$package/prereqs ]] || return 0
@@ -554,7 +552,6 @@ function check_prereqs {
 # and symlink its binaries from ~/bin
 function update_collected {
 	cd $PKG_DIR/$1 || return
-	typeset -i bins=0 bino=0 mans=0 mano=0
 	typeset man section manpage file target
 
 	if [[ ! -d bin && ! -d man ]] {
@@ -608,7 +605,7 @@ function update_collected {
 # Remove a package's files from .collected
 # Assuming there are no packages with colliding files
 function genocide_collected {
-	typeset i file man manual section
+	typeset file man manual section
 
 	cd $PKG_DIR/$1 || return
 	if [[ ! -d bin && ! -d man ]] {
@@ -750,7 +747,7 @@ function pkg_info {
 	typeset name=$1 package_root=$PKG_ROOT
 	typeset repo_type=$(list_get_type $1)
 	typeset priority priority_name
-	typeset hooks makefile discription state
+	typeset hooks makefile description state
 
 	pkgroot_clean
 
@@ -808,7 +805,7 @@ function pkg_info {
 }
 
 function pkg_list {
-	typeset package crap
+	typeset package
 
 	case $1 in
 		''|local)
