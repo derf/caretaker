@@ -469,18 +469,6 @@ function check_prereqs {
 	cd $PKG_DIR/$package
 	info "$1: checking prerequisites\n"
 
-	# function scope → typeset and localoptions are possible
-	function source_prereqs {
-		{
-			source prereqs
-		} always {
-			if (( TRY_BLOCK_ERROR )) {
-				warn "Error in prereqs script\n"
-				TRY_BLOCK_ERROR=0
-			}
-		}
-	}
-
 	function is_installed {
 		[[ -d $PKG_DIR/$1 ]]
 	}
@@ -521,7 +509,17 @@ function check_prereqs {
 		}
 	}
 
-	source_prereqs
+	# function scope → typeset and localoptions are possible
+	function {
+		{
+			source prereqs
+		} always {
+			if (( TRY_BLOCK_ERROR )) {
+				warn "Error in prereqs script\n"
+				TRY_BLOCK_ERROR=0
+			}
+		}
+	}
 
 	if [[ -n $warn || -n $info ]] {
 		[[ -n $warn ]] && warn $warn
