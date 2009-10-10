@@ -672,27 +672,26 @@ function wrap {
 	typeset -a packages
 	shift 2
 
-	if (( $# == 1 )) {
-		$function $1
-	} else {
+	if [[ $# == 1 || $loop_all == 0 ]] {
 
-		if (( loop_all )) {
-			packages=(*(-/))
-		} else {
-			packages=($*)
-		}
-
-		[[ -n $progress ]] && all=$(list_packages_local | wc -l)
-		[[ -n $progress ]] && current=0
-
-		for package in $packages; {
+		for package in $*; {
 			cd $PKG_DIR
-			(( current++ ))
-			[[ -n $progress && $loop_all == 1 ]] && progress $current $all $progress $package
 			$function $package
 		}
 
-		[[ -n $progress ]] && clear_line
+	} else {
+
+		all=$(list_packages_local | wc -l)
+		current=0
+
+		for package in *(-/); {
+			cd $PKG_DIR
+			(( current++ ))
+			progress $current $all $progress $package
+			$function $package
+		}
+
+		clear_line
 	}
 }
 
