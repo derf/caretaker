@@ -154,4 +154,4 @@ many ideas and suggestions
 
 =head1 SEE ALSO
 
-L<caretaker.conf>(5), caretaker(7)
+caretaker.conf(5), caretaker(7)
