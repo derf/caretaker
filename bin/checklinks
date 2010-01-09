@@ -29,18 +29,24 @@ GetOptions(
 );
 
 open(my $links, '<', $linkfile) or die("Can't open $linkfile: $!");
-while(<$links>) {
-	chomp;
+while (my $line = <$links>) {
+	chomp($line);
+
 	foreach my $key (keys(%substitute)) {
-		s/\$$key/$substitute{$key}/g;
+		$line =~ s/\$$key/$substitute{$key}/g;
 	}
-	my ($type, $src, $dst) = split;
+
+	my ($type, $src, $dst) = split(/\s+/, $line);
+
 	next unless ($type eq 'soft' or $type eq 'hard');
+
 	if ($remove) {
 		remove_link($type, $src, $dst);
-	} elsif ($type eq 'soft') {
+	}
+	elsif ($type eq 'soft') {
 		check_symlink($src, $dst);
-	} elsif ($type eq 'hard') {
+	}
+	elsif ($type eq 'hard') {
 		check_hardlink($src, $dst);
 	}
 }
@@ -64,6 +70,7 @@ sub check_symlink {
 	my $dst = shift;
 
 	mkdirs($src);
+
 	if (not -l "$base/$src" and not -e "$base/$src") {
 		symlink($dst, "$base/$src");
 		print_format('created', $src, $dst, 'cyan', 1);
@@ -90,6 +97,7 @@ sub check_hardlink {
 	my $dst = shift;
 
 	mkdirs($src);
+
 	if (not -e "$base/$dst") {
 		print_format('no dest', $src, $dst, 'red bold', 2);
 	}
@@ -115,6 +123,7 @@ sub mkdirs {
 
 	# the last element is the file
 	pop(@dirs);
+
 	foreach(@dirs) {
 		unless(-d "$path/$_") {
 			mkdir("$path/$_") or die("Can't create $path/$_: $!");
@@ -132,11 +141,14 @@ sub print_format {
 	}
 
 	return if ($level < $msglevel);
+
 	if (defined($color)) {
 		printf(colored('%-9s', $color), $message);
-	} else {
+	}
+	else {
 		printf('%-9s', $message);
 	}
+
 	printf(" %-15s -> %-15s\n", $src, $dst);
 	return;
 }
