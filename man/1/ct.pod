@@ -68,7 +68,11 @@ If no argument is given, pushes all installed packages
 =item B<refresh> [ I<package> ]
 
 Check prereqs and update symlinks of I<package>.
-If no argument is given, refreshs all installed packages
+If no argument is given, refreshes all installed packages
+
+You can think of this as a 'Fake-Upgrade', it is as if the package had been
+upgraded. Therefory, B<refresh> is useful if you want to test a change without
+committing or pushing it.
 
 =item B<remove> I<packages>
 
@@ -120,17 +124,6 @@ so please see caretaker.conf(5) for more information.
 =item F<~/.caretaker.conf>
 
 Contains configuration vars
-
-=back
-
-=head1 EXAMPLES
-
-=over
-
-=item * B<ct refresh caretaker>
-
-'Fake-Upgrade'. Execute the appropiate commands as if the caretaker package had been
-upgraded (useful when you change something but don't want to commit/push yet)
 
 =back
 
