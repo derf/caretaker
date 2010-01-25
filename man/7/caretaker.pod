@@ -6,15 +6,22 @@ caretaker - distributed dotfile and script manager, package format
 
 (if you prefer technical infos over historical blah-blah, skip this section)
 
-Actually, caretaker is just a pimped dotfile manager, which just happens to support
-a sort of packages, version control, automatic sym- and hardlinking, and which
-can also handle scripts and binaries. Oh, and it can cause serious brain damage.
+Actually, caretaker is just a dotfile manager, which however happens to support
+a sort of packages, version control, automatic sym- and hardlinking, and
+can also handle scripts and binaries.
 
-It evolved from two hg repos for ~/bin and ~/etc and some management scripts,
-and now it can handle as many git repos as you want, which may contain
-basically anything you can think of - you can even store movies in them.
-(Of course that would be completely braindead, but hey -
-you could, if you wanted to)
+It evolved from two hg repos for ~/bin and ~/etc and some management scripts.
+They served their purpose well, but at some point I decided that it'd be nice
+to only have the dotfiles/scripts actually used on a host.
+So I needed separate repositories for zsh configs, Xorg configs, etc.
+Managing them would probably be a little more work than previously, so it was
+time to write a script for that purpose, which is now called B<caretaker>.
+It can handle as many git repos as you want, which may contain
+basically anything you can think of - you can even store movies in them, if
+you're up to that sort of weird VCS abuse ;-)
+
+I myself use caretaker with repos containing various dotfiles and scripts
+/ binaries.
 
 =head1 THE BASICS
 
