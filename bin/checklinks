@@ -82,7 +82,7 @@ sub check_symlink {
 		print_format('absolute', $src, $dst, 'yellow', 0);
 	}
 	elsif (not -l "$base/$src" and -e "$base/$src") {
-		print_format('EXISTS', $src, $dst, 'bold red', 2);
+		print_format('exists', $src, $dst, 'bold red', 2);
 	}
 	elsif (-l "$base/$src") {
 		unlink("$base/$src");
@@ -237,13 +237,13 @@ and replaced with a link to the target
 
 The link did not exist and has been created
 
-=item EXISTS (soft links only)
+=item exists (soft links only)
 
 The source already exists, but is not a symlink
 
-=item no dest
+=item no dest (hard links only)
 
-The link destination does not exist
+The link destination does not exist and therefore cannot be hardlinked to
 
 =back
 
@@ -289,8 +289,4 @@ Example:
 =head1 DIAGNOSTICS
 
 The exit value is the number of files with grave errors
-(a status of "EXISTS" or "no dst").
-
-=head1 BUGS
-
-There are no checks whether the symlink target actually exists.
+(a status of "exists" or "no dest").
