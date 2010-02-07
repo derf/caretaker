@@ -18,22 +18,22 @@ setopt err_exit
 cd $1
 shift
 
-for i in *(-/); {
+for dir in *(-/); {
 
 	# git repo
-	if [[ -d $i/.git ]] {
-		echo -n "$i git "
-		echo -n ${$(git --git-dir=$i/.git log -n 1)[2]}
+	if [[ -d $dir/.git ]] {
+		echo -n "$dir git "
+		echo -n ${$(git --git-dir=$dir/.git log -n 1)[2]}
 		echo " $*"
 
 	# bare git repo
-	} elif [[ -d $i/objects && -d $i/refs ]] {
-		echo -n "$i git "
-		echo -n ${$(git --git-dir=$i log -n 1)[2]}
+	} elif [[ -d $dir/objects && -d $dir/refs ]] {
+		echo -n "$dir git "
+		echo -n ${$(git --git-dir=$dir log -n 1)[2]}
 		echo " $*"
 
 	# unknown
 	} else {
-		echo "$i: Unsupported or no repository" >&2
+		echo "$dir: Unsupported or no repository" >&2
 	}
 }
