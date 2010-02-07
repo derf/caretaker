@@ -3,6 +3,11 @@
 ## used by ct update remote
 ## the PKG_PATH (package root path) is given as first argument ($1)
 
+if [[ -z $1 ]] {
+	echo "Usage: $0 <package root path>" >&2
+	exit 1
+}
+
 if [[ ! -d $1 ]] {
 	echo "$0: package root directory '$1' does not exist!" >&2
 	exit 1
