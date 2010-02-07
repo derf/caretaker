@@ -112,8 +112,16 @@ if (( rcempty )) {
 	rm ~/.zshrc
 }
 
+cat <<- tac
+	
+	bootstrap finished.
+	Package directory: $PKG_DIR,
+	config path      : $XDG_CONFIG_HOME/caretaker/caretaker.conf
+tac
+
 if [[ $PATH != *$HOME/bin* ]] {
 	cat <<- tac
+		
 		Note: You may need to change your PATH to include ~/bin,
 		otherwise certain parts of caretaker will not work.
 	tac
