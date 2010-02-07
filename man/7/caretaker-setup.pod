@@ -68,6 +68,22 @@ Example:
 
   soft .ssh/config ../$etc/config
 
+=head1 ADDING A CLIENT
+
+Now that you have a package root and some packages, you might start to wonder
+how to actually start using them on some machine.
+
+In theory, this is quite trivial. caretaker ships a B<bootstrap> script in
+F<examples/bootstrap> (again, you can get it from the bare repo with
+C<< git cat-file blob master:examples/bootstrap >>). Execute the script to see
+its help message, then execute it again with the proper arguments on the
+machine on which you want to use caretaker and watch its output.
+
+With the terminology from the previous sections, in most cases you'll need
+C<< ./bootstrap ssh://server/$PKG_ROOT >>.
+If you deploy caretaker on the server containing the package root,
+C<< ./bootstrap /$PKG_ROOT >> will suffice.
+
 =head1 SEE ALSO
 
 checklinks(1), ct(1), caretaker(7)
