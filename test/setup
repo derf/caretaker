@@ -2,7 +2,7 @@
 echo "# setting up PKG_ROOT"
 cd $test_proot
 git clone --quiet ${1-git://git.tabularazor.org/~derf/caretaker} caretaker
-cp caretaker/include/pkglist pkglist
+cp caretaker/examples/pkglist pkglist
 for repo in ra rb rc; (
 	mkdir $repo
 	cd $repo

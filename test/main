@@ -31,7 +31,7 @@ source $tests/checklinks
 (source $tests/setup)
 
 echo "# bootstrapping PKG_DIR"
-$test_proot/caretaker/include/bootstrap $test_proot $test_pdir
+$test_proot/caretaker/examples/bootstrap $test_proot $test_pdir
 
 echo "# checking for success"
 [[ -e $test_home/.config/caretaker/caretaker.conf ]]
