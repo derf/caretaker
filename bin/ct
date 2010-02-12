@@ -354,7 +354,7 @@ function list_package_remove {
 }
 
 function list_packages_local {
-	cut -d ' ' -f 1 $PKG_DIR/.list
+	print -l $PKG_DIR/*(:t)
 }
 
 function list_packages_remote {
