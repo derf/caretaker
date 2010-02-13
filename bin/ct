@@ -266,7 +266,7 @@ function vcs_log (
 function vcs_pull (
 	vcs_setup $1
 	if (( GIT_USE_ORIGIN )) {
-		git pull ${SILENT+--no-stat}
+		git pull ${SILENT+--quiet}
 	} else {
 		pkgroot_parse $(list_get_root $1)
 		vcs_branch_is_master $1 && git pull $PKG_ROOT/${PWD:t} master
