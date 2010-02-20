@@ -100,6 +100,12 @@ if (( $#PKG_ROOTS == 0 )) {
 export PKG_DIR
 export PKG_ROOT
 
+if (( SILENT )) {
+	GIT_SILENT_ARG=--quiet
+} else {
+	GIT_SILENT_ARG=
+}
+
 self=$0
 self_path=$PKG_DIR/${${(s:/:)$(readlink $self)}[-3]}
 
@@ -266,7 +272,7 @@ function vcs_log (
 function vcs_pull (
 	vcs_setup $1
 	if (( GIT_USE_ORIGIN )) {
-		git pull ${SILENT:+--quiet}
+		git pull $GIT_SILENT_ARG
 	} else {
 		pkgroot_parse $(list_get_root $1)
 		vcs_branch_is_master $1 && git pull $PKG_ROOT/${PWD:t} master
