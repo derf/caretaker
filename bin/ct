@@ -297,9 +297,7 @@ function vcs_setup {
 function vcs_status (
 	typeset gitstatus
 	vcs_setup $1
-	gitstatus=$(git status --short)
-	[[ $gitstatus == *'nothing to commit (working directory clean)' ]] && gitstatus=''
-	echo $gitstatus
+	git status --short
 )
 
 function vcs_to_list (
