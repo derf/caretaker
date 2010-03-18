@@ -258,8 +258,8 @@ function vcs_branch_is_master (
 
 	if [[ $branch != master ]] {
 		warn "$1: The currently checked out branch is not master, but '$branch'\n" \
-			"Currently, with GIT_USE_ORIGIN=0, caretaker can only operate on the branch master\n" \
-			" -> skipping repo, please fix manually\n"
+		     "With GIT_USE_ORIGIN=0, caretaker can only operate on the branch master\n" \
+		     "Skipping repo, please fix manually\n"
 		return 1
 	}
 )
@@ -566,8 +566,10 @@ function update_collected {
 		section=${man:h:t}
 		manpage=${man:t}
 		target=$PKG_DIR/.collected/man/man$section/${manpage%.pod}.$section
+
 		if podchecker man/$section/$manpage &> /dev/null; then
-			pod2man -u -s $section -c "$1 package" -r $HOME man/$section/$manpage > $target
+			pod2man -u -s $section -c "$1 package" -r $HOME \
+				man/$section/$manpage > $target
 		elif [[ $manpage != *.pod && ! -e $target ]]; then
 			ln -s ../../../$1/man/$section/$manpage $target
 		fi
@@ -580,16 +582,19 @@ function update_collected {
 	}
 
 	for file in ~/bin/*(@N); {
-		if [[ $(readlink $file) == (../${PKG_DIR//$HOME\/}|$PKG_DIR)/$1/bin/${file:t} ]] {
-			if [[ ! -e $PKG_DIR/$1/bin/${file:t} ]] {
-				rm $file
-			}
+		if [[ $(readlink $file) == \
+			(../${PKG_DIR//$HOME\/}|$PKG_DIR)/$1/bin/${file:t} \
+			&& ! -e $PKG_DIR/$1/bin/${file:t} \
+		]] {
+			rm $file
 		}
 	}
 
 	for file in bin/*(-*N); {
 		if [[ -L $HOME/$file || ! -e $HOME/$file ]] {
-			if [[ $(readlink $HOME/$file) != (../${PKG_DIR//$HOME\/}|$PKG_DIR)/$1/$file ]] {
+			if [[ $(readlink $HOME/$file) != \
+				(../${PKG_DIR//$HOME\/}|$PKG_DIR)/$1/$file \
+			]] {
 				rm -f $HOME/$file
 				if [[ $PKG_DIR == ${HOME}* ]] {
 					ln -s ../${PKG_DIR//$HOME\/}/$1/$file $HOME/$file
@@ -607,7 +612,7 @@ function update_collected {
 # Remove a package's files from .collected
 # Assuming there are no packages with colliding files
 function genocide_collected {
-	typeset file man manual section
+	typeset file man manual section manfile
 
 	cd $PKG_DIR/$1 || return
 	if [[ ! -d bin && ! -d man ]] {
@@ -619,9 +624,7 @@ function genocide_collected {
 	for man in man/*/*(N); {
 		section=${man:h:t}
 		manual=${man:t}
-		if [[ -e $PKG_DIR/.collected/man/man$section/${manual%.pod}.$section ]] {
-			rm $PKG_DIR/.collected/man/man$section/${manual%.pod}.$section
-		}
+		rm -f $PKG_DIR/.collected/man/man$section/${manual%.pod}.$section
 	}
 
 	for file in bin/*(N); {
@@ -629,7 +632,9 @@ function genocide_collected {
 	}
 
 	for file in bin/*(-*N); {
-		if [[ $(readlink $HOME/$file) == (../${PKG_DIR//$HOME\/}|$PKG_DIR)/$1/$file ]] {
+		if [[ $(readlink $HOME/$file) == \
+			(../${PKG_DIR//$HOME\/}|$PKG_DIR)/$1/$file \
+		]] {
 			rm -f $HOME/$file
 		}
 	}
@@ -714,7 +719,7 @@ function pkg_debug {
 	echo "--- running ---"
 	echo "  zsh           $ZSH_VERSION"
 	echo "  git           "${$(git --version)[3]}
-	echo "  caretaker     "${$(git --git-dir=$PKG_DIR/${${(s:/:)$(readlink $self)}[-3]}/.git/ log -n 1)[2]}
+	echo "  caretaker     "${$(git --git-dir=$self_path/.git/ log -n 1)[2]}
 	echo "--- settings ---"
 	echo "  PKGLIST_LOCAL $PKGLIST_LOCAL"
 
@@ -853,7 +858,9 @@ function pkg_remove {
 
 	if [[ -r $PKG_DIR/$1/priority ]] {
 		if (( $(cat $PKG_DIR/$1/priority) > 3 )) {
-			confirm_no "Package '$1' is $(priority_name $(cat $PKG_DIR/$1/priority)). Really remove?" || return
+			confirm_no "Package '$1' is" \
+			           $(priority_name $(cat $PKG_DIR/$1/priority)). \
+			           "Really remove?" || return
 		}
 	}
 
@@ -895,10 +902,13 @@ function pkg_update {
 function pkg_upgrade {
 	check_installed $1
 
-	if list_exists $1 && [[ $(list_get_type $1) != $(list_get_type_local $1) ]]; then
+	if list_exists $1 && \
+		[[ $(list_get_type $1) != $(list_get_type_local $1) ]]
+	then
 		clear_line
-		warn "Incompatible systems. Please reinstall: $1\n"
-		warn "  remote '$(list_get_type $1)' <-> local '$(list_get_type_local $1)'\n"
+		warn "Incompatible systems. Please reinstall: $1\n" \
+		     "  remote '$(list_get_type $1)'" \
+		     "<-> local '$(list_get_type_local $1)'\n"
 		return 1
 	fi
 
@@ -912,14 +922,16 @@ function pkg_upgrade {
 }
 
 function pkg_version {
-	print "${self:t} version "${$(git --git-dir=${self_path}/.git/ log -n 1)[2]}
+	print "${self:t} version" \
+	      ${$(git --git-dir=${self_path}/.git/ log -n 1)[2]}
 }
 
 
 cd $PKG_DIR || die "Cannot cd $PKG_DIR"
 
 # Note:
-# wrap foobar "$1" <- the "" are neccessary here, since $1 is optional (and therefore may be empty)
+# wrap foobar "$1" <- the "" are neccessary here,
+# since $1 is optional (and therefore may be empty)
 case $action in
 	debug)   pkg_debug $* ;;
 	e|eval)  eval      $* ;;
