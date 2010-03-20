@@ -1,0 +1,20 @@
+=pod
+
+=head1 NAME
+
+caretaker-shell - Restricted shell for caretaker commands
+
+=head1 DESCRIPTION
+
+B<caretaker-shell> is designed to only execute commands required B<caretaker>.
+This is useful if you want to use B<caretaker> with ssh on untrusted hosts:
+Generate a SSH key and put it into your .ssh/authorized_keys prefixed by
+C<< command="/path/to/caretaker-shell" >>.
+This way, caretaker will work, but it won't be possible to gain actual SSH
+access to your host.
+
+=head1 WARNING
+
+This is an experimental feature, security flaws may be present. Use at own
+risk, and while you're at it you might also want to add a passphrase to your
+ssh keys.

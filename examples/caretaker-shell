@@ -1,0 +1,23 @@
+#!/usr/bin/env zsh
+
+# Change this to your package root
+PKG_ROOT='/home/derf/var/packages_root'
+
+# Change this to the location of your pkglist script (if non-default)
+PKG_LIST=${PKG_ROOT}/pkglist
+
+args=(${(z)SSH_ORIGINAL_COMMAND})
+
+if [[ \
+	( \
+		$args[1] == ${PKG_LIST} && \
+		$args[2] == ${PKG_ROOT} \
+	) || ( \
+		$args[1] == 'git-'(upload|receive)'-pack' && \
+		$args[2] != *'../'* && \
+		$args[2] == \'${PKG_ROOT}/*\' \
+	) \
+]] {
+	args[2]=${args[2]//\'}
+	${args}
+}
