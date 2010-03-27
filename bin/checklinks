@@ -3,6 +3,8 @@
 ## License: WTFPL <http://sam.zoy.org/wtfpl>
 use strict;
 use warnings;
+use 5.010;
+use Cwd;
 use Getopt::Long;
 use Term::ANSIColor;
 
@@ -13,52 +15,76 @@ my %substitute;
 my $linkfile;
 my $exit = 0;
 
-if (-f '.links') {
-	$linkfile = '.links';
-} elsif (-f 'links') {
-	$linkfile = 'links';
-} else {
-	exit(0);
+
+sub mkdirs {
+	my $source = shift;
+	my $path = $base;
+	my @dirs = split(/\//, $source);
+
+	# the last element is the file
+	pop(@dirs);
+
+	foreach(@dirs) {
+		unless(-d "$path/$_") {
+			mkdir("$path/$_") or die("Can't create $path/$_: $!");
+		}
+		$path .= $_;
+	}
+	return;
 }
 
-GetOptions(
-	'm|msglevel=i' => \$msglevel,
-	'p|parameter=s' => \%substitute,
-	'q|quiet'  => sub {$msglevel = 1},
-	'r|remove' => \$remove,
-);
+sub dir_content {
+	my ($dir) = @_;
+	my @return;
+	my ($normal_file, $dot_file);
 
-open(my $links, '<', $linkfile) or die("Can't open $linkfile: $!");
-while (my $line = <$links>) {
-	chomp($line);
+	opendir(my $dh, $dir) or die("Cannot opendir $dir: $!");
+	while (my $entry = readdir($dh)) {
+		next if ($entry ~~ ['.', '..', '.git', '.hg', '.links', 'links']);
 
-	foreach my $key (keys(%substitute)) {
-		$line =~ s/\$$key/$substitute{$key}/g;
+		push(@return, $entry);
+
+		if (!$dot_file and $entry =~ /^\./) {
+			$dot_file = 1;
+		}
+		elsif (!$normal_file) {
+			$normal_file = 1
+		}
 	}
 
-	my ($type, $src, $dst) = split(/\s+/, $line);
+	if ($normal_file and $dot_file) {
+		@return = grep { /^\./ } @return;
+	}
 
-	next unless ($type eq 'soft' or $type eq 'hard');
-
-	if ($remove) {
-		remove_link($type, $src, $dst);
-	}
-	elsif ($type eq 'soft') {
-		check_symlink($src, $dst);
-	}
-	elsif ($type eq 'hard') {
-		check_hardlink($src, $dst);
-	}
+	return @return;
 }
-close($links);
+
+sub print_format {
+	my ($message, $src, $dst, $color, $level) = @_;
+
+	if ($level > 1) {
+		$exit++;
+	}
+
+	return if ($level < $msglevel);
+
+	if (defined($color)) {
+		printf(colored('%-9s', $color), $message);
+	}
+	else {
+		printf('%-9s', $message);
+	}
+
+	printf(" %-15s -> %-15s\n", $src, $dst);
+	return;
+}
 
 sub remove_link {
 	my ($type, $src, $dst) = @_;
 
-	if (
-	       ($type eq 'soft' and -l "$base/$src")
-	    or ($type eq 'hard' and -e "$base/$src" and -e "$base/$dst")
-	) {
+	if (($type eq 'soft' and -l "$base/$src")
+	 or ($type eq 'hard' and -e "$base/$src" and -e "$base/$dst"))
+	{
 		unlink("$base/$src") or warn("cannot unlink $base/$src: $!");
 		print_format('removed', $src, '', 'red', 1);
 	}
@@ -116,42 +142,79 @@ sub check_hardlink {
 	return;
 }
 
-sub mkdirs {
-	my $source = shift;
-	my $path = $base;
-	my @dirs = split(/\//, $source);
+sub loop_links {
+	my $dir;
+	my $cwd = cwd();
 
-	# the last element is the file
-	pop(@dirs);
-
-	foreach(@dirs) {
-		unless(-d "$path/$_") {
-			mkdir("$path/$_") or die("Can't create $path/$_: $!");
-		}
-		$path .= $_;
-	}
-	return;
-}
-
-sub print_format {
-	my ($message, $src, $dst, $color, $level) = @_;
-
-	if ($level > 1) {
-		$exit++;
-	}
-
-	return if ($level < $msglevel);
-
-	if (defined($color)) {
-		printf(colored('%-9s', $color), $message);
+	if (-e 'etc') {
+		$dir = 'etc';
 	}
 	else {
-		printf('%-9s', $message);
+		$dir = '.';
 	}
 
-	printf(" %-15s -> %-15s\n", $src, $dst);
-	return;
+	foreach my $entry (dir_content($dir)) {
+		my $source = $entry;
+		if ($source !~ /^\./) {
+			$source = ".$source";
+		}
+
+		if ($remove) {
+			remove_link('soft', $source);
+		}
+		else {
+			check_symlink($source, "$cwd/$dir/$entry");
+		}
+	}
 }
+
+
+if (-f '.links') {
+	$linkfile = '.links';
+}
+elsif (-f 'links') {
+	$linkfile = 'links';
+}
+else {
+	exit(0);
+}
+
+GetOptions(
+	'm|msglevel=i' => \$msglevel,
+	'p|parameter=s' => \%substitute,
+	'q|quiet'  => sub {$msglevel = 1},
+	'r|remove' => \$remove,
+);
+
+open(my $links, '<', $linkfile) or die("Can't open $linkfile: $!");
+while (my $line = <$links>) {
+	chomp($line);
+
+	foreach my $key (keys(%substitute)) {
+		$line =~ s/\$$key/$substitute{$key}/g;
+	}
+
+	my ($type, $src, $dst) = split(/\s+/, $line);
+
+	next unless ($type ~~ ['soft', 'hard', 'auto']);
+
+	if ($type eq 'auto') {
+		loop_links($src, $dst);
+	}
+	else {
+		if ($remove) {
+			remove_link($type, $src, $dst);
+		}
+		elsif ($type eq 'soft') {
+			check_symlink($src, $dst);
+		}
+		elsif ($type eq 'hard') {
+			check_hardlink($src, $dst);
+		}
+	}
+}
+close($links);
+
 
 exit($exit);
 
@@ -257,7 +320,12 @@ current working directory. Each line contains, separated by spaces:
 
 =item the symlink type
 
-This may be one of 'soft' or 'hard', indicating either a symlink or a hardlink.
+This may either be 'soft' or 'hard' (symlink / hardlink) or 'auto'.
+
+If the type is B<auto>, the following fields may be omitted. Instead, the
+notes in L</"AUTO SYMLINKS"> apply.
+
+
 
 =item the source
 
@@ -275,7 +343,10 @@ This is relative to the source. See L<path_resolution>(7)
 
 =back
 
+
 Lines beginning with an invalid symlink type will be ignored.
+I recommend using a # to introduce comments, though, and not simply write
+something into the file just because that is (technically) also ok ;)
 
 Example:
 
@@ -285,6 +356,35 @@ Example:
   soft .zlogin $etc/login
   soft .zlogout $etc/logout
   soft .zshenv $etc/env
+
+=head2 AUTO SYMLINKS
+
+If the link type is 'auto', B<checklinks> will attempt to guess which files are
+meant to be symlinked where.  However, be aware that this feature is highly
+experimental and may be changed or removed in the future. So far it will
+only create absolute links. Also, do not mix 'auto' with other link types.
+
+Automatic symlinking works this way:
+B<checklinks> takes all files in either F<etc/>, or (if that doesn't exist)
+the current directory. All files in there will be symlinked as a dotfile from
+your home. If the directory only contains normal files, their corresponding
+symlink will have a . as prefix; if dotfiles are present, only these will be
+symlinked to (without adding another . as prefix, of course).
+This way, it is possibly to have various files in a directory, but only
+symlink those which are dotfiles.
+
+Example:
+
+  remnant ~/p/zsh > ls -A etc
+  completions      functions      hosts   .zlogout   .zshenv
+  completions.zwc  functions.zwc  startx  .zprofile  .zshrc
+  remnant ~/p/zsh > cat links
+  auto
+  remnant ~/p/zsh > checklinks
+  ok        .zshenv         -> /home/derf/packages/zsh/etc/.zshenv
+  ok        .zlogout        -> /home/derf/packages/zsh/etc/.zlogout
+  ok        .zshrc          -> /home/derf/packages/zsh/etc/.zshrc
+  ok        .zprofile       -> /home/derf/packages/zsh/etc/.zprofile
 
 =head1 DIAGNOSTICS
 
