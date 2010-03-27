@@ -56,14 +56,16 @@ if [[ -r $XDG_CONFIG_HOME/caretaker/caretaker.conf ]] {
 # Parse commandline options
 while [[ $1 == --* ]] {
 	case $1 in
-		--auto-update)    (( AUTOUPDATE = 1)) ;;
-		--no-auto-update) (( AUTOUPDATE = 0)) ;;
-		--coluors)        (( COLOURS  = 1  )) ;;
-		--no-colours)     (( COLOURS  = 0  )) ;;
-		--progress)       (( PROGRESS = 1  )) ;;
-		--no-progress)    (( PROGRESS = 0  )) ;;
-		--quiet)          (( SILENT   = 1  )) ;;
-		--no-quiiet)      (( SILENT   = 0  )) ;;
+		--auto-update)    (( AUTOUPDATE = 1 )) ;;
+		--no-auto-update) (( AUTOUPDATE = 0 )) ;;
+		--coluors)        (( COLOURS    = 1 )) ;;
+		--no-colours)     (( COLOURS    = 0 )) ;;
+		--magic-etc)      (( MAGIC_ETC  = 1 )) ;;
+		--no-magic-etc)   (( MAGIC_ETC  = 0 )) ;;
+		--progress)       (( PROGRESS   = 1 )) ;;
+		--no-progress)    (( PROGRESS   = 0 )) ;;
+		--quiet)          (( SILENT     = 1 )) ;;
+		--no-quiiet)      (( SILENT     = 0 )) ;;
 
 		--version) die "see '$0 version'\n" ;;
 		--help) die "see '$0 help'\n" ;;
@@ -96,6 +98,7 @@ if (( $#PKG_ROOTS == 0 )) {
 : ${AUTOUPDATE=1}
 : ${GIT_USE_ORIGIN=1}
 : ${COLOURS=1}
+: ${MAGIC_ETC=1}
 : ${PROGRESS=1}
 export PKG_DIR
 export PKG_ROOT
@@ -416,6 +419,17 @@ function priority_name {
 	esac
 }
 
+function run_checklinks {
+	if [[ -e links ]] {
+		checklinks $* $CL_OPTIONS \
+			--parameter package=${${PWD#$HOME}#/##} \
+			--parameter etc=${${PWD#$HOME}#/##}/etc
+	} elif [[ -d etc && $MAGIC_ETC == 1 ]] {
+		checklinks --ct-auto $CL_OPTIONS $*
+	}
+}
+
+
 function exec_hook {
 	typeset package=$1
 	typeset hook=$2
@@ -444,9 +458,7 @@ function global_hook {
 				info "$1: Running make\n"
 				make
 			}
-			checklinks $CL_OPTIONS \
-				--parameter package=${${PWD#$HOME}#/##} \
-				--parameter etc=${${PWD#$HOME}#/##}/etc
+			run_checklinks
 			update_collected $1
 			update_provides $1
 			list_package_update $1
@@ -454,7 +466,7 @@ function global_hook {
 		pre-remove)
 			exec_hook $1 pre-remove
 			genocide_collected $1
-			checklinks $CL_OPTIONS --remove
+			run_checklinks --remove
 			list_package_remove $1
 			update_provides $1
 		;;
@@ -740,6 +752,7 @@ function pkg_debug {
 	echo "  COLOURS       $COLOURS"
 	echo "  PROGRESS      $PROGRESS"
 	echo "  AUTOUPDATE    $AUTOUPDATE"
+	echo "  MAGIC_ETC     $MAGIC_ETC"
 	echo "  GIT_USE_ORIGIN $GIT_USE_ORIGIN"
 }
 

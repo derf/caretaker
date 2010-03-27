@@ -31,7 +31,6 @@ this in the package root itself, since it's recommended to have bare git repos t
   Initialized empty Git repository in /tmp/vim/.git/
   client /tmp/vim > mkdir etc
   client /tmp/vim > cp $your_fancy_vimrc etc/vimrc
-  client /tmp/vim > echo 'soft .vimrc $etc/vimrc' > links
   client /tmp/vim > git add .
   client /tmp/vim > git commit -m 'initial commit. Now with extra cake'
   [master (root-commit) 4359548] initial commit. Now with extra cake

@@ -105,7 +105,13 @@ a manual will be generated out of it (see L</"COLLECTED PACKAGE FILES">)
 
 =item etc/
 
-Configuration files, not treated specially though
+Configuration files.  Unless your package contains a links file, all files in
+this directory (or, if it contains dotfiles, only the dotfiles) will
+automatically symlinked as dotfiles from your home using checklinks(1).
+So, for example F<etc/vimrc> will be installed as F<~/.vimrc>.
+
+If you do not want this behaviour, create an empty links file.
+To disable it for all packages, set MAGIC_ETC=0.
 
 =item hooks/
 
@@ -117,11 +123,11 @@ Manual files, separated by section (like man/7/caretaker.pod).
 Files with valid POD will be processed with pod2man, all other files which do
 not have a .pod suffix are assumed to be *roff source and directly put into
 the manual directory (with a symlink).
-See also L</"COLLECTED PACKAGE FILES">.
+See also L</"COLLECTED PACKAGE FILES">
 
 =item provides/
 
-Files for inclusion into other packages. See L</"PROVIDES">
+Files for inclusion into other packages.  See L</"PROVIDES">
 
 =item description
 
@@ -129,7 +135,7 @@ Package description for B<ct info>
 
 =item links
 
-Sym- and hardlink descriptions. See checklinks(1)
+Manual sym- and hardlink definitions.  See checklinks(1)
 
 =item Makefile
 

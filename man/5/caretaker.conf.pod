@@ -48,6 +48,10 @@ path for the local package tree
 
 Options to invoke L<checklinks>(1) with
 
+=item B<MAGIC_ETC>=I<boolean>   (--magic-etc)   [1]
+
+Automatically run checklinks on files (or, if present, dotfiles) in F<etc/>
+
 =item B<COLOURS>=I<boolean>   (--colours)   [1]
 
 Colorize the output (cyan for info messages, red for errors/warnings)

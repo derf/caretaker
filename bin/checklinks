@@ -14,6 +14,7 @@ my $remove = 0;
 my %substitute;
 my $linkfile;
 my $exit = 0;
+my $ct_auto = 0;
 
 
 sub mkdirs {
@@ -146,11 +147,14 @@ sub loop_links {
 	my $dir;
 	my $cwd = cwd();
 
-	if (-e 'etc') {
+	if (-d 'etc') {
 		$dir = 'etc';
 	}
-	else {
+	elsif (!$ct_auto) {
 		$dir = '.';
+	}
+	else {
+		return;
 	}
 
 	foreach my $entry (dir_content($dir)) {
@@ -166,8 +170,17 @@ sub loop_links {
 			check_symlink($source, "$cwd/$dir/$entry");
 		}
 	}
+	return;
 }
 
+
+GetOptions(
+	'ct-auto' => \$ct_auto,
+	'm|msglevel=i' => \$msglevel,
+	'p|parameter=s' => \%substitute,
+	'q|quiet'  => sub {$msglevel = 1},
+	'r|remove' => \$remove,
+);
 
 if (-f '.links') {
 	$linkfile = '.links';
@@ -176,15 +189,11 @@ elsif (-f 'links') {
 	$linkfile = 'links';
 }
 else {
+	if ($ct_auto) {
+		loop_links();
+	}
 	exit(0);
 }
-
-GetOptions(
-	'm|msglevel=i' => \$msglevel,
-	'p|parameter=s' => \%substitute,
-	'q|quiet'  => sub {$msglevel = 1},
-	'r|remove' => \$remove,
-);
 
 open(my $links, '<', $linkfile) or die("Can't open $linkfile: $!");
 while (my $line = <$links>) {
@@ -199,7 +208,7 @@ while (my $line = <$links>) {
 	next unless ($type ~~ ['soft', 'hard', 'auto']);
 
 	if ($type eq 'auto') {
-		loop_links($src, $dst);
+		loop_links();
 	}
 	else {
 		if ($remove) {
