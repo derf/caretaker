@@ -106,7 +106,7 @@ export PKG_ROOT
 if (( SILENT )) {
 	GIT_SILENT_ARG=--quiet
 } else {
-	GIT_SILENT_ARG=
+	unset GIT_SILENT_ARG
 }
 
 self=$0
@@ -116,16 +116,12 @@ if (( SILENT )) {
 	# The goal is not to override anything set by the user...
 	# So, an alias should be safer than fiddling with $MAKEFLAGS
 	alias make='make -s'
-	function info {}
-	function say {}
-	function clear_line {}
+	function info say clear_line {}
 	PROGRESS=0
 }
 
 if (( ! COLOURS )) {
-	c_info=''
-	c_reset=''
-	c_error=''
+	unset c_info c_reset c_error
 }
 
 if [[ ! -d $PKG_DIR ]] {
@@ -718,8 +714,7 @@ function wrap {
 function pkg_add {
 	check_valid $1
 	if [[ -d $PKG_DIR/$1 ]] {
-		info "Package '$1' is already installed!\n"
-		exit 1
+		die "Package '$1' is already installed!\n"
 	}
 
 	info "$1: Retrieving package\n"
