@@ -33,3 +33,85 @@ echo "# checklinks: link source exists already"
 echo exists > link
 ! checklinks
 [[ $(cat link) == exists ]]
+
+rm bar file flurbl foo link blub
+mkdir ~/cl
+cd ~/cl
+
+echo "# checklinks: auto (normal files)"
+
+echo auto > links
+touch n1 n2
+checklinks
+
+[[ -e ~/.n1 ]]
+[[ -e ~/.n2 ]]
+
+checklinks --remove
+
+[[ ! -e ~/.n1 ]]
+[[ ! -e ~/.n2 ]]
+
+echo "# checkliks: auto (normal files + dotfiles)"
+
+touch .d1 .d2
+checklinks
+
+[[ -e ~/.d1 ]]
+[[ -e ~/.d2 ]]
+[[ ! -e ~/.n1 ]]
+[[ ! -e ~/.n2 ]]
+[[ ! -e ~/n1 ]]
+[[ ! -e ~/n2 ]]
+
+checklinks --remove
+
+[[ ! -e ~/.d1 ]]
+[[ ! -e ~/.d2 ]]
+
+echo "# checklinks: auto (dotfiles)"
+
+rm n1 n2
+checklinks
+
+[[ -e ~/.d1 ]]
+[[ -e ~/.d2 ]]
+
+checklinks --remove
+
+[[ ! -e ~/.d1 ]]
+[[ ! -e ~/.d2 ]]
+
+rm links
+
+echo "# checklinks: --ct-auto (no etc)"
+
+touch foo bar
+checklinks --ct-auto
+
+[[ ! -e ~/.foo ]]
+[[ ! -e ~/.bar ]]
+
+echo "# checklinks: --ct-auto (etc with links file)"
+
+touch links
+checklinks --ct-auto
+
+[[ ! -e ~/.foo ]]
+[[ ! -e ~/.bar ]]
+
+rm links
+
+echo "# checklinks: --ct-auto (etc with files)"
+
+mkdir etc
+touch etc/{the,dude}
+checklinks --ct-auto
+
+[[ -e ~/.the ]]
+[[ -e ~/.dude ]]
+
+checklinks --ct-auto --remove
+
+[[ ! -e ~/.the ]]
+[[ ! -e ~/.dude ]]
