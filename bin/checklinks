@@ -25,8 +25,8 @@ sub mkdirs {
 	# the last element is the file
 	pop(@dirs);
 
-	foreach(@dirs) {
-		unless(-d "$path/$_") {
+	foreach (@dirs) {
+		if (not -d "$path/$_") {
 			mkdir("$path/$_") or die("Can't create $path/$_: $!");
 		}
 		$path .= $_;
@@ -45,10 +45,10 @@ sub dir_content {
 
 		push(@return, $entry);
 
-		if (!$dot_file and $entry =~ /^\./) {
+		if (not $dot_file and $entry =~ /^\./) {
 			$dot_file = 1;
 		}
-		elsif (!$normal_file) {
+		elsif (not $normal_file) {
 			$normal_file = 1
 		}
 	}
@@ -195,7 +195,7 @@ else {
 	exit(0);
 }
 
-open(my $links, '<', $linkfile) or die("Can't open $linkfile: $!");
+open(my $links, '<', $linkfile) or die("Cannot open $linkfile: $!");
 while (my $line = <$links>) {
 	chomp($line);
 
@@ -205,7 +205,7 @@ while (my $line = <$links>) {
 
 	my ($type, $src, $dst) = split(/\s+/, $line);
 
-	next unless ($type ~~ ['soft', 'hard', 'auto']);
+	next if (not($type ~~ ['soft', 'hard', 'auto']));
 
 	if ($type eq 'auto') {
 		loop_links();
@@ -222,7 +222,7 @@ while (my $line = <$links>) {
 		}
 	}
 }
-close($links);
+close($links) or die("Cannot close $linkfile: $!");
 
 
 exit($exit);
