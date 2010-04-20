@@ -473,7 +473,7 @@ function global_hook {
 }
 
 function check_prereqs {
-	typeset -a -U install maybe_install
+	typeset -a -U force_install install maybe_install
 	typeset warn info
 	typeset package=$1
 
@@ -495,6 +495,15 @@ function check_prereqs {
 
 	function offer_install {
 		install+=$1
+	}
+
+
+	function force_depend {
+		if [[ $1 == 'package' ]] {
+			is_installed $2 || force_install+=$2
+		} else {
+			warn "force_depend: Only makes sense for packages\n"
+		}
 	}
 
 	function depend {
@@ -537,6 +546,13 @@ function check_prereqs {
 		[[ -n $warn ]] && warn $warn
 		[[ -n $info ]] && echo -n $info
 		read -q '?continue [] '
+	}
+
+	if [[ -n $force_install ]] {
+		info "${1} forces installation of additional packages: ${(j:, :)force_install}\n"
+		for package in ${force_install}; {
+			pkg_add ${package}
+		}
 	}
 
 	if [[ -n $install ]] {

@@ -203,6 +203,11 @@ Take the same arguments as B<depend>, but are of lower priority.
 recommend only causes "info" messages, and suggest does not interrupt caretaker
 to make sure it's read by the user
 
+=item B<force_depend package> I<package>
+
+Like B<depend>, but installs the package without asking the user for
+confirmation.
+
 =back
 
 Additionally, the string parameters B<warn> and B<info> can be used to store
