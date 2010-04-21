@@ -58,7 +58,7 @@ while [[ $1 == --* ]] {
 	case $1 in
 		--auto-update)    (( AUTOUPDATE = 1 )) ;;
 		--no-auto-update) (( AUTOUPDATE = 0 )) ;;
-		--coluors)        (( COLOURS    = 1 )) ;;
+		--colours)        (( COLOURS    = 1 )) ;;
 		--no-colours)     (( COLOURS    = 0 )) ;;
 		--magic-etc)      (( MAGIC_ETC  = 1 )) ;;
 		--no-magic-etc)   (( MAGIC_ETC  = 0 )) ;;
