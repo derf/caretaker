@@ -868,9 +868,15 @@ function pkg_push {
 		clear_line
 		info "Pushing $1\n"
 
-		global_hook $1 pre-update
+		if (( HOOK_ON_PUSH == 1 )) {
+			global_hook $1 pre-update
+		}
+
 		vcs_push $1
-		global_hook $1 post-update
+
+		if (( HOOK_ON_PUSH == 1 )) {
+			global_hook $1 post-update
+		}
 	fi
 }
 
