@@ -56,16 +56,18 @@ if [[ -r $XDG_CONFIG_HOME/caretaker/caretaker.conf ]] {
 # Parse commandline options
 while [[ $1 == --* ]] {
 	case $1 in
-		--auto-update)    (( AUTOUPDATE = 1 )) ;;
-		--no-auto-update) (( AUTOUPDATE = 0 )) ;;
-		--colours)        (( COLOURS    = 1 )) ;;
-		--no-colours)     (( COLOURS    = 0 )) ;;
-		--magic-etc)      (( MAGIC_ETC  = 1 )) ;;
-		--no-magic-etc)   (( MAGIC_ETC  = 0 )) ;;
-		--progress)       (( PROGRESS   = 1 )) ;;
-		--no-progress)    (( PROGRESS   = 0 )) ;;
-		--quiet)          (( SILENT     = 1 )) ;;
-		--no-quiiet)      (( SILENT     = 0 )) ;;
+		--auto-update)     (( AUTOUPDATE   = 1 )) ;;
+		--no-auto-update)  (( AUTOUPDATE   = 0 )) ;;
+		--colours)         (( COLOURS      = 1 )) ;;
+		--no-colours)      (( COLOURS      = 0 )) ;;
+		--hook-on-push)    (( HOOK_ON_PUSH = 1 )) ;;
+		--no-hook-on-push) (( HOOK_ON_PUSH = 0 )) ;;
+		--magic-etc)       (( MAGIC_ETC    = 1 )) ;;
+		--no-magic-etc)    (( MAGIC_ETC    = 0 )) ;;
+		--progress)        (( PROGRESS     = 1 )) ;;
+		--no-progress)     (( PROGRESS     = 0 )) ;;
+		--quiet)           (( SILENT       = 1 )) ;;
+		--no-quiiet)       (( SILENT       = 0 )) ;;
 
 		--version) die "see '$0 version'\n" ;;
 		--help) die "see '$0 help'\n" ;;
@@ -97,6 +99,7 @@ if (( $#PKG_ROOTS == 0 )) {
 : ${SILENT=0}
 : ${AUTOUPDATE=1}
 : ${GIT_USE_ORIGIN=1}
+: ${HOOK_ON_PUSH=1}
 : ${COLOURS=1}
 : ${MAGIC_ETC=1}
 : ${PROGRESS=1}

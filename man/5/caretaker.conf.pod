@@ -56,6 +56,12 @@ Automatically run checklinks on files (or, if present, dotfiles) in F<etc/>
 
 Colorize the output (cyan for info messages, red for errors/warnings)
 
+=item B<HOOK_ON_PUSH>=I<boolean>   (--hook-on-push)   [1]
+
+Execute pre-update / post-update hooks when running C<< ct push >>.
+If set to 0, you need to run ct refresh by hand to execute these hooks after
+changing a package.
+
 =item B<PROGRESS>=I<boolean>   (--progress)   [1]
 
 Show a progress bar when performing tasks on all packages

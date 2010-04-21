@@ -86,6 +86,8 @@ _arguments \
 	'--packageroot[package root]:url' \
 	'--colours[use colours]' \
 	'--no-colours[No colours]' \
+	'--hook-on-push[Execute hooks for ct push]' \
+	'--no-hook-on-push[Do not execute hooks for ct push]' \
 	'--progress[show progress bar]' \
 	'--no-progress[No progress bar]' \
 	':action:_ct_action' \
