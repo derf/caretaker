@@ -882,6 +882,7 @@ function pkg_push {
 
 function pkg_refresh {
 	check_installed $1
+	clear_line
 	global_hook $1 pre-update
 	global_hook $1 post-update
 }
