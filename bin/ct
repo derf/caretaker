@@ -266,6 +266,10 @@ function vcs_branch_is_master (
 	}
 )
 
+function vcs_has_origin (
+	[[ -e ${PKG_DIR}/${1}/.git/refs/remotes/origin ]]
+)
+
 function vcs_log (
 	vcs_setup $1
 	git log
@@ -339,7 +343,9 @@ function list_get_version_remote {
 }
 
 function list_incoming {
-	[[ $(list_get_version_local $1) != $(list_get_version_remote $1) ]]
+	typeset local=$(list_get_version_local $1)
+	typeset remote=$(list_get_version_remote $1)
+	[[ -n ${local} && -n ${remote} && ${local} != ${remote} ]]
 }
 
 function list_is_installed {
@@ -864,7 +870,7 @@ function pkg_log {
 function pkg_push {
 	check_installed $1
 
-	if list_incoming $1 || ! list_exists $1; then
+	if list_incoming $1 || ( vcs_has_origin $1 && ! list_exists $1 ); then
 		clear_line
 		info "Pushing $1\n"
 
@@ -946,7 +952,7 @@ function pkg_upgrade {
 		return 1
 	fi
 
-	if list_incoming $1 || ! list_exists $1; then
+	if list_incoming $1 || ( vcs_has_origin $1 && ! list_exists $1 ); then
 		clear_line
 		info "Updating $1 to $(list_get_version_remote $1)\n"
 		global_hook $1 pre-update
