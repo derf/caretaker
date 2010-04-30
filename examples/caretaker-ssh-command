@@ -1,4 +1,12 @@
 #!/usr/bin/env zsh
+# example ssh force command. Use this for ssh keys which you only want to use
+# for caretaker.
+# Example .ssh/authorized_keys line:
+#    no-pty,no-port-forwarding,command=".../caretaker-ssh-command" ssh-rsa ...
+#
+# This _should_ restrict all ssh operations to the git/pkglist commands
+# required by caretaker. However, be warned that I am no security expert, so
+# there might be flaws in here. Use at own risk.
 
 # Change this to your package root
 PKG_ROOT='/home/derf/var/packages_root'
@@ -10,14 +18,14 @@ args=(${(z)SSH_ORIGINAL_COMMAND})
 
 if [[ \
 	( \
-		$args[1] == ${PKG_LIST} && \
-		$args[2] == ${PKG_ROOT} \
+		${args[1]} == ${PKG_LIST} && \
+		${args[2]} == ${PKG_ROOT} \
 	) || ( \
-		$args[1] == 'git-'(upload|receive)'-pack' && \
-		$args[2] != *'../'* && \
-		$args[2] == \'${PKG_ROOT}/*\' \
-	) \
-]] {
+		${args[1]} == 'git-'(upload|receive)'-pack' && \
+		${args[2]} != *'../'* && \
+		${args[2]} == \'${PKG_ROOT}/*\' \
+	) ]] \
+{
 	args[2]=${args[2]//\'}
 	${args}
 }
