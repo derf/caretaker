@@ -84,17 +84,21 @@ while [[ $1 == --* ]] {
 action=$1
 ((#)) && shift
 
+# If we already break BC we can at least give a warning ;)
+
 if [[ -n $PKG_ROOT ]] {
-	PKG_ROOTS+=($PKG_ROOT)
-	unset PKG_ROOT
+	warn "There were major, BC-breaking changes to the format of caretaker.conf\n"
+	warn "Please read caretaker.conf(5) and update it accordingly\n\n"
+	warn "You'll probably also need to update your pkglist script, see\n" \
+		"examples/pkglist in your caretaker repo\n"
+	exit 1
 }
 
 if (( $#PKG_ROOTS == 0 )) {
 	die "No package root(s) specified.\n" \
-	    "Please edit the PKG_ROOTS value in your config file\n"
+		"Please edit the PKG_ROOTS value in your config file\n"
 }
 : ${PKG_DIR:="$HOME/packages"}
-: ${PKGLIST_LOCAL=0}
 : ${CL_OPTIONS:=--quiet}
 : ${SILENT=0}
 : ${AUTOUPDATE=1}
@@ -104,7 +108,7 @@ if (( $#PKG_ROOTS == 0 )) {
 : ${MAGIC_ETC=1}
 : ${PROGRESS=1}
 export PKG_DIR
-export PKG_ROOT
+export PKG_PROTO PKG_USER PKG_HOST PKG_UAH PKG_PATH
 
 if (( SILENT )) {
 	GIT_SILENT_ARG=--quiet
@@ -131,47 +135,29 @@ if [[ ! -d $PKG_DIR ]] {
 	die "Error: Package directory '$PKG_DIR' does not exist\n"
 }
 
+function pkgroot_setup {
+	PKGLIST_LOCAL=0
 
-##
-## Setup some additional variables related to PKG_ROOT
-##
-
-function pkgroot_parse {
-	PKG_ROOT=$1
-
-	# Protocol
-	case $PKG_ROOT in
-		ssh://*) PKG_PROTO='ssh' ;;
-		git://*) PKG_PROTO='git' ;;
-		/*)      PKG_PROTO='file' ;;
-		*) die "Error: Unknown protocol in PKG_ROOT '$PKG_ROOT'\n" ;;
-	esac
-
-	# user, host, path
-	if [[ $PKG_PROTO == (git|ssh) ]] {
-		PKG_HOST=${${PKG_ROOT#"${PKG_PROTO}://"}%%/*}
-		PKG_PATH=${PKG_ROOT#"${PKG_PROTO}://$PKG_HOST"}
-
-		if [[ $PKG_HOST == *@* ]] {
-			PKG_USER=${PKG_HOST%%@*}
-			PKG_HOST=${PKG_HOST#*@}
-			PKG_UAH=${PKG_USER}@${PKG_HOST}
-		} else {
-			PKG_USER=$USERNAME
-			PKG_UAH=${PKG_HOST}
-		}
-
-	} elif [[ $PKG_PROTO == 'file' ]] {
-		PKG_PATH=$PKG_ROOT
+	if [[ -n ${functions[pkgroot_${1}]} ]] {
+		pkgroot_${1}
+	} else {
+		die "function pkgroot_${1} not defined in caretaker.conf\n" \
+			"The config format was changed recently, please consult your" \
+			"documentation ;-)\n"
 	}
+
 	: ${PKGLIST_PATH:=$PKG_PATH/pkglist}
+
+	if [[ -n ${PKG_USER} ]] {
+		PKG_UAH="${PKG_USER}@${PKG_HOST}"
+	} else {
+		PKG_UAH=${PKG_HOST}
+	}
 }
 
 function pkgroot_clean {
-	unset PKG_ROOT PKG_PROTO PKG_HOST PKG_PATH PKG_USER PKG_UAH
-	(( PKGLIST_LOCAL )) || unset PKGLIST_PATH
+	unset PKG_PROTO PKG_HOST PKG_PATH PKG_USER PKG_UAH PKGLIST_PATH
 }
-
 
 function check_installed {
 	if [[ -z $1 || ! -d $PKG_DIR/$1 ]] {
@@ -236,11 +222,10 @@ function progress {
 ## VCS Wrappers
 
 function vcs_add (
-	pkgroot_parse $(list_get_root $1)
 	cd $PKG_DIR
 
 	if [[ $(list_get_type $1) == git ]] {
-		git clone "$PKG_ROOT/$1"
+		git clone $(list_get_uri $1)
 		vcs_setup $1
 		git config push.default matching
 	} else {
@@ -280,9 +265,7 @@ function vcs_pull (
 	if (( GIT_USE_ORIGIN )) {
 		git pull $GIT_SILENT_ARG
 	} else {
-		pkgroot_parse $(list_get_root $1)
-		vcs_branch_is_master $1 && git pull $PKG_ROOT/${PWD:t} master
-		pkgroot_clean
+		vcs_branch_is_master $1 && git pull $(list_get_uri $1) master
 	}
 )
 
@@ -291,8 +274,7 @@ function vcs_push (
 	if (( GIT_USE_ORIGIN )) {
 		git push
 	} else {
-		pkgroot_parse $(list_get_root $1)
-		vcs_branch_is_master $1 && git push $PKG_ROOT/${PWD:t} master
+		vcs_branch_is_master $1 && git push $(list_get_uri $1) master
 	}
 )
 
@@ -322,7 +304,7 @@ function list_exists {
 	grep -q "^$1 " $PKG_DIR/.list-remote
 }
 
-function list_get_root {
+function list_get_uri {
 	echo - ${$(grep "^$1 " $PKG_DIR/.list-remote)[4]}
 }
 
@@ -391,12 +373,15 @@ function list_update_remote {
 	typeset tmpfile=$(mktemp -t pkglist.XXXXXX) PKG_ROOT
 
 	for PKG_ROOT in $PKG_ROOTS; {
-		pkgroot_parse $PKG_ROOT
+		pkgroot_setup $PKG_ROOT
 
 		if [[ $PKGLIST_LOCAL == 1 || $PKG_PROTO == 'file' ]] {
-			$PKGLIST_PATH $PKG_PATH $PKG_ROOT >> $tmpfile
+			$PKGLIST_PATH >> $tmpfile
 		} elif [[ $PKG_PROTO == 'ssh' ]] {
-			ssh $PKG_UAH "$PKGLIST_PATH $PKG_PATH $PKG_ROOT" >> $tmpfile
+			ssh $PKG_UAH \
+				"PKG_PATH=\"${PKG_PATH}\" PKG_UAH=\"${PKG_UAH}\"" \
+				"PKG_PROTO=\"${PKG_PROTO}\"" \
+				"$PKGLIST_PATH" >> $tmpfile
 		}
 
 		pkgroot_clean
@@ -753,16 +738,16 @@ function pkg_debug {
 	echo "  git           "${$(git --version)[3]}
 	echo "  caretaker     "${$(git --git-dir=$self_path/.git/ log -n 1)[2]}
 	echo "--- settings ---"
-	echo "  PKGLIST_LOCAL $PKGLIST_LOCAL"
 
 	for PKG_ROOT in $PKG_ROOTS; {
-		pkgroot_parse $PKG_ROOT
+		pkgroot_setup $PKG_ROOT
 		echo "  PKG_ROOT      $PKG_ROOT"
 		echo "    PKG_PROTO   $PKG_PROTO"
 		echo "    PKG_USER    $PKG_USER"
 		echo "    PKG_HOST    $PKG_HOST"
 		echo "    PKG_UAH     $PKG_UAH"
-		echo "    PKGLIST_PATH $PKGLIST_PATH"
+		echo "    PKGLIST_PATH  ${PKGLIST_PATH}"
+		echo "    PKGLIST_LOCAL ${PKGLIST_LOCAL}"
 		pkgroot_clean
 	}
 
@@ -782,14 +767,14 @@ function pkg_help {
 
 function pkg_info {
 	list_is_installed $1 || list_exists $1 || die "No such package: $1\n"
-	list_exists $1 && pkgroot_parse $(list_get_root $1)
 
 	typeset name=$1 package_root=$PKG_ROOT
 	typeset repo_type=$(list_get_type $1)
 	typeset priority priority_name
 	typeset hooks makefile description state
+	typeset uri
 
-	pkgroot_clean
+	list_exists $1 && uri=$(list_get_uri $1)
 
 	if [[ -d $1 ]] {
 		cd $1
@@ -831,7 +816,7 @@ function pkg_info {
 	}
 
 	show_info 'Package' $name
-	show_info 'Source' $package_root
+	show_info 'Source' $uri
 	show_info 'State' $state
 
 	[[ -n $priority ]] && show_info 'Priority' "$priority ($priority_name)"

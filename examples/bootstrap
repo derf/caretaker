@@ -7,40 +7,45 @@
 
 setopt err_exit
 trap "print -P '\n%N:%i: bootstrap failed ($?)'" ZERR
-typeset -i rcempty=0 pkglist_cgi=0
+typeset -i rcempty=0
 typeset PKG_ROOT PKG_DIR default_path='~/packages'
 : ${XDG_CONFIG_HOME=$HOME/.config}
 
-while [[ $1 == --* ]] {
-	case $1 in
-		--pkglist-cgi)
-			pkglist_cgi=1
-			pkglist_cgi_url=$2
-			shift
-		;;
-	esac
-	shift
-}
+if ! which git &> /dev/null; then
+	echo - 'It appears that git is not available on this system.'
+	echo - '-Installation aborted-'
+	exit 200
+fi
 
-if [[ -n $1 ]] {
-	PKG_ROOT=$1
-	PKG_DIR=${~${2-$default_path}}
+if [[ $# -ge 4 ]] {
+	PKG_PROTO=$1
+	PKG_USER=$2
+	PKG_HOST=$3
+	PKG_PATH=$4
+	PKG_DIR=${~${5-$default_path}}
 } else {
 	cat <<- meow
-		Usage: ./bootstrap [options] PKG_ROOT [PKG_DIR]
-		PKG_ROOT is an URI, either of the form proto://host/path (if the package root is
-		         on a remote machine), or just /path for a local package root.
-		         Note: The path must be absolute, it may not contain a literal ~
-		         Also note: proto must be either 'ssh' or 'git'
-		PKG_DIR is the path where caretaker and all further packages will be installed,
+		Usage: ./bootstrap PKG_PROTO PKG_USER PKG_HOST PKG_PATH [PKG_DIR]
+		PKG_PROTO : the protocol type, e.g. ssh, file or git.
+		PKG_USER : user on the package root host. May be left out if it
+		         is identical to the local user name.
+		PKG_HOST : remote host to connect to
+		PKG_PATH : package root path on the remote host
+		PKG_DIR : the path where caretaker and all further packages will be installed,
 		        by default $default_path
 
-		Options:
-
-		  --pkglist-cgi URL
-		      Get the package list from URL (http://...) - most useful with a git:// PKG_ROOT
+		Examples: ./bootstrap ssh '' aneurysm /home/derf/var/packages_root
+		          ./bootstrap file '' '' /home/derf/var/packages_root
+		          ./bootstrap ssh derf derf.homelinux.org /home/derf/var/packages_root
+		          etc.
 	meow
 	exit 100
+}
+
+if [[ -n ${PKG_USER} ]] {
+	PKG_UAH="${PKG_USER}@${PKG_HOST}"
+} else {
+	PKG_UAH=${PKG_HOST}
 }
 
 # zsh keeps complaining about not having a configuration,
@@ -56,48 +61,25 @@ mkdir -p ~/bin
 path=(~/bin $path)
 mkdir -p $PKG_DIR/.collected/man/man{1..8}
 
-if ! which git &> /dev/null; then
-	echo 'It appears that git is not available on this system.'
-	echo '-Installation aborted-'
-	exit 200
-fi
-
 echo 'Fetching the caretaker package...'
 cd $PKG_DIR
-git clone $PKG_ROOT/caretaker caretaker
+git clone "${PKG_PROTO}://${PKG_UAH}/${PKG_PATH}/caretaker" caretaker
 cd caretaker
 
 echo "Writing $XDG_CONFIG_HOME/caretaker/caretaker.conf"
 mkdir -p $XDG_CONFIG_HOME/caretaker
 
 cat > $XDG_CONFIG_HOME/caretaker/caretaker.conf <<- flurbl
-	PKG_ROOT=($PKG_ROOT)
-	PKG_DIR="${PKG_DIR/$HOME/\$HOME}"
+	PKG_DIR="${PKG_DIR/${HOME}/\${HOME}/"
+	PKG_ROOTS=(default)
+
+	function pkgroot_default {
+		PKG_PROTO='${PKG_PROTO}'
+		PKG_USER='${PKG_USER}'
+		PKG_HOST='${PKG_HOST}'
+		PKG_PATH='${PKG_PATH}'
+	}
 flurbl
-
-if (( pkglist_cgi )) {
-
-	if which curl &> /dev/null; then
-		getcmd='curl -s'
-	elif which wget &> /dev/null; then
-		getcmd='wget -q -O -'
-	else
-		print STDERR "Unable to find a proper download program, fix $PKG_DIR/.pkglist\n"
-		getcmd='echo fixme >&2; exit 1;'
-	fi
-
-	cat >> $XDG_CONFIG_HOME/caretaker/caretaker.conf <<-flurbl
-		PKGLIST_LOCAL=1
-		PKGLIST_PATH=$PKG_DIR/.pkglist
-	flurbl
-
-	cat > $PKG_DIR/.pkglist <<-flurbl
-		#!/bin/sh
-		$getcmd $pkglist_cgi_url
-	flurbl
-
-	chmod +x $PKG_DIR/.pkglist
-}
 
 echo 'Installing caretaker package'
 rehash
