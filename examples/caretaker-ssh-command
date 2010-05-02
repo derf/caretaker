@@ -8,24 +8,35 @@
 # required by caretaker. However, be warned that I am no security expert, so
 # there might be flaws in here. Use at own risk.
 
-# Change this to your package root
-PKG_ROOT='/home/derf/var/packages_root'
+# Change this to reflect your settings
+PKG_PROTO='ssh'
+PKG_UAH='derf@aneurysm'
+PKG_PATH='/home/derf/var/packages_root'
 
 # Change this to the location of your pkglist script (if non-default)
-PKG_LIST=${PKG_ROOT}/pkglist
+PKG_LIST=${PKG_PATH}/pkglist
 
 args=(${(z)SSH_ORIGINAL_COMMAND})
 
+
 if [[ \
 	( \
-		${args[1]} == ${PKG_LIST} && \
-		${args[2]} == ${PKG_ROOT} \
+		${args[1]} == "PKG_PATH=\"${PKG_PATH}\"" && \
+		${args[2]} == "PKG_UAH=\"${PKG_UAH}\"" && \
+		${args[3]} == "PKG_PROTO=\"${PKG_PROTO}\"" && \
+		${args[4]} == ${PKG_LIST} && \
+		${#args}   == 4 \
 	) || ( \
 		${args[1]} == 'git-'(upload|receive)'-pack' && \
 		${args[2]} != *'../'* && \
-		${args[2]} == \'${PKG_ROOT}/*\' \
+		${args[2]} == \'${PKG_ROOT}/*\' && \
+		${#args}   == 2 \
 	) ]] \
 {
-	args[2]=${args[2]//\'}
-	${args}
+	if [[ ${#args} == 2 ]] {
+		args[2]=${args[2]//\'}
+		${args}
+	} else {
+		eval ${args}
+	}
 }
