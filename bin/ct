@@ -73,7 +73,6 @@ while [[ $1 == --* ]] {
 		--help) die "see '$0 help'\n" ;;
 
 		--packagedir)  PKG_DIR=$2; shift ;;
-		--packageroot) PKG_ROOT=$2; shift ;;
 		--checklinks-options) CL_OPTIONS+=$2; shift ;;
 		--) shift; break ;;
 		*) die "Unknown argument: '$1'\n" ;;

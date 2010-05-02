@@ -20,25 +20,14 @@ The text in (braces) refers to the ct commandline option with which the config
 setting may be overridden (if present).
 The text in [these braces] is the default value.
 
+=head2 GENERAL OPTIONS
+
 =over
 
-=item B<PKG_ROOTS>=(I<url1> I<url2> I<...>)   (--packageroot I<url>)
+=item B<PKG_ROOTS>=(I<name1> I<name2> I<...>)
 
-the package root paths, at least one must be set.
-I<url> may either be of the form C<protocol://host/path> or C</path>,
-the supported protocols are C<git> and C<ssh>.
-Note that pushing is not possible when the C<git> protocol is used.
-
-=item B<PKGLIST_PATH>=I<path>   [$PKG_PATH/pkglist]
-
-path to pkglist on the package root, to generate the package list.
-In the default, $PKG_PATH means the path component of $PKG_ROOT.
-
-=item B<PKGLIST_LOCAL>=I<boolean>   [0]
-
-If true, B<PKLIST_PATH> will always be executed on the local machine, regardless
-of where the B<PKG_ROOT> lies. For possible uses of this setting, see
-L<caretaker(7)/"THE PACKAGE LIST">
+The package roots to use, at least one must be set.
+For the package root definitions, see below.
 
 =item B<PKG_DIR>=I<path>   (--packagedir I<path>)   [$HOME/packages]
 
@@ -100,6 +89,48 @@ Example: function pkg_hook_post-update {clear_line; echo "Hello from package $1!
 
 =back
 
+=head2 ROOT-SPECIFIC OPTIONS
+
+Each package root is defined as a function, more precisely,
+C<< function pkgroot_I<name> { I<content> } >>.
+You need at least one package root, and it must be enabled by putting its
+I<name> into B<PKG_ROOTS> (see above).
+
+The I<content> consists of variables like above.
+
+=over
+
+=item B<PKG_PROTO>=I<protocol>
+
+Protocol to use. May be anything understood by git, e.g. file, git, ssh, http,
+etc. Note that by default only file and ssh are supported, for other protocols
+you will have to write your own pkglist script
+
+=item B<PKG_USER>=I<username>
+
+If B<PKG_PROTO> supports authentication, sets the login username.  If
+authentication is not required/supported, don't set this or leave it empty
+
+=item B<PKG_HOST>=I<hostname>
+
+Remote host to connect to.  Leave empty if you use the "file" protocol
+
+=item B<PKG_PATH>=I<path>
+
+Absolute path in which your repositories are stored. E.g.
+"/home/derf/var/packages_root"
+
+=item B<PKGLIST_PATH>=I<path>   [$PKG_PATH/pkglist]
+
+Path to the script generating the package list.
+
+=item B<PKGLIST_LOCAL>=I<boolean>   [0]
+
+If true, execute the package list on the local machine. Otherwise (e.g. wit
+the ssh protocol) it will be executed on the remote host.
+
+=back
+
 =head2 COLOURS
 
 Colours are defined in the same way as options. They take an ANSI escape code
@@ -116,6 +147,25 @@ Colour for informational messages (default: cyan)
 Colour for warning and error messages (default: red)
 
 =back
+
+=head1 EXAMPLE
+
+    PKG_ROOTS=(aneurysm)
+
+    function pkgroot_aneurysm {
+        PKG_PROTO=ssh
+        PKG_HOST=aneurysm
+        PKG_PATH=${HOME}/var/packages_root
+    }
+
+    # This will not be used, but may be enabled by appending it to the
+    # PKG_ROOTS array. In this case we use a custom list script which does not
+    # require PKG_USER / PKG_HOST / PKG_PATH to be set.
+    function pkgroot_github {
+        PKG_PROTO=https
+        PKGLIST_LOCAL=1
+        PKGLIST_PATH=${HOME}/libexec/pkglist-github
+    }
 
 =head1 SEE ALSO
 
