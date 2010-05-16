@@ -25,20 +25,20 @@ c_reset=$'\e[0m'
 ## Basic output functions
 
 function info {
-	echo -ne - "${c_info}$*${c_reset}"
+	echo -ne - "${c_info}${*}${c_reset}"
 }
 
 function warn {
-	echo -ne - "${c_error}$*${c_reset}" > /dev/stderr
+	echo -ne - "${c_error}${*}${c_reset}" > /dev/stderr
 }
 
 function die {
-	echo -ne - "${c_error}$*${c_reset}" > /dev/stderr
+	echo -ne - "${c_error}${*}${c_reset}" > /dev/stderr
 	exit 100
 }
 
 function say {
-	echo - $*
+	echo - ${*}
 }
 
 function clear_line {
@@ -46,16 +46,16 @@ function clear_line {
 }
 
 # Read local configuration
-: ${XDG_CONFIG_HOME=$HOME/.config}
-if [[ -r $XDG_CONFIG_HOME/caretaker/caretaker.conf ]] {
-	source $XDG_CONFIG_HOME/caretaker/caretaker.conf
-} elif [[ -r $HOME/.caretaker.conf ]] {
-	source $HOME/.caretaker.conf
+: ${XDG_CONFIG_HOME=${HOME}/.config}
+if [[ -r ${XDG_CONFIG_HOME}/caretaker/caretaker.conf ]] {
+	source ${XDG_CONFIG_HOME}/caretaker/caretaker.conf
+} elif [[ -r ${HOME}/.caretaker.conf ]] {
+	source ${HOME}/.caretaker.conf
 }
 
 # Parse commandline options
-while [[ $1 == --* ]] {
-	case $1 in
+while [[ ${1} == --* ]] {
+	case ${1} in
 		--auto-update)     (( AUTOUPDATE   = 1 )) ;;
 		--no-auto-update)  (( AUTOUPDATE   = 0 )) ;;
 		--colours)         (( COLOURS      = 1 )) ;;
@@ -69,23 +69,23 @@ while [[ $1 == --* ]] {
 		--quiet)           (( SILENT       = 1 )) ;;
 		--no-quiiet)       (( SILENT       = 0 )) ;;
 
-		--version) die "see '$0 version'\n" ;;
-		--help) die "see '$0 help'\n" ;;
+		--version) die "see '${0} version'\n" ;;
+		--help) die "see '${0} help'\n" ;;
 
-		--packagedir)  PKG_DIR=$2; shift ;;
-		--checklinks-options) CL_OPTIONS+=$2; shift ;;
+		--packagedir)  PKG_DIR=${2}; shift ;;
+		--checklinks-options) CL_OPTIONS+=${2}; shift ;;
 		--) shift; break ;;
-		*) die "Unknown argument: '$1'\n" ;;
+		*) die "Unknown argument: '${1}'\n" ;;
 	esac
 	shift
 }
 
-action=$1
+action=${1}
 ((#)) && shift
 
 # If we already break BC we can at least give a warning ;)
 
-if [[ -n $PKG_ROOT ]] {
+if [[ -n ${PKG_ROOT} ]] {
 	warn "There were major, BC-breaking changes to the format of caretaker.conf\n"
 	warn "Please read caretaker.conf(5) and update it accordingly\n\n"
 	warn "You'll probably also need to update your pkglist script, see\n" \
@@ -93,11 +93,11 @@ if [[ -n $PKG_ROOT ]] {
 	exit 1
 }
 
-if (( $#PKG_ROOTS == 0 )) {
+if (( ${#PKG_ROOTS} == 0 )) {
 	die "No package root(s) specified.\n" \
 		"Please edit the PKG_ROOTS value in your config file\n"
 }
-: ${PKG_DIR:="$HOME/packages"}
+: ${PKG_DIR:="${HOME}/packages"}
 : ${CL_OPTIONS:=--quiet}
 : ${SILENT=0}
 : ${AUTOUPDATE=1}
@@ -115,12 +115,12 @@ if (( SILENT )) {
 	unset GIT_SILENT_ARG
 }
 
-self=$0
-self_path=$PKG_DIR/${${(s:/:)$(readlink $self)}[-3]}
+self=${0}
+self_path=${PKG_DIR}/${${(s:/:)$(readlink ${self})}[-3]}
 
 if (( SILENT )) {
 	# The goal is not to override anything set by the user...
-	# So, an alias should be safer than fiddling with $MAKEFLAGS
+	# So, an alias should be safer than fiddling with ${MAKEFLAGS}
 	alias make='make -s'
 	function info say clear_line {}
 	PROGRESS=0
@@ -130,8 +130,8 @@ if (( ! COLOURS )) {
 	unset c_info c_reset c_error
 }
 
-if [[ ! -d $PKG_DIR ]] {
-	die "Error: Package directory '$PKG_DIR' does not exist\n"
+if [[ ! -d ${PKG_DIR} ]] {
+	die "Error: Package directory '${PKG_DIR}' does not exist\n"
 }
 
 function pkgroot_setup {
@@ -145,7 +145,7 @@ function pkgroot_setup {
 			"documentation ;-)\n"
 	}
 
-	: ${PKGLIST_PATH:=$PKG_PATH/pkglist}
+	: ${PKGLIST_PATH:=${PKG_PATH}/pkglist}
 
 	if [[ -n ${PKG_USER} ]] {
 		PKG_UAH="${PKG_USER}@${PKG_HOST}"
@@ -159,28 +159,28 @@ function pkgroot_clean {
 }
 
 function check_installed {
-	if [[ -z $1 || ! -d $PKG_DIR/$1 ]] {
-		die "Package is not installed: '$1'\n"
+	if [[ -z ${1} || ! -d ${PKG_DIR}/${1} ]] {
+		die "Package is not installed: '${1}'\n"
 	}
 }
 
 function check_valid {
-	if ! list_exists $1; then
-		die "Unknown package name: '$1' (not in package list)\n"
+	if ! list_exists ${1}; then
+		die "Unknown package name: '${1}' (not in package list)\n"
 	fi
 }
 
 # Default reply: Yes
 function confirm_yes {
-	echo -n - "$* [Y/n] "
+	echo -n - "${*} [Y/n] "
 	read -k 1
-	[[ $REPLY != $'\n' ]] && echo
-	[[ $REPLY == (y|Y|$'\n') ]]
+	[[ ${REPLY} != $'\n' ]] && echo
+	[[ ${REPLY} == (y|Y|$'\n') ]]
 }
 
 # Default reply: No
 function confirm_no {
-	echo -n - "$* [y/N] "
+	echo -n - "${*} [y/N] "
 	read -q
 }
 
@@ -192,58 +192,58 @@ function confirm_no {
 function progress {
 	(( PROGRESS )) || return
 
-	typeset -i current=$1
-	typeset -i max=$2
-	typeset desc=$3
-	typeset desc2=$4
+	typeset -i current=${1}
+	typeset -i max=${2}
+	typeset desc=${3}
+	typeset desc2=${4}
 	typeset output=''
 	typeset -i currentper=$(( (current * 100) / max ))
 	typeset -i item_current item_remain
 
 	function item {
-		repeat $1; {
-			output+=$2
+		repeat ${1}; {
+			output+=${2}
 		}
 	}
 
 	(( item_current = currentper / 5 ))
 	(( item_remain  =  20 - item_current ))
 
-	output+="${c_info}$desc${c_reset} ["
-	item $item_current '='
-	item $item_remain ' '
-	output+="] $currentper% $desc2"
+	output+="${c_info}${desc}${c_reset} ["
+	item ${item_current} '='
+	item ${item_remain} ' '
+	output+="] ${currentper}% ${desc2}"
 
 	clear_line
-	echo -ne $output
+	echo -ne ${output}
 }
 
 ## VCS Wrappers
 
 function vcs_add (
-	cd $PKG_DIR
+	cd ${PKG_DIR}
 
-	if [[ $(list_get_type $1) == git ]] {
-		git clone $(list_get_uri $1)
-		vcs_setup $1
+	if [[ $(list_get_type ${1}) == git ]] {
+		git clone $(list_get_uri ${1})
+		vcs_setup ${1}
 		git config push.default matching
 	} else {
-		 die "$1: Cannot handle repository format '$(list_get_type $1)'\n"
+		 die "${1}: Cannot handle repository format '$(list_get_type ${1})'\n"
 	}
 
 	pkgroot_clean
 )
 
 function vcs_branch_is_master (
-	vcs_setup $1
+	vcs_setup ${1}
 	typeset IFS=$'\n' branch line
 
 	for line in $(git branch); {
-		[[ $line == \*\ * ]] && branch=${line#* }
+		[[ ${line} == \*\ * ]] && branch=${line#* }
 	}
 
-	if [[ $branch != master ]] {
-		warn "$1: The currently checked out branch is not master, but '$branch'\n" \
+	if [[ ${branch} != master ]] {
+		warn "${1}: The currently checked out branch is not master, but '${branch}'\n" \
 		     "With GIT_USE_ORIGIN=0, caretaker can only operate on the branch master\n" \
 		     "Skipping repo, please fix manually\n"
 		return 1
@@ -255,271 +255,271 @@ function vcs_has_origin (
 )
 
 function vcs_log (
-	vcs_setup $1
+	vcs_setup ${1}
 	git log
 )
 
 function vcs_pull (
-	vcs_setup $1
+	vcs_setup ${1}
 	if (( GIT_USE_ORIGIN )) {
-		git pull $GIT_SILENT_ARG
+		git pull ${GIT_SILENT_ARG}
 	} else {
-		vcs_branch_is_master $1 && git pull $(list_get_uri $1) master
+		vcs_branch_is_master ${1} && git pull $(list_get_uri ${1}) master
 	}
 )
 
 function vcs_push (
-	vcs_setup $1
+	vcs_setup ${1}
 	if (( GIT_USE_ORIGIN )) {
 		git push
 	} else {
-		vcs_branch_is_master $1 && git push $(list_get_uri $1) master
+		vcs_branch_is_master ${1} && git push $(list_get_uri ${1}) master
 	}
 )
 
 function vcs_setup {
-	cd $PKG_DIR/$1 || die "vcs_setup: Cannot cd $PKG_DIR/$1"
+	cd ${PKG_DIR}/${1} || die "vcs_setup: Cannot cd ${PKG_DIR}/${1}"
 }
 
 function vcs_status (
 	typeset gitstatus
-	vcs_setup $1
+	vcs_setup ${1}
 	git status --short
 )
 
 function vcs_to_list (
-	vcs_setup $1
-	if [[ -d $PKG_DIR/$1/.git ]] {
-		echo -n - "$1 git "
+	vcs_setup ${1}
+	if [[ -d ${PKG_DIR}/${1}/.git ]] {
+		echo -n - "${1} git "
 		echo ${$(git log -n 1 master)[2]}
 	} else {
-		warn "No git repository found: '$1'\n"
+		warn "No git repository found: '${1}'\n"
 	}
 )
 
 ## List stuff
 
 function list_exists {
-	grep -q "^$1 " $PKG_DIR/.list-remote
+	grep -q "^${1} " ${PKG_DIR}/.list-remote
 }
 
 function list_get_uri {
-	echo - ${$(grep "^$1 " $PKG_DIR/.list-remote)[4]}
+	echo - ${$(grep "^${1} " ${PKG_DIR}/.list-remote)[4]}
 }
 
 function list_get_type {
-	echo - ${$(grep "^$1 " $PKG_DIR/.list-remote)[2]}
+	echo - ${$(grep "^${1} " ${PKG_DIR}/.list-remote)[2]}
 }
 
 function list_get_type_local {
-	echo - ${$(grep "^$1 " $PKG_DIR/.list)[2]}
+	echo - ${$(grep "^${1} " ${PKG_DIR}/.list)[2]}
 }
 
 function list_get_version_local {
-	echo ${$(grep "^$1 " $PKG_DIR/.list)[3]}
+	echo ${$(grep "^${1} " ${PKG_DIR}/.list)[3]}
 }
 
 function list_get_version_remote {
-	echo ${$(grep "^$1 " $PKG_DIR/.list-remote)[3]}
+	echo ${$(grep "^${1} " ${PKG_DIR}/.list-remote)[3]}
 }
 
 function list_incoming {
-	typeset local=$(list_get_version_local $1)
-	typeset remote=$(list_get_version_remote $1)
+	typeset local=$(list_get_version_local ${1})
+	typeset remote=$(list_get_version_remote ${1})
 	[[ -n ${local} && -n ${remote} && ${local} != ${remote} ]]
 }
 
 function list_is_installed {
-	grep -q "^$1 " $PKG_DIR/.list
+	grep -q "^${1} " ${PKG_DIR}/.list
 }
 
 function list_package_update {
 	typeset list
-	list=$(grep -v "^$1 " $PKG_DIR/.list)
-	echo - $list > $PKG_DIR/.list
-	vcs_to_list $1 >> $PKG_DIR/.list
+	list=$(grep -v "^${1} " ${PKG_DIR}/.list)
+	echo - ${list} > ${PKG_DIR}/.list
+	vcs_to_list ${1} >> ${PKG_DIR}/.list
 }
 
 function list_package_remove {
 	typeset list
-	list=$(grep -v "^$1 " $PKG_DIR/.list)
-	echo - $list > $PKG_DIR/.list
+	list=$(grep -v "^${1} " ${PKG_DIR}/.list)
+	echo - ${list} > ${PKG_DIR}/.list
 }
 
 function list_packages_local {
-	print -l $PKG_DIR/*(:t)
+	print -l ${PKG_DIR}/*(:t)
 }
 
 function list_packages_remote {
-	cut -d ' ' -f 1 $PKG_DIR/.list-remote
+	cut -d ' ' -f 1 ${PKG_DIR}/.list-remote
 }
 
 function list_update_local {
-	typeset -i all=${#$(echo $PKG_DIR/*(/))}
+	typeset -i all=${#$(echo ${PKG_DIR}/*(/))}
 	typeset -i current=0
 	typeset package
 
-	rm -f $PKG_DIR/.list
+	rm -f ${PKG_DIR}/.list
 
 	for package in *(-/); {
 		(( current++ ))
-		progress $current $all 'Updating package list' $package
-		vcs_to_list $package >> $PKG_DIR/.list
+		progress ${current} ${all} 'Updating package list' ${package}
+		vcs_to_list ${package} >> ${PKG_DIR}/.list
 	}
 }
 
 function list_update_remote {
 	typeset tmpfile=$(mktemp -t pkglist.XXXXXX) PKG_ROOT
 
-	for PKG_ROOT in $PKG_ROOTS; {
-		pkgroot_setup $PKG_ROOT
+	for PKG_ROOT in ${PKG_ROOTS}; {
+		pkgroot_setup ${PKG_ROOT}
 
-		if [[ $PKGLIST_LOCAL == 1 || $PKG_PROTO == 'file' ]] {
-			$PKGLIST_PATH >> $tmpfile
-		} elif [[ $PKG_PROTO == 'ssh' ]] {
-			ssh $PKG_UAH \
+		if [[ ${PKGLIST_LOCAL} == 1 || ${PKG_PROTO} == 'file' ]] {
+			${PKGLIST_PATH} >> ${tmpfile}
+		} elif [[ ${PKG_PROTO} == 'ssh' ]] {
+			ssh ${PKG_UAH} \
 				"PKG_PATH=\"${PKG_PATH}\" PKG_UAH=\"${PKG_UAH}\"" \
 				"PKG_PROTO=\"${PKG_PROTO}\"" \
-				"$PKGLIST_PATH" >> $tmpfile
+				"${PKGLIST_PATH}" >> ${tmpfile}
 		}
 
 		pkgroot_clean
 	}
 
-	if [[ -n $(cat $tmpfile) ]] {
-		cp $tmpfile .list-remote
-		rm $tmpfile
+	if [[ -n $(cat ${tmpfile}) ]] {
+		cp ${tmpfile} .list-remote
+		rm ${tmpfile}
 	} else {
-		rm $tmpfile
+		rm ${tmpfile}
 		die "remote list update failed\n"
 	}
 }
 
 
 function priority_name {
-	case $1 in
+	case ${1} in
 		6) echo 'essential' ;;
 		5) echo 'important' ;;
 		4) echo 'required' ;;
 		3) echo 'standard' ;;
 		2) echo 'optional' ;;
 		1) echo 'extra' ;;
-		*) warn "invalid priority: '$1'\n" ;;
+		*) warn "invalid priority: '${1}'\n" ;;
 	esac
 }
 
 function run_checklinks {
 	if [[ -e links ]] {
-		checklinks $* $CL_OPTIONS \
-			--parameter package=${${PWD#$HOME}#/##} \
-			--parameter etc=${${PWD#$HOME}#/##}/etc
-	} elif [[ -d etc && $MAGIC_ETC == 1 ]] {
-		checklinks --ct-auto $CL_OPTIONS $*
+		checklinks ${*} ${CL_OPTIONS} \
+			--parameter package=${${PWD#${HOME}}#/##} \
+			--parameter etc=${${PWD#${HOME}}#/##}/etc
+	} elif [[ -d etc && ${MAGIC_ETC} == 1 ]] {
+		checklinks --ct-auto ${CL_OPTIONS} ${*}
 	}
 }
 
 
 function exec_hook {
-	typeset package=$1
-	typeset hook=$2
+	typeset package=${1}
+	typeset hook=${2}
 
-	if [[ -r $PKG_DIR/$package/hooks/$hook ]] {
-		info "$package: executing hook $hook\n"
-		cd $PKG_DIR/$package
-		(source hooks/$hook)
+	if [[ -r ${PKG_DIR}/${package}/hooks/${hook} ]] {
+		info "${package}: executing hook ${hook}\n"
+		cd ${PKG_DIR}/${package}
+		(source hooks/${hook})
 	}
 }
 
 function global_hook {
-	cd $PKG_DIR/$1
+	cd ${PKG_DIR}/${1}
 
-	case $2 in
+	case ${2} in
 		post-add)
-			exec_hook $1 post-add
-			global_hook $1 post-update
+			exec_hook ${1} post-add
+			global_hook ${1} post-update
 		;;
 		pre-update)
 		;;
 		post-update)
-			triggers+=$1
-			check_prereqs $1
+			triggers+=${1}
+			check_prereqs ${1}
 			if [[ -r Makefile ]] {
-				info "$1: Running make\n"
+				info "${1}: Running make\n"
 				make
 			}
 			run_checklinks
-			update_collected $1
-			update_provides $1
-			list_package_update $1
+			update_collected ${1}
+			update_provides ${1}
+			list_package_update ${1}
 		;;
 		pre-remove)
-			exec_hook $1 pre-remove
-			genocide_collected $1
+			exec_hook ${1} pre-remove
+			genocide_collected ${1}
 			run_checklinks --remove
-			list_package_remove $1
-			update_provides $1
+			list_package_remove ${1}
+			update_provides ${1}
 		;;
 	esac
 
 	# execute custom hooks
-	(( $+functions[pkg_hook_$2] )) && pkg_hook_$2 $1
+	(( $+functions[pkg_hook_${2}] )) && pkg_hook_${2} ${1}
 }
 
 function check_prereqs {
 	typeset -a -U force_install install maybe_install
 	typeset warn info
-	typeset package=$1
+	typeset package=${1}
 
-	[[ -r $PKG_DIR/$package/prereqs ]] || return 0
-	cd $PKG_DIR/$package
-	info "$1: checking prerequisites\n"
+	[[ -r ${PKG_DIR}/${package}/prereqs ]] || return 0
+	cd ${PKG_DIR}/${package}
+	info "${1}: checking prerequisites\n"
 
 	function is_installed {
-		[[ -d $PKG_DIR/$1 ]]
+		[[ -d ${PKG_DIR}/${1} ]]
 	}
 
 	function perlmodule {
-		perl -M$1 < /dev/null 2> /dev/null
+		perl -M${1} < /dev/null 2> /dev/null
 	}
 
 	function executable {
-		which $1 > /dev/null
+		which ${1} > /dev/null
 	}
 
 	function offer_install {
-		install+=$1
+		install+=${1}
 	}
 
 
 	function force_depend {
-		if [[ $1 == 'package' ]] {
-			is_installed $2 || force_install+=$2
+		if [[ ${1} == 'package' ]] {
+			is_installed ${2} || force_install+=${2}
 		} else {
 			warn "force_depend: Only makes sense for packages\n"
 		}
 	}
 
 	function depend {
-		if [[ $1 == 'package' ]] {
-			is_installed $2 || offer_install $2
+		if [[ ${1} == 'package' ]] {
+			is_installed ${2} || offer_install ${2}
 		} else {
-			$* || warn+="Requirement failed: $*\n"
+			${*} || warn+="Requirement failed: ${*}\n"
 		}
 	}
 
 	function suggest {
-		if [[ $1 == 'package' ]] {
-			is_installed $2 || info "$package suggests package $2\n"
+		if [[ ${1} == 'package' ]] {
+			is_installed ${2} || info "${package} suggests package ${2}\n"
 		} else {
-			$* || echo "Suggest failed: $*\n"
+			${*} || echo "Suggest failed: ${*}\n"
 		}
 	}
 
 	function recommend {
-		if [[ $1 == 'package' ]] {
-			is_installed $2 || maybe_install+=$2
+		if [[ ${1} == 'package' ]] {
+			is_installed ${2} || maybe_install+=${2}
 		} else {
-			$* || info+="Recommend failed: $*\n"
+			${*} || info+="Recommend failed: ${*}\n"
 		}
 	}
 
@@ -535,33 +535,33 @@ function check_prereqs {
 		}
 	}
 
-	if [[ -n $warn || -n $info ]] {
-		[[ -n $warn ]] && warn $warn
-		[[ -n $info ]] && echo -n $info
+	if [[ -n ${warn} || -n ${info} ]] {
+		[[ -n ${warn} ]] && warn ${warn}
+		[[ -n ${info} ]] && echo -n ${info}
 		read -q '?continue [] '
 	}
 
-	if [[ -n $force_install ]] {
+	if [[ -n ${force_install} ]] {
 		info "${1} forces installation of additional packages: ${(j:, :)force_install}\n"
 		for package in ${force_install}; {
 			pkg_add ${package}
 		}
 	}
 
-	if [[ -n $install ]] {
-		info "$1 requires the following packages: ${(j:, :)install}\n"
+	if [[ -n ${install} ]] {
+		info "${1} requires the following packages: ${(j:, :)install}\n"
 		if confirm_yes "Install them?"; then
-			for package in $install; {
-				pkg_add $package
+			for package in ${install}; {
+				pkg_add ${package}
 			}
 		fi
 	}
 
-	if [[ -n $maybe_install ]] {
-		info "$1 recommends the following packages: ${(j:, :)maybe_install}\n"
+	if [[ -n ${maybe_install} ]] {
+		info "${1} recommends the following packages: ${(j:, :)maybe_install}\n"
 		if confirm_no "Install them?"; then
-			for package in $maybe_install; {
-				pkg_add $package
+			for package in ${maybe_install}; {
+				pkg_add ${package}
 			}
 		fi
 	}
@@ -570,58 +570,58 @@ function check_prereqs {
 # Write a package's documentation to .collected
 # and symlink its binaries from ~/bin
 function update_collected {
-	cd $PKG_DIR/$1 || return
+	cd ${PKG_DIR}/${1} || return
 	typeset man section manpage file target
 
 	if [[ ! -d bin && ! -d man ]] {
 		return
 	}
 
-	info "$1: Processing documentation and binaries\n"
+	info "${1}: Processing documentation and binaries\n"
 
 	for man in man/*/*(N); {
 		section=${man:h:t}
 		manpage=${man:t}
-		target=$PKG_DIR/.collected/man/man$section/${manpage%.pod}.$section
+		target=${PKG_DIR}/.collected/man/man${section}/${manpage%.pod}.${section}
 
-		if podchecker man/$section/$manpage &> /dev/null; then
-			pod2man -u -s $section -c "$1 package" -r $HOME \
-				man/$section/$manpage > $target
-		elif [[ $manpage != *.pod && ! -e $target ]]; then
-			ln -s ../../../$1/man/$section/$manpage $target
+		if podchecker man/${section}/${manpage} &> /dev/null; then
+			pod2man -u -s ${section} -c "${1} package" -r ${HOME} \
+				man/${section}/${manpage} > ${target}
+		elif [[ ${manpage} != *.pod && ! -e ${target} ]]; then
+			ln -s ../../../${1}/man/${section}/${manpage} ${target}
 		fi
 	}
 
 	for file in bin/*(N); {
-		if podchecker $file &> /dev/null; then
-			pod2man -u $file > $PKG_DIR/.collected/man/man1/${file:t}.1
+		if podchecker ${file} &> /dev/null; then
+			pod2man -u ${file} > ${PKG_DIR}/.collected/man/man1/${file:t}.1
 		fi
 	}
 
 	for file in ~/bin/*(@N); {
-		if [[ $(readlink $file) == \
-			(../${PKG_DIR//$HOME\/}|$PKG_DIR)/$1/bin/${file:t} \
-			&& ! -e $PKG_DIR/$1/bin/${file:t} \
-		]] {
-			rm $file
+		if [[ $(readlink ${file}) == \
+			(../${PKG_DIR//${HOME}\/}|${PKG_DIR})/${1}/bin/${file:t} \
+			&& ! -e ${PKG_DIR}/${1}/bin/${file:t} ]] \
+		{
+			rm ${file}
 		}
 	}
 
 	for file in bin/*(-*N); {
-		if [[ -L $HOME/$file || ! -e $HOME/$file ]] {
-			if [[ $(readlink $HOME/$file) != \
-				(../${PKG_DIR//$HOME\/}|$PKG_DIR)/$1/$file \
-			]] {
-				rm -f $HOME/$file
-				if [[ $PKG_DIR == ${HOME}* ]] {
-					ln -s ../${PKG_DIR//$HOME\/}/$1/$file $HOME/$file
+		if [[ -L ${HOME}/${file} || ! -e ${HOME}/${file} ]] {
+			if [[ $(readlink ${HOME}/${file}) != \
+				(../${PKG_DIR//${HOME}\/}|${PKG_DIR})/${1}/${file} ]] \
+			{
+				rm -f ${HOME}/${file}
+				if [[ ${PKG_DIR} == ${HOME}* ]] {
+					ln -s ../${PKG_DIR//${HOME}\/}/${1}/${file} ${HOME}/${file}
 				} else {
-					ln -s $PKG_DIR/$1/$file $HOME/$file
+					ln -s ${PKG_DIR}/${1}/${file} ${HOME}/${file}
 				}
 			}
 		} else {
-			warn "update_collected: ~/$file is not a symlink - skipping $1/$file\n" \
-			     "Please fix manually and then call '$0 refresh $1'\n"
+			warn "update_collected: ~/${file} is not a symlink - skipping ${1}/${file}\n" \
+			     "Please fix manually and then call '${0} refresh ${1}'\n"
 		}
 	}
 }
@@ -631,28 +631,28 @@ function update_collected {
 function genocide_collected {
 	typeset file man manual section manfile
 
-	cd $PKG_DIR/$1 || return
+	cd ${PKG_DIR}/${1} || return
 	if [[ ! -d bin && ! -d man ]] {
 		return
 	}
 
-	info "$1: Removing documentation and binaries\n"
+	info "${1}: Removing documentation and binaries\n"
 
 	for man in man/*/*(N); {
 		section=${man:h:t}
 		manual=${man:t}
-		rm -f $PKG_DIR/.collected/man/man$section/${manual%.pod}.$section
+		rm -f ${PKG_DIR}/.collected/man/man${section}/${manual%.pod}.${section}
 	}
 
 	for file in bin/*(N); {
-		rm -f $PKG_DIR/.collected/man/man1/${file:t}.1
+		rm -f ${PKG_DIR}/.collected/man/man1/${file:t}.1
 	}
 
 	for file in bin/*(-*N); {
-		if [[ $(readlink $HOME/$file) == \
-			(../${PKG_DIR//$HOME\/}|$PKG_DIR)/$1/$file \
-		]] {
-			rm -f $HOME/$file
+		if [[ $(readlink ${HOME}/${file}) == \
+			(../${PKG_DIR//${HOME}\/}|${PKG_DIR})/${1}/${file} ]] \
+		{
+			rm -f ${HOME}/${file}
 		}
 	}
 }
@@ -660,9 +660,9 @@ function genocide_collected {
 function update_provides {
 	typeset package
 
-	for package in $PKG_DIR/$1/provides/*(N:t); {
-		if [[ -d $PKG_DIR/$package ]] {
-			triggers+=$package
+	for package in ${PKG_DIR}/${1}/provides/*(N:t); {
+		if [[ -d ${PKG_DIR}/${package} ]] {
+			triggers+=${package}
 		}
 	}
 }
@@ -670,8 +670,8 @@ function update_provides {
 function apply_triggers {
 	typeset package
 
-	for package in $triggers; {
-		exec_hook $package 'post-update'
+	for package in ${triggers}; {
+		exec_hook ${package} 'post-update'
 	}
 }
 
@@ -679,25 +679,25 @@ function apply_triggers {
 function wrap {
 	typeset -i loop_all=0
 
-	while [[ $1 == -* ]] {
-		case $1 in
+	while [[ ${1} == -* ]] {
+		case ${1} in
 			-a) loop_all=1 ;;
 		esac
 		shift
 	}
 
-	typeset function=$1
-	typeset progress=$2
+	typeset function=${1}
+	typeset progress=${2}
 	typeset package
 	typeset -i all current
 	typeset -a packages
 	shift 2
 
-	if [[ $# == 1 || $loop_all == 0 ]] {
+	if [[ ${#} == 1 || ${loop_all} == 0 ]] {
 
-		for package in $*; {
-			cd $PKG_DIR
-			$function $package
+		for package in ${*}; {
+			cd ${PKG_DIR}
+			${function} ${package}
 		}
 
 	} else {
@@ -706,10 +706,10 @@ function wrap {
 		current=0
 
 		for package in *(-/); {
-			cd $PKG_DIR
+			cd ${PKG_DIR}
 			(( current++ ))
-			progress $current $all $progress $package
-			$function $package
+			progress ${current} ${all} ${progress} ${package}
+			${function} ${package}
 		}
 
 		clear_line
@@ -721,66 +721,66 @@ function wrap {
 ##
 
 function pkg_add {
-	check_valid $1
-	if [[ -d $PKG_DIR/$1 ]] {
-		die "Package '$1' is already installed!\n"
+	check_valid ${1}
+	if [[ -d ${PKG_DIR}/${1} ]] {
+		die "Package '${1}' is already installed!\n"
 	}
 
-	info "$1: Retrieving package\n"
-	vcs_add $1 || return 255
-	global_hook $1 post-add
+	info "${1}: Retrieving package\n"
+	vcs_add ${1} || return 255
+	global_hook ${1} post-add
 }
 
 function pkg_debug {
 	echo "--- running ---"
-	echo "  zsh           $ZSH_VERSION"
+	echo "  zsh           ${ZSH_VERSION}"
 	echo "  git           "${$(git --version)[3]}
-	echo "  caretaker     "${$(git --git-dir=$self_path/.git/ log -n 1)[2]}
+	echo "  caretaker     "${$(git --git-dir=${self_path}/.git/ log -n 1)[2]}
 	echo "--- settings ---"
 
-	for PKG_ROOT in $PKG_ROOTS; {
-		pkgroot_setup $PKG_ROOT
-		echo "  PKG_ROOT      $PKG_ROOT"
-		echo "    PKG_PROTO   $PKG_PROTO"
-		echo "    PKG_USER    $PKG_USER"
-		echo "    PKG_HOST    $PKG_HOST"
-		echo "    PKG_UAH     $PKG_UAH"
+	for PKG_ROOT in ${PKG_ROOTS}; {
+		pkgroot_setup ${PKG_ROOT}
+		echo "  PKG_ROOT      ${PKG_ROOT}"
+		echo "    PKG_PROTO   ${PKG_PROTO}"
+		echo "    PKG_USER    ${PKG_USER}"
+		echo "    PKG_HOST    ${PKG_HOST}"
+		echo "    PKG_UAH     ${PKG_UAH}"
 		echo "    PKGLIST_PATH  ${PKGLIST_PATH}"
 		echo "    PKGLIST_LOCAL ${PKGLIST_LOCAL}"
 		pkgroot_clean
 	}
 
-	echo "  PKG_DIR       $PKG_DIR"
-	echo "  CL_OPTIONS    $CL_OPTIONS"
-	echo "  SILENT        $SILENT"
-	echo "  COLOURS       $COLOURS"
-	echo "  PROGRESS      $PROGRESS"
-	echo "  AUTOUPDATE    $AUTOUPDATE"
-	echo "  MAGIC_ETC     $MAGIC_ETC"
-	echo "  GIT_USE_ORIGIN $GIT_USE_ORIGIN"
+	echo "  PKG_DIR       ${PKG_DIR}"
+	echo "  CL_OPTIONS    ${CL_OPTIONS}"
+	echo "  SILENT        ${SILENT}"
+	echo "  COLOURS       ${COLOURS}"
+	echo "  PROGRESS      ${PROGRESS}"
+	echo "  AUTOUPDATE    ${AUTOUPDATE}"
+	echo "  MAGIC_ETC     ${MAGIC_ETC}"
+	echo "  GIT_USE_ORIGIN ${GIT_USE_ORIGIN}"
 }
 
 function pkg_help {
-	echo "See 'man ${self:t}' or 'perldoc -F $self_path/man/1/ct'"
+	echo "See 'man ${self:t}' or 'perldoc -F ${self_path}/man/1/ct'"
 }
 
 function pkg_info {
-	list_is_installed $1 || list_exists $1 || die "No such package: $1\n"
+	list_is_installed ${1} || list_exists ${1} || die "No such package: ${1}\n"
 
-	typeset name=$1 package_root=$PKG_ROOT
-	typeset repo_type=$(list_get_type $1)
+	typeset name=${1} package_root=${PKG_ROOT}
+	typeset repo_type=$(list_get_type ${1})
 	typeset priority priority_name
 	typeset hooks makefile description state
 	typeset uri
 
-	list_exists $1 && uri=$(list_get_uri $1)
+	list_exists ${1} && uri=$(list_get_uri ${1})
 
-	if [[ -d $1 ]] {
-		cd $1
+	if [[ -d ${1} ]] {
+		cd ${1}
 
 		if [[ -r priority ]] {
 			priority=$(cat priority)
-			priority_name=$(priority_name $priority)
+			priority_name=$(priority_name ${priority})
 		}
 
 		if [[ -d hooks ]] {
@@ -791,14 +791,14 @@ function pkg_info {
 			makefile=1
 		}
 
-		size=$(du -sh .$(list_get_type $1) | grep -o '.*[KMG]')
+		size=$(du -sh .$(list_get_type ${1}) | grep -o '.*[KMG]')
 
 		if [[ -r description ]] {
 			description=$(cat description)
 		}
 
 		state='installed'
-		if list_incoming $1; then
+		if list_incoming ${1}; then
 			state+=', needs update'
 		else
 			state+=', up-to-date'
@@ -809,29 +809,29 @@ function pkg_info {
 	}
 
 	function show_info {
-		[[ -z $2 ]] && return
-		info "$1: "
-		echo $2
+		[[ -z ${2} ]] && return
+		info "${1}: "
+		echo ${2}
 	}
 
-	show_info 'Package' $name
-	show_info 'Source' $uri
-	show_info 'State' $state
+	show_info 'Package' ${name}
+	show_info 'Source' ${uri}
+	show_info 'State' ${state}
 
-	[[ -n $priority ]] && show_info 'Priority' "$priority ($priority_name)"
+	[[ -n ${priority} ]] && show_info 'Priority' "${priority} (${priority_name})"
 
-	show_info 'Local Version' $(list_get_version_local $1)
-	show_info 'Remote Version' $(list_get_version_remote $1)
-	show_info 'Repository Type' $repo_type
-	show_info 'Repository Size' $size
-	show_info 'Hooks' $hooks
-	show_info 'Description' $description
+	show_info 'Local Version' $(list_get_version_local ${1})
+	show_info 'Remote Version' $(list_get_version_remote ${1})
+	show_info 'Repository Type' ${repo_type}
+	show_info 'Repository Size' ${size}
+	show_info 'Hooks' ${hooks}
+	show_info 'Description' ${description}
 }
 
 function pkg_list {
 	typeset package
 
-	case $1 in
+	case ${1} in
 		''|local)
 			list_packages_local
 		;;
@@ -840,108 +840,108 @@ function pkg_list {
 		;;
 		not-installed)
 			for package in $(list_packages_remote); {
-				list_is_installed $package || echo $package
+				list_is_installed ${package} || echo ${package}
 			}
 		;;
 	esac
 }
 
 function pkg_log {
-	check_installed $1
-	vcs_log $1
+	check_installed ${1}
+	vcs_log ${1}
 }
 
 function pkg_push {
-	check_installed $1
+	check_installed ${1}
 
-	if list_incoming $1 || ( vcs_has_origin $1 && ! list_exists $1 ); then
+	if list_incoming ${1} || ( vcs_has_origin ${1} && ! list_exists ${1} ); then
 		clear_line
-		info "Pushing $1\n"
+		info "Pushing ${1}\n"
 
 		if (( HOOK_ON_PUSH == 1 )) {
-			global_hook $1 pre-update
+			global_hook ${1} pre-update
 		}
 
-		vcs_push $1
+		vcs_push ${1}
 
 		if (( HOOK_ON_PUSH == 1 )) {
-			global_hook $1 post-update
+			global_hook ${1} post-update
 		}
 	fi
 }
 
 function pkg_refresh {
-	check_installed $1
+	check_installed ${1}
 	clear_line
-	global_hook $1 pre-update
-	global_hook $1 post-update
+	global_hook ${1} pre-update
+	global_hook ${1} post-update
 }
 
 function pkg_remove {
-	check_installed $1
+	check_installed ${1}
 
-	if [[ -r $PKG_DIR/$1/priority ]] {
-		if (( $(cat $PKG_DIR/$1/priority) > 3 )) {
-			confirm_no "Package '$1' is" \
-			           $(priority_name $(cat $PKG_DIR/$1/priority)). \
+	if [[ -r ${PKG_DIR}/${1}/priority ]] {
+		if (( $(cat ${PKG_DIR}/${1}/priority) > 3 )) {
+			confirm_no "Package '${1}' is" \
+			           $(priority_name $(cat ${PKG_DIR}/${1}/priority)). \
 			           "Really remove?" || return
 		}
 	}
 
-	global_hook $1 pre-remove
-	rm -rf $PKG_DIR/$1
-	info "$1: Package removed\n"
+	global_hook ${1} pre-remove
+	rm -rf ${PKG_DIR}/${1}
+	info "${1}: Package removed\n"
 }
 
 function pkg_status {
 	typeset vcs_status
-	check_installed $1
+	check_installed ${1}
 
-	vcs_status=$(PAGER='' vcs_status $1)
+	vcs_status=$(PAGER='' vcs_status ${1})
 
-	if [[ -n $vcs_status ]] {
+	if [[ -n ${vcs_status} ]] {
 		if ((SILENT)) {
-			echo $1
+			echo ${1}
 		} else {
 			clear_line
-			info "$1:\n"
-			echo $vcs_status
+			info "${1}:\n"
+			echo ${vcs_status}
 		}
 	}
 }
 
 function pkg_update {
-	if [[ -z $1 || $1 == local ]] {
+	if [[ -z ${1} || ${1} == local ]] {
 		info "Updating local package list\n"
 		list_update_local
 		clear_line
 	}
 
-	if [[ -z $1 || $1 == remote ]] {
+	if [[ -z ${1} || ${1} == remote ]] {
 		info "Updating remote package list\n"
 		list_update_remote
 	}
 }
 
 function pkg_upgrade {
-	check_installed $1
+	check_installed ${1}
 
-	if list_exists $1 && \
-		[[ $(list_get_type $1) != $(list_get_type_local $1) ]]
+	if list_exists ${1} && \
+		[[ $(list_get_type ${1}) != $(list_get_type_local ${1}) ]]
 	then
 		clear_line
-		warn "Incompatible systems. Please reinstall: $1\n" \
-		     "  remote '$(list_get_type $1)'" \
-		     "<-> local '$(list_get_type_local $1)'\n"
+		warn "Incompatible systems. Please reinstall: ${1}\n" \
+		     "  remote '$(list_get_type ${1})'" \
+		     "<-> local '$(list_get_type_local ${1})'\n"
 		return 1
 	fi
 
-	if list_incoming $1 || ( vcs_has_origin $1 && ! list_exists $1 ); then
+	if list_incoming ${1} || ( vcs_has_origin ${1} && ! list_exists ${1} ); then
 		clear_line
-		info "Updating $1 to $(list_get_version_remote $1)\n"
-		global_hook $1 pre-update
-		vcs_pull $1
-		global_hook $1 post-update
+		info "Updating ${1} to $(list_get_version_remote ${1})\n"
+		global_hook ${1} pre-update
+		vcs_pull ${1}
+		global_hook ${1} post-update
 	fi
 }
 
@@ -951,36 +951,36 @@ function pkg_version {
 }
 
 
-cd $PKG_DIR || die "Cannot cd $PKG_DIR"
+cd ${PKG_DIR} || die "Cannot cd ${PKG_DIR}"
 
 # Note:
-# wrap foobar "$1" <- the "" are neccessary here,
-# since $1 is optional (and therefore may be empty)
-case $action in
-	debug)   pkg_debug $* ;;
-	e|eval)  eval      $* ;;
-	help)    pkg_help     ;;
-	i|info)  pkg_info  $* ;;
-	ls|list) pkg_list  $* ;;
-	l|log)   pkg_log   $* ;;
-	version) pkg_version  ;;
+# wrap foobar "${1}" <- the "" are neccessary here,
+# since ${1} is optional (and therefore may be empty)
+case ${action} in
+	debug)   pkg_debug ${*} ;;
+	e|eval)  eval      ${*} ;;
+	help)    pkg_help       ;;
+	i|info)  pkg_info  ${*} ;;
+	ls|list) pkg_list  ${*} ;;
+	l|log)   pkg_log   ${*} ;;
+	version) pkg_version    ;;
 
 	f|pull)
 		(( AUTOUPDATE )) && pkg_update remote
-		wrap -a pkg_upgrade 'Looking for updates' $*
+		wrap -a pkg_upgrade 'Looking for updates' ${*}
 	;;
 	p|push)
 		(( AUTOUPDATE )) && pkg_update
-		wrap -a pkg_push 'Pushing' $*
+		wrap -a pkg_push 'Pushing' ${*}
 	;;
 
-	a|add)     wrap    pkg_add     'Adding' $* ;;
-	r|refresh) wrap -a pkg_refresh 'Refreshing' $* ;;
-	rm|remove) wrap    pkg_remove  'Removing' $* ;;
-	s|status)  wrap -a pkg_status  'Checking package status' $* ;;
-	u|update)          pkg_update   $* ;;
+	a|add)     wrap    pkg_add     'Adding' ${*}     ;;
+	r|refresh) wrap -a pkg_refresh 'Refreshing' ${*} ;;
+	rm|remove) wrap    pkg_remove  'Removing' ${*}   ;;
+	s|status)  wrap -a pkg_status  'Checking package status' ${*} ;;
+	u|update)          pkg_update   ${*} ;;
 
-	*) die "wait, what?\nct: unknown action: '$action'\n" ;;
+	*) die "wait, what?\nct: unknown action: '${action}'\n" ;;
 esac
 
 apply_triggers
