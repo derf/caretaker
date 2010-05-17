@@ -6,10 +6,10 @@
 # and also have an excuse for using zsh here :P
 
 setopt err_exit
-trap "print -P '\n%N:%i: bootstrap failed ($?)'" ZERR
+trap "print -P '\n%N:%i: bootstrap failed (${?})'" ZERR
 typeset -i rcempty=0
 typeset PKG_ROOT PKG_DIR default_path='~/packages'
-: ${XDG_CONFIG_HOME=$HOME/.config}
+: ${XDG_CONFIG_HOME=${HOME}/.config}
 
 if ! which git &> /dev/null; then
 	echo - 'It appears that git is not available on this system.'
@@ -17,12 +17,12 @@ if ! which git &> /dev/null; then
 	exit 200
 fi
 
-if [[ $# -ge 4 ]] {
-	PKG_PROTO=$1
-	PKG_USER=$2
-	PKG_HOST=$3
-	PKG_PATH=$4
-	PKG_DIR=${~${5-$default_path}}
+if [[ ${#} -ge 4 ]] {
+	PKG_PROTO=${1}
+	PKG_USER=${2}
+	PKG_HOST=${3}
+	PKG_PATH=${4}
+	PKG_DIR=${~${5-${default_path}}}
 } else {
 	cat <<- meow
 		Usage: ./bootstrap PKG_PROTO PKG_USER PKG_HOST PKG_PATH [PKG_DIR]
@@ -32,7 +32,7 @@ if [[ $# -ge 4 ]] {
 		PKG_HOST : remote host to connect to
 		PKG_PATH : package root path on the remote host
 		PKG_DIR : the path where caretaker and all further packages will be installed,
-		        by default $default_path
+		        by default ${default_path}
 
 		Examples: ./bootstrap ssh '' aneurysm /home/derf/var/packages_root
 		          ./bootstrap file '' '' /home/derf/var/packages_root
@@ -58,18 +58,18 @@ if ! [[ -e ~/.zshrc ]] {
 
 echo 'Creating the basic directory structure'
 mkdir -p ~/bin
-path=(~/bin $path)
-mkdir -p $PKG_DIR/.collected/man/man{1..8}
+path=(~/bin ${path})
+mkdir -p ${PKG_DIR}/.collected/man/man{1..8}
 
 echo 'Fetching the caretaker package...'
-cd $PKG_DIR
+cd ${PKG_DIR}
 git clone "${PKG_PROTO}://${PKG_UAH}/${PKG_PATH}/caretaker" caretaker
 cd caretaker
 
-echo "Writing $XDG_CONFIG_HOME/caretaker/caretaker.conf"
-mkdir -p $XDG_CONFIG_HOME/caretaker
+echo "Writing ${XDG_CONFIG_HOME}/caretaker/caretaker.conf"
+mkdir -p ${XDG_CONFIG_HOME}/caretaker
 
-cat > $XDG_CONFIG_HOME/caretaker/caretaker.conf <<- flurbl
+cat > ${XDG_CONFIG_HOME}/caretaker/caretaker.conf <<- flurbl
 	PKG_DIR="${PKG_DIR/${HOME}/\${HOME}/"
 	PKG_ROOTS=(default)
 
@@ -97,11 +97,11 @@ if (( rcempty )) {
 cat <<- tac
 	
 	bootstrap finished.
-	Package directory: $PKG_DIR,
-	config path      : $XDG_CONFIG_HOME/caretaker/caretaker.conf
+	Package directory: ${PKG_DIR},
+	config path      : ${XDG_CONFIG_HOME}/caretaker/caretaker.conf
 tac
 
-if [[ $PATH != *$HOME/bin* ]] {
+if [[ ${PATH} != *${HOME}/bin* ]] {
 	cat <<- tac
 		
 		Note: You may need to change your PATH to include ~/bin,

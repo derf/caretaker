@@ -3,35 +3,35 @@
 ## used by ct update remote
 
 if [[ -z ${PKG_PATH} || -z ${PKG_PROTO} ]] {
-	echo "PKG_PATH and PKG_PROTO must be set while running $0" >&2
+	echo "PKG_PATH and PKG_PROTO must be set while running ${0}" >&2
 	exit 1
 }
 
 if [[ ! -d ${PKG_PATH} ]] {
-	echo "$0: package root directory '$PKG_PATH' does not exist!" >&2
+	echo "${0}: package root directory '${PKG_PATH}' does not exist!" >&2
 	exit 1
 }
 
 setopt err_exit
 
-cd $PKG_PATH
+cd ${PKG_PATH}
 
 for dir in *(-/); {
 
 	# git repo
-	if [[ -d $dir/.git ]] {
-		echo -n "$dir git "
-		echo -n ${$(git --git-dir=$dir/.git log -n 1)[2]}
+	if [[ -d ${dir}/.git ]] {
+		echo -n "${dir} git "
+		echo -n ${$(git --git-dir=${dir}/.git log -n 1)[2]}
 		echo " ${PKG_PROTO}://${PKG_UAH}/${PKG_PATH}/${dir}/.git"
 
 	# bare git repo
-	} elif [[ -d $dir/objects && -d $dir/refs ]] {
-		echo -n "$dir git "
-		echo -n ${$(git --git-dir=$dir log -n 1)[2]}
+	} elif [[ -d ${dir}/objects && -d ${dir}/refs ]] {
+		echo -n "${dir} git "
+		echo -n ${$(git --git-dir=${dir} log -n 1)[2]}
 		echo " ${PKG_PROTO}://${PKG_UAH}/${PKG_PATH}/${dir}"
 
 	# unknown
 	} else {
-		echo "$dir: Unsupported or no repository" >&2
+		echo "${dir}: Unsupported or no repository" >&2
 	}
 }
