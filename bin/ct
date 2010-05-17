@@ -366,6 +366,7 @@ function list_update_local {
 		progress ${current} ${all} 'Updating package list' ${package}
 		vcs_to_list ${package} >> ${PKG_DIR}/.list
 	}
+	clear_line
 }
 
 function list_update_remote {
@@ -914,7 +915,6 @@ function pkg_update {
 	if [[ -z ${1} || ${1} == local ]] {
 		info "Updating local package list\n"
 		list_update_local
-		clear_line
 	}
 
 	if [[ -z ${1} || ${1} == remote ]] {
