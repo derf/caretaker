@@ -297,6 +297,14 @@ function vcs_to_list (
 	}
 )
 
+function vcs_update_submodules (
+	vcs_setup ${1}
+	if [[ -e .gitmodules ]] {
+		git submodule init
+		git submodule update
+	}
+)
+
 ## List stuff
 
 function list_exists {
@@ -443,6 +451,7 @@ function global_hook {
 		;;
 		post-update)
 			triggers+=${1}
+			vcs_update_submodules ${1}
 			check_prereqs ${1}
 			if [[ -r Makefile ]] {
 				info "${1}: Running make\n"
