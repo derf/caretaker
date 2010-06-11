@@ -18,9 +18,11 @@ setopt extended_glob
 typeset -a -U triggers
 typeset -a PKG_ROOTS CL_OPTIONS
 
-c_info=$'\e[0;36m'
-c_error=$'\e[0;31m'
-c_reset=$'\e[0m'
+if [[ -t 1 ]] {
+	c_info=$'\e[0;36m'
+	c_error=$'\e[0;31m'
+	c_reset=$'\e[0m'
+}
 
 ## Basic output functions
 
@@ -117,6 +119,11 @@ if (( SILENT )) {
 
 self=${0}
 self_path=${PKG_DIR}/${${(s:/:)$(readlink ${self})}[-3]}
+
+if [[ ! -t 1 ]] {
+	PROGRESS=0
+	function clear_line {}
+}
 
 if (( SILENT )) {
 	# The goal is not to override anything set by the user...
