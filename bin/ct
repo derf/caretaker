@@ -231,7 +231,7 @@ function vcs_add (
 	cd ${PKG_DIR}
 
 	if [[ $(list_get_type ${1}) == git ]] {
-		git clone $(list_get_uri ${1})
+		git clone $(list_get_uri ${1}) ${1}
 		vcs_setup ${1}
 		git config push.default matching
 	} else {
