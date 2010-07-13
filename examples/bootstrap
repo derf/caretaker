@@ -70,7 +70,7 @@ echo "Writing ${XDG_CONFIG_HOME}/caretaker/caretaker.conf"
 mkdir -p ${XDG_CONFIG_HOME}/caretaker
 
 cat > ${XDG_CONFIG_HOME}/caretaker/caretaker.conf <<- flurbl
-	PKG_DIR="${PKG_DIR/${HOME}/\${HOME}/"
+	PKG_DIR="${PKG_DIR/${HOME}/\${HOME\}}"
 	PKG_ROOTS=(default)
 
 	function pkgroot_default {
