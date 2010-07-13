@@ -273,6 +273,7 @@ function vcs_pull (
 	} else {
 		vcs_branch_is_master ${1} && git pull $(list_get_uri ${1}) master
 	}
+	vcs_update_submodules
 )
 
 function vcs_push (
@@ -458,7 +459,6 @@ function global_hook {
 		;;
 		post-update)
 			triggers+=${1}
-			vcs_update_submodules ${1}
 			check_prereqs ${1}
 			if [[ -r Makefile ]] {
 				info "${1}: Running make\n"
