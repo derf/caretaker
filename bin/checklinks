@@ -182,17 +182,12 @@ GetOptions(
 	'r|remove' => \$remove,
 );
 
-if (-f '.links') {
-	$linkfile = '.links';
+if ($ct_auto) {
+	loop_links();
+	exit 0;
 }
 elsif (-f 'links') {
 	$linkfile = 'links';
-}
-else {
-	if ($ct_auto) {
-		loop_links();
-	}
-	exit(0);
 }
 
 open(my $links, '<', $linkfile) or die("Cannot open $linkfile: $!");
