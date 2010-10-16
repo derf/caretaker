@@ -268,8 +268,7 @@ provided by packages.
 
 B<caretaker> uses git(1) as backend for storing and syncing package information.
 It is not recommended to use branches other than "master".
-While they should work if GIT_USE_ORIGIN is set to 1 (the default), they will
-most likely confuse caretaker.
+In theory they should work, but will likely cause major confusion.
 
 =head1 AUTHOR
 

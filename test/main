@@ -62,26 +62,22 @@ echo "# ct add (no such repo)"
 echo "# ct add (already installed)"
 ! ct add caretaker
 
-for conf_origin in 0 1; {
-	echo "## GIT_USE_ORIGIN=$conf_origin"
-	echo "GIT_USE_ORIGIN=$conf_origin" >> $test_home/.config/caretaker/caretaker.conf
-	for repo in ra ra-bare; {
-		file=${repo%-*}
-		if [[ $repo == *-bare ]] {
-			echo "## bare repository"
-			complement=$file
-		} else {
-			echo "## non-bare repository"
-			complement=${repo}-bare
-		}
-		source $tests/add
-		source $tests/prereqs
-		cd $test_pdir/$repo
-		source $tests/push
-		cd $test_pdir
-		source $tests/pull-prepare
-		source $tests/remove
+for repo in ra ra-bare; {
+	file=${repo%-*}
+	if [[ $repo == *-bare ]] {
+		echo "## bare repository"
+		complement=$file
+	} else {
+		echo "## non-bare repository"
+		complement=${repo}-bare
 	}
+	source $tests/add
+	source $tests/prereqs
+	cd $test_pdir/$repo
+	source $tests/push
+	cd $test_pdir
+	source $tests/pull-prepare
+	source $tests/remove
 }
 
 rm -rf $test_pdir $test_proot $test_home

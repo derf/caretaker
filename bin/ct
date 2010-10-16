@@ -103,7 +103,6 @@ if (( ${#PKG_ROOTS} == 0 )) {
 : ${CL_OPTIONS:=--quiet}
 : ${SILENT=0}
 : ${AUTOUPDATE=1}
-: ${GIT_USE_ORIGIN=1}
 : ${HOOK_ON_PUSH=1}
 : ${COLOURS=1}
 : ${MAGIC_ETC=1}
@@ -241,22 +240,6 @@ function vcs_add (
 	pkgroot_clean
 )
 
-function vcs_branch_is_master (
-	vcs_setup ${1}
-	typeset IFS=$'\n' branch line
-
-	for line in $(git branch); {
-		[[ ${line} == \*\ * ]] && branch=${line#* }
-	}
-
-	if [[ ${branch} != master ]] {
-		warn "${1}: The currently checked out branch is not master, but '${branch}'\n" \
-		     "With GIT_USE_ORIGIN=0, caretaker can only operate on the branch master\n" \
-		     "Skipping repo, please fix manually\n"
-		return 1
-	}
-)
-
 function vcs_has_origin (
 	[[ -e ${PKG_DIR}/${1}/.git/refs/remotes/origin ]]
 )
@@ -272,28 +255,18 @@ function vcs_new (
 	git init
 	mkdir etc
 
-	if ((GIT_USE_ORIGIN)) {
-		git remote add origin ${PKG_PROTO}://${PKG_UAH}/${PKG_PATH}/${1}
-	}
+	git remote add origin ${PKG_PROTO}://${PKG_UAH}/${PKG_PATH}/${1}
 )
 
 function vcs_pull (
 	vcs_setup ${1}
-	if (( GIT_USE_ORIGIN )) {
-		git pull ${GIT_SILENT_ARG}
-	} else {
-		vcs_branch_is_master ${1} && git pull $(list_get_uri ${1}) master
-	}
+	git pull ${GIT_SILENT_ARG}
 	vcs_update_submodules
 )
 
 function vcs_push (
 	vcs_setup ${1}
-	if (( GIT_USE_ORIGIN )) {
-		git push
-	} else {
-		vcs_branch_is_master ${1} && git push $(list_get_uri ${1}) master
-	}
+	git push
 )
 
 function vcs_setup {
@@ -785,7 +758,6 @@ function pkg_debug {
 	echo "  PROGRESS      ${PROGRESS}"
 	echo "  AUTOUPDATE    ${AUTOUPDATE}"
 	echo "  MAGIC_ETC     ${MAGIC_ETC}"
-	echo "  GIT_USE_ORIGIN ${GIT_USE_ORIGIN}"
 }
 
 function pkg_help {
