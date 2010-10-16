@@ -47,7 +47,6 @@ function clear_line {
 	echo -ne "\r\e[2K"
 }
 
-# Read local configuration
 : ${XDG_CONFIG_HOME=${HOME}/.config}
 if [[ -r ${XDG_CONFIG_HOME}/caretaker/caretaker.conf ]] {
 	source ${XDG_CONFIG_HOME}/caretaker/caretaker.conf
@@ -55,7 +54,6 @@ if [[ -r ${XDG_CONFIG_HOME}/caretaker/caretaker.conf ]] {
 	source ${HOME}/.caretaker.conf
 }
 
-# Parse commandline options
 while [[ ${1} == --* ]] {
 	case ${1} in
 		--auto-update)     (( AUTOUPDATE   = 1 )) ;;
@@ -982,9 +980,6 @@ function pkg_version {
 
 cd ${PKG_DIR} || die "Cannot cd ${PKG_DIR}"
 
-# Note:
-# wrap foobar "${1}" <- the "" are neccessary here,
-# since ${1} is optional (and therefore may be empty)
 case ${action} in
 	debug)   pkg_debug ${*} ;;
 	e|eval)  eval      ${*} ;;
