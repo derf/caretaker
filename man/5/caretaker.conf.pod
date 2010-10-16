@@ -146,7 +146,7 @@ Colour for warning and error messages (default: red)
     function pkgroot_aneurysm {
         PKG_PROTO=ssh
         PKG_HOST=aneurysm
-        PKG_PATH=${HOME}/var/packages_root
+        PKG_PATH=/home/derf/var/packages_root
     }
 
     # This will not be used, but may be enabled by appending it to the
