@@ -411,11 +411,11 @@ function priority_name {
 
 function run_checklinks {
 	if [[ -e links ]] {
-		checklinks ${*} ${CL_OPTIONS} \
+		${self_path}/bin/checklinks ${*} ${CL_OPTIONS} \
 			--parameter package=${${PWD#${HOME}}#/##} \
 			--parameter etc=${${PWD#${HOME}}#/##}/etc
 	} elif [[ -d etc && ${MAGIC_ETC} == 1 ]] {
-		checklinks --ct-auto ${CL_OPTIONS} ${*}
+		${self_path}/bin/checklinks --ct-auto ${CL_OPTIONS} ${*}
 	}
 }
 
