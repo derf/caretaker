@@ -55,6 +55,12 @@ show remote packages which are not installed
 
 Show commit history for package
 
+=item B<new> I<package>
+
+Create new I<package> on the local and remote site.  If you have more than one
+package root, the first one is used.  Note that this only works for SSH
+package roots without forcecommand.
+
 =item B<pull> [ I<package> ]
 
 retrieve and install newest available version of I<package>.

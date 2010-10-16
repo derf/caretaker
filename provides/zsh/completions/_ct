@@ -7,7 +7,7 @@ typeset expl
 function _ct_action () {
 	_wanted action expl 'action' \
 	compadd add debug eval remove info list \
-	log pull push refresh status update
+	log new pull push refresh status update
 }
 
 function _ct_installed () {
@@ -32,7 +32,7 @@ function _ct_args {
 				_ct_installed
 			;;
 			i|info)
-				_ct_all 
+				_ct_all
 			;;
 			a|add)
 				_ct_notinstalled
@@ -50,6 +50,9 @@ function _ct_args {
 			u|update)
 				_wanted mode expl 'update target' \
 				compadd local remote
+			;;
+			n|new)
+				_message 'New package name'
 			;;
 			*)
 				_message 'no more arguments'

@@ -266,7 +266,15 @@ function vcs_pull (
 
 function vcs_push (
 	vcs_setup ${1}
-	git push
+
+	# Repos created with "ct new" don't have a remote tracking branch yet.
+	# Detect this and fix it.
+
+	if [[ $(git branch -r) == '' ]] {
+		git push origin master
+	} else {
+		git push
+	}
 )
 
 function vcs_setup {
@@ -853,8 +861,12 @@ function pkg_log {
 
 function pkg_new {
 
+	if [[ -z ${1} ]] {
+		die "Usage: ct new <packagename>\n"
+	}
+
 	if list_exists ${1}; then
-		die "We already have a package with this name: ${1}"
+		die "We already have a package with this name: ${1}\n"
 	fi
 
 	pkgroot_setup ${PKG_ROOTS[1]}
