@@ -108,6 +108,7 @@ forms:
      i    info
      l    log
      ls   list
+     n    new
      p    push
      r    refresh
      rm   remove
