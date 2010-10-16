@@ -272,7 +272,7 @@ In theory they should work, but will likely cause major confusion.
 
 =head1 AUTHOR
 
-Daniel Friesel E<lt>derf@derf.homelinux.orgE<gt>
+Daniel Friesel E<lt>derf@finalrewind.orgE<gt>
 
 =head1 SEE ALSO
 
