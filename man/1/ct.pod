@@ -95,6 +95,9 @@ Update local/remote package list (both if no argument is given)
 
 =back
 
+For all actions which expect a I<package> as argument, if the first argument
+is C<< . >>, the package related to the current working directory will be used.
+
 =head2 SHORT ACTIONS
 
 Instead of the I<action>s described above, you may also use their short
@@ -128,7 +131,7 @@ so please see caretaker.conf(5) for more information.
 
 =over
 
-=item F<~/.caretaker.conf>
+=item F<~/.config/caretaker/caretaker.conf> or F<~/.caretaker.conf>
 
 Contains configuration vars
 
