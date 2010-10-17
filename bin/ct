@@ -251,7 +251,6 @@ function vcs_new (
 	mkdir ${PKG_DIR}/${1}
 	cd ${PKG_DIR}/${1} || die "Cannot cd to new package ${1}"
 	git init
-	mkdir etc
 
 	git remote add origin ${PKG_PROTO}://${PKG_UAH}/${PKG_PATH}/${1}
 )
@@ -859,23 +858,52 @@ function pkg_log {
 
 function pkg_new {
 
-	if [[ -z ${1} ]] {
+	package=${1}
+	pd=${PKG_DIR}/${package}
+
+	if [[ -z ${package} ]] {
 		die "Usage: ct new <packagename>\n"
 	}
 
-	if list_exists ${1}; then
-		die "We already have a package with this name: ${1}\n"
+	shift
+
+	if list_exists ${package}; then
+		die "We already have a package with this name: ${package}\n"
 	fi
 
 	pkgroot_setup ${PKG_ROOTS[1]}
 
 	info "Creating local package...\n"
-	vcs_new ${1}
+	vcs_new ${package}
 
 	if [[ ${PKG_PROTO} == ssh ]] {
-		info "Creating remote packages...\n"
-		ssh ${PKG_UAH} "GIT_DIR=${PKG_PATH}/${1} git --bare init"
-		say "Note that you will have to push manually the first time\n"
+		info "Creating remote package...\n"
+		ssh ${PKG_UAH} "GIT_DIR=${PKG_PATH}/${package} git --bare init"
+	}
+
+	for file in ${*}; {
+
+		if [[ ${file} != /* ]] {
+			file=${HOME}/${file}
+		}
+
+		if [[ -x ${file} ]]; then
+
+			mkdir -p ${pd}/bin
+			mv -i ${file} ${pd}/bin && \
+			info "OK ${file} -> ${pd}/bin/${file:r}\n"
+
+		elif [[ ! -d ${file} && ${file} =~ ${HOME}/'[^/]+$' ]]; then
+
+			mkdir -p ${pd}/etc
+			mv -i ${file} ${pd}/etc/${file#${HOME}/.} && \
+			info "OK ${file} -> ${pd}/etc/${file#${HOME}/.}\n"
+
+		else
+
+			say "Cannot handle ${file}"
+
+		fi
 	}
 }
 
