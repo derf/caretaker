@@ -11,7 +11,7 @@ use Term::ANSIColor;
 my $base = $ENV{HOME};
 my $msglevel = 0;
 my $remove = 0;
-my %substitute;
+my (%substitute, %bc_subst);
 my $linkfile;
 my $exit = 0;
 my $ct_auto = 0;
@@ -182,6 +182,16 @@ GetOptions(
 	'r|remove' => \$remove,
 );
 
+foreach my $key (keys %substitute) {
+
+	my $path = $substitute{$key};
+
+	$path =~ s/ ^ $ENV{HOME}//x;
+
+	$bc_subst{$key} = $path;
+
+}
+
 if ($ct_auto) {
 	loop_links();
 	exit 0;
@@ -195,7 +205,13 @@ while (my $line = <$links>) {
 	chomp($line);
 
 	foreach my $key (keys(%substitute)) {
-		$line =~ s/\$$key/$substitute{$key}/g;
+
+		if ($line =~ / ^ \S+ \s+ \S+ \s+ \$ /x) {
+			$line =~ s/\$$key/$substitute{$key}/g;
+		}
+		else {
+			$line =~ s/\$$key/$bc_subst{$key}/g;
+		}
 	}
 
 	my ($type, $src, $dst) = split(/\s+/, $line);
