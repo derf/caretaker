@@ -417,8 +417,8 @@ function priority_name {
 function run_checklinks {
 	if [[ -e links ]] {
 		${self_path}/bin/checklinks ${*} ${CL_OPTIONS} \
-			--parameter package=${${PWD#${HOME}}#/##} \
-			--parameter etc=${${PWD#${HOME}}#/##}/etc
+			--parameter package=${PWD} \
+			--parameter etc=${PWD}/etc
 	} elif [[ -d etc && ${MAGIC_ETC} == 1 ]] {
 		${self_path}/bin/checklinks --ct-auto ${CL_OPTIONS} ${*}
 	}
@@ -889,17 +889,19 @@ function pkg_new {
 			file=${HOME}/${file}
 		}
 
-		if [[ -x ${file} ]]; then
+		if [[ -x ${file} && ! -d ${file} ]]; then
 
 			mkdir -p ${pd}/bin
 			mv -i ${file} ${pd}/bin && \
 			info "OK ${file} -> ${pd}/bin/${file:r}\n"
 
-		elif [[ ! -d ${file} && ${file} =~ ${HOME}/'[^/]+$' ]]; then
+		elif [[ ${file} == ${HOME}/.* ]]; then
 
 			mkdir -p ${pd}/etc
-			mv -i ${file} ${pd}/etc/${file#${HOME}/.} && \
-			info "OK ${file} -> ${pd}/etc/${file#${HOME}/.}\n"
+			mv -i ${file} ${pd}/etc/${file:t} && \
+			info "OK ${file} -> ${pd}/etc/${file:t}\n"
+
+			echo "soft ${file#${HOME}/} \$etc/${file:t}" >> ${pd}/links
 
 		else
 
