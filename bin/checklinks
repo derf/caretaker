@@ -186,7 +186,7 @@ foreach my $key (keys %substitute) {
 
 	my $path = $substitute{$key};
 
-	$path =~ s/ ^ $ENV{HOME}//x;
+	$path =~ s{ ^ $ENV{HOME} /}{}x;
 
 	$bc_subst{$key} = $path;
 
