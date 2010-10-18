@@ -55,11 +55,14 @@ show remote packages which are not installed
 
 Show commit history for package
 
-=item B<new> I<package>
+=item B<new> I<package> [ I<files> ]
 
-Create new I<package> on the local and remote site.  If you have more than one
-package root, the first one is used.  Note that this only works for SSH
-package roots without forcecommand.
+If I<package> does not exist locally: Create it on the local and remote site.
+If you have more than one package root, the first one is used.  Note that this
+only works for SSH package roots without forcecommand.
+
+If I<files> are given, add them to the either newly created or already
+installed package.  Be aware that this feature is experimental.
 
 =item B<pull> [ I<package> ]
 

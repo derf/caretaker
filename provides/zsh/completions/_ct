@@ -52,7 +52,8 @@ function _ct_args {
 				compadd local remote
 			;;
 			n|new)
-				_message 'New package name'
+				_message 'New or existing package name'
+				_ct_installed
 			;;
 			*)
 				_message 'no more arguments'
@@ -78,6 +79,8 @@ function _ct_args {
 		_ct_notinstalled
 	} elif [[ ${words[1]} == (rm|remove) ]] {
 		_ct_installed
+	} elif [[ ${words[1]} == (n|new) ]] {
+		_files -W ${HOME}
 	}
 }
 

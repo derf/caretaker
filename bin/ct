@@ -867,19 +867,21 @@ function pkg_new {
 
 	shift
 
-	if list_exists ${package}; then
+	if list_exists ${package} && [[ ${#} == 0 ]] ; then
 		die "We already have a package with this name: ${package}\n"
 	fi
 
 	pkgroot_setup ${PKG_ROOTS[1]}
 
-	info "Creating local package...\n"
-	vcs_new ${package}
+	if ! list_exists ${package}; then
+		info "Creating local package...\n"
+		vcs_new ${package}
 
-	if [[ ${PKG_PROTO} == ssh ]] {
-		info "Creating remote package...\n"
-		ssh ${PKG_UAH} "GIT_DIR=${PKG_PATH}/${package} git --bare init"
-	}
+		if [[ ${PKG_PROTO} == ssh ]] {
+			info "Creating remote package...\n"
+			ssh ${PKG_UAH} "GIT_DIR=${PKG_PATH}/${package} git --bare init"
+		}
+	fi
 
 	for file in ${*}; {
 
