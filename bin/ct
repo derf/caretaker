@@ -766,7 +766,7 @@ function pkg_debug {
 }
 
 function pkg_help {
-	echo "See 'man ${self:t}' or 'perldoc -F ${self_path}/man/1/ct'"
+	echo "See 'man ${self:t}' or 'perldoc -F ${self_path}/man/1/ct.pod'"
 }
 
 function pkg_info {
