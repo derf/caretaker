@@ -231,6 +231,7 @@ function vcs_add (
 		git clone $(list_get_uri ${1}) ${1}
 		vcs_setup ${1}
 		git config push.default matching
+		vcs_update_submodules ${1}
 	} else {
 		 die "${1}: Cannot handle repository format '$(list_get_type ${1})'\n"
 	}
@@ -258,7 +259,7 @@ function vcs_new (
 function vcs_pull (
 	vcs_setup ${1}
 	git pull ${GIT_SILENT_ARG}
-	vcs_update_submodules
+	vcs_update_submodules ${1}
 )
 
 function vcs_push (
@@ -297,8 +298,7 @@ function vcs_to_list (
 function vcs_update_submodules (
 	vcs_setup ${1}
 	if [[ -e .gitmodules ]] {
-		git submodule init
-		git submodule update
+		git submodule update --init
 	}
 )
 
