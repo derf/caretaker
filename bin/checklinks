@@ -25,11 +25,11 @@ sub mkdirs {
 	# the last element is the file
 	pop(@dirs);
 
-	foreach (@dirs) {
-		if (not -d "$path/$_") {
-			mkdir("$path/$_") or die("Can't create $path/$_: $!");
+	for my $dir (@dirs) {
+		if (not -d "$path/$dir") {
+			mkdir("$path/$dir") or die("Can't create $path/$dir: $!");
 		}
-		$path .= $_;
+		$path .= "/$dir";
 	}
 	return;
 }
