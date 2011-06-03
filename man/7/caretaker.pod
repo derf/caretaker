@@ -170,7 +170,7 @@ Note that the file will be sourced in function scope. It is recommended to
 introduce parameters and options local to the prereqs script with
 C<< typeset >> and C<< setopt localoptions >>, respectively.
 
-It's main use is to check for dependencies. To help with this, the following
+Its main use is to check for dependencies. To help with this, the following
 functions are available:
 
 =over
