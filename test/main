@@ -26,6 +26,8 @@ test directories:
 	HOME = $test_home
 meow
 
+cp ~/.gitconfig $test_home
+
 cd $test_home
 export HOME=$test_home
 source $tests/checklinks
