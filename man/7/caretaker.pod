@@ -252,6 +252,29 @@ Sourced before a package is removed
 
 =back
 
+The following helper functions can be used for data aggregation into files /
+directories.  It should be noted that only the first argument is mandatory,
+they work fine with constructs like C<< collect_into_file
+${PKG_DIR}/.collected/ssh/config ${PKG_DIR}/*/provides/ssh/config(N) >>.
+
+=over
+
+=item B<collect_into_directory> I<directory> [I<files ...>]
+
+For each I<file>, create an absolute symlink pointing to it in I<directory>.
+
+Note that I<directory> must be used exclusively by this function: every time
+it runs, the directory will be wiped clean of all symlinks to make sure there
+are no broken ones (which would otherwise occur when removing a related
+package).
+
+=item B<collect_into_file> I<outfile> [I<infiles ...>]
+
+Concatenate the content of I<infiles> into I<outfile>. If no I<infiles> are
+specified, produces an empty I<outfile>.
+
+=back
+
 =head1 COLLECTED PACKAGE FILES
 
 These files reside in F<$PKG_DIR/.collected> (subject to change).
