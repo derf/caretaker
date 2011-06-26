@@ -437,8 +437,8 @@ function collect_into_directory {
 	shift
 
 	info "collecting into ${directory}: ${*}\n"
-	rm -rf ${directory}
 	mkdir -p ${directory}
+	rm -f ${directory}/*(@)
 
 	if [[ -e ${1} ]] {
 		ln -s ${*} ${directory}
