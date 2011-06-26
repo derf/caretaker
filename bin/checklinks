@@ -268,9 +268,12 @@ Set the level threshold to show status messages.
 =item B<-p>, B<--parameter> I<parameter>=I<value>
 
 While reading the links file, replace $I<parameter> with I<value>.
+
 When used in conjuction with ct(1), $package will be set to the current
 package's relative path (as seen from $HOME, like C<packages/caretaker>),
-and $etc will be set to $package/etc (like C<packages/caretaker/etc>)
+$etc will be set to $package/etc (like C<packages/caretaker/etc>) and $pkgdir
+will point to the package root (like C<packages>). Also, for each of these
+parameters, C<a_param> (like $a_etc) is the corresponding absolute path.
 
 =item B<-q>, B<--quiet>
 

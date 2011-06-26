@@ -416,9 +416,15 @@ function priority_name {
 
 function run_checklinks {
 	if [[ -e links ]] {
+
 		${self_path}/bin/checklinks ${*} ${CL_OPTIONS} \
-			--parameter package=${PWD} \
-			--parameter etc=${PWD}/etc
+			--parameter   package=${PWD}              \
+			--parameter a_package=${HOME}/${PWD}      \
+			--parameter   etc=${PWD}/etc              \
+			--parameter a_etc=${HOME}/${PWD}/etc      \
+			--parameter   pkgdir=${PKG_DIR#${HOME}/}  \
+			--parameter a_pkgdir=${PKG_DIR}
+
 	} elif [[ -d etc && ${MAGIC_ETC} == 1 ]] {
 		${self_path}/bin/checklinks --ct-auto ${CL_OPTIONS} ${*}
 	}
