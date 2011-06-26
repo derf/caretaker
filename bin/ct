@@ -438,7 +438,7 @@ function collect_into_directory {
 
 	info "collecting into ${directory}: ${*}\n"
 	mkdir -p ${directory}
-	rm -f ${directory}/*(@)
+	rm -f ${directory}/*(@N)
 
 	if [[ -e ${1} ]] {
 		ln -s ${*} ${directory}
