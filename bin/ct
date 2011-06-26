@@ -430,6 +430,28 @@ function run_checklinks {
 	}
 }
 
+## Hook helper functions
+
+function collect_into_directory {
+	typeset directory=${1}
+	shift
+
+	info "collecting into $directory: $*\n"
+	rm -rf ${directory}
+	mkdir -p ${directory}
+
+	if [[ -e ${1} ]] {
+		ln -s ${*} ${directory}
+	}
+}
+
+function collect_into_file {
+	typeset out=${1}
+	shift
+
+	info "collecting into ${out}: ${*}\n"
+	cat /dev/null ${*} > ${out}
+}
 
 function exec_hook {
 	typeset package=${1}
