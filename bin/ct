@@ -436,7 +436,7 @@ function collect_into_directory {
 	typeset directory=${1}
 	shift
 
-	info "collecting into $directory: $*\n"
+	info "collecting into ${directory}: ${*}\n"
 	rm -rf ${directory}
 	mkdir -p ${directory}
 
@@ -478,7 +478,7 @@ function global_hook {
 			triggers+=${1}
 			check_prereqs ${1}
 			if [[ -r Makefile ]] {
-				info "${1}: Running make\n"
+				info "${1}: running make\n"
 				make
 			}
 			run_checklinks
@@ -611,7 +611,7 @@ function update_collected {
 		return
 	}
 
-	info "${1}: Processing documentation and binaries\n"
+	info "${1}: processing documentation and binaries\n"
 
 	for man in man/*/*(N); {
 		section=${man:h:t}
@@ -670,7 +670,7 @@ function genocide_collected {
 		return
 	}
 
-	info "${1}: Removing documentation and binaries\n"
+	info "${1}: removing documentation and binaries\n"
 
 	for man in man/*/*(N); {
 		section=${man:h:t}
@@ -760,7 +760,7 @@ function pkg_add {
 		die "Package '${1}' is already installed!\n"
 	}
 
-	info "${1}: Retrieving package\n"
+	info "${1}: retrieving package\n"
 	vcs_add ${1} || return 255
 	global_hook ${1} post-add
 }
@@ -944,7 +944,7 @@ function pkg_push {
 
 	if list_incoming ${1}; then
 		clear_line
-		info "Pushing ${1}\n"
+		info "${1}: pushing\n"
 
 		if (( HOOK_ON_PUSH == 1 )) {
 			global_hook ${1} pre-update
@@ -978,7 +978,7 @@ function pkg_remove {
 
 	global_hook ${1} pre-remove
 	rm -rf ${PKG_DIR}/${1}
-	info "${1}: Package removed\n"
+	info "${1} removed\n"
 }
 
 function pkg_status {
@@ -1025,7 +1025,7 @@ function pkg_upgrade {
 
 	if list_incoming ${1}; then
 		clear_line
-		info "Updating ${1} to $(list_get_version_remote ${1})\n"
+		info "${1}: updating to $(list_get_version_remote ${1})\n"
 		global_hook ${1} pre-update
 		vcs_pull ${1}
 		global_hook ${1} post-update
