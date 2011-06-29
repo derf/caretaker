@@ -126,7 +126,7 @@ if (( SILENT )) {
 	# The goal is not to override anything set by the user...
 	# So, an alias should be safer than fiddling with ${MAKEFLAGS}
 	alias make='make -s'
-	function info say clear_line {}
+	function info say clear_line split_long {}
 	PROGRESS=0
 }
 
@@ -220,6 +220,37 @@ function progress {
 
 	clear_line
 	echo -ne ${output}
+}
+
+function split_long {
+	while read line; do
+		typeset -i line_length=0
+		typeset -i first=1
+		typeset buffer=
+		for word in ${(s: :)line}; do
+			word_length=${#word}
+
+			if (( line_length + word_length > 80 )); then
+				if [[ -n ${buffer} ]]; then
+					echo ${buffer}
+					buffer=
+					line_length=0
+					broke_line=1
+				fi
+			fi
+
+			(( line_length += word_length + 1 ))
+
+			if (( first )); then
+				buffer=${word}
+				first=0
+			else
+				buffer+=" ${word}"
+			fi
+
+		done
+		echo ${buffer}
+	done
 }
 
 ## VCS Wrappers
@@ -436,7 +467,7 @@ function collect_into_directory {
 	typeset directory=${1}
 	shift
 
-	info "collecting into ${directory}: ${*}\n"
+	info "collecting into ${directory}: ${*}\n" | split_long
 	mkdir -p ${directory}
 	rm -f ${directory}/*(@N)
 
@@ -449,7 +480,7 @@ function collect_into_file {
 	typeset out=${1}
 	shift
 
-	info "collecting into ${out}: ${*}\n"
+	info "collecting into ${out}: ${*}\n" | split_long
 	cat /dev/null ${*} > ${out}
 }
 
@@ -576,14 +607,16 @@ function check_prereqs {
 	}
 
 	if [[ -n ${force_install} ]] {
-		info "${1} forces installation of additional packages: ${(j:, :)force_install}\n"
+		info "${1} forces installation of additional packages: ${(j:,:)force_install}\n" \
+		| split_long
 		for package in ${force_install}; {
 			pkg_add ${package}
 		}
 	}
 
 	if [[ -n ${install} ]] {
-		info "${1} requires the following packages: ${(j:, :)install}\n"
+		info "${1} requires the following packages: ${(j:, :)install}\n" \
+		| split_long
 		if confirm_yes "Install them?"; then
 			for package in ${install}; {
 				pkg_add ${package}
@@ -592,7 +625,8 @@ function check_prereqs {
 	}
 
 	if [[ -n ${maybe_install} ]] {
-		info "${1} recommends the following packages: ${(j:, :)maybe_install}\n"
+		info "${1} recommends the following packages: ${(j:,:)maybe_install}\n" \
+		| split_long
 		if confirm_no "Install them?"; then
 			for package in ${maybe_install}; {
 				pkg_add ${package}
