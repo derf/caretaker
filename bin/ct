@@ -450,11 +450,11 @@ function run_checklinks {
 
 		${self_path}/bin/checklinks ${*} ${CL_OPTIONS} \
 			--parameter   package=${PWD}              \
-			--parameter a_package=${HOME}/${PWD}      \
+			--parameter r_package=${PWD#${HOME}}      \
 			--parameter   etc=${PWD}/etc              \
-			--parameter a_etc=${HOME}/${PWD}/etc      \
-			--parameter   pkgdir=${PKG_DIR#${HOME}/}  \
-			--parameter a_pkgdir=${PKG_DIR}
+			--parameter r_etc=${PWD#${HOME}}/etc      \
+			--parameter   pkgdir=${PKG_DIR}           \
+			--parameter r_pkgdir=${PKG_DIR#${HOME}/}
 
 	} elif [[ -d etc && ${MAGIC_ETC} == 1 ]] {
 		${self_path}/bin/checklinks --ct-auto ${CL_OPTIONS} ${*}

@@ -270,10 +270,11 @@ Set the level threshold to show status messages.
 While reading the links file, replace $I<parameter> with I<value>.
 
 When used in conjuction with ct(1), $package will be set to the current
-package's relative path (as seen from $HOME, like C<packages/caretaker>),
-$etc will be set to $package/etc (like C<packages/caretaker/etc>) and $pkgdir
-will point to the package root (like C<packages>). Also, for each of these
-parameters, C<a_param> (like $a_etc) is the corresponding absolute path.
+package's absolute path,
+$etc will be set to $package/etc (e.g. C<~/packages/caretaker/etc>) and $pkgdir
+will point to the package root (e.g. C<~/packages>). Also, for each of these
+parameters, C<r_param> (e.g. $r_etc) is the corresponding relative path as
+seen from $HOME.
 
 =item B<-q>, B<--quiet>
 
