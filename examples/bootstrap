@@ -23,6 +23,12 @@ if [[ ${#} -ge 4 ]] {
 	PKG_HOST=${3}
 	PKG_PATH=${4}
 	PKG_DIR=${~${5-${default_path}}}
+    PKGLIST_PATH=""
+    if [[ $PKG_PROTO == "gitolite" ]]; then
+        pkglist_type="$PKG_PROTO"
+        PKG_PROTO="ssh"
+        PKGLIST_PATH="\${PKG_DIR}/caretaker/examples/pkglist-${pkglist_type}"
+    fi
 } else {
 	cat <<- meow
 		Usage: ./bootstrap PKG_PROTO PKG_USER PKG_HOST PKG_PATH [PKG_DIR]
@@ -78,8 +84,14 @@ cat > ${XDG_CONFIG_HOME}/caretaker/caretaker.conf <<- flurbl
 		PKG_USER='${PKG_USER}'
 		PKG_HOST='${PKG_HOST}'
 		PKG_PATH='${PKG_PATH}'
-	}
 flurbl
+if [[ $PKGLIST_PATH != "" ]]; then
+cat >> ${XDG_CONFIG_HOME}/caretaker/caretaker.conf <<- flurbl
+PKGLIST_LOCAL=1
+PKGLIST_PATH="${PKGLIST_PATH}"
+flurbl
+fi
+echo '}' >>${XDG_CONFIG_HOME}/caretaker/caretaker.conf
 
 echo 'Installing caretaker package'
 rehash
