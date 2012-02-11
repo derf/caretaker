@@ -4,6 +4,6 @@
 #   This file is licensed under the GPL v2.
 #   (c) Michael Gebetsroither <michael@mgeb.org>
 
-ssh $PKG_USER@${PKG_HOST} list_config_repos |while read reponame_ type_ hash_; do
+ssh $PKG_USER@${PKG_HOST} pkglist-gitolite-adc |while read reponame_ type_ hash_; do
     echo $reponame_ $type_ $hash_ "$PKG_USER@${PKG_HOST}:${PKG_PATH}/${reponame_}.git"
 done
