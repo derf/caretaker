@@ -1,0 +1,23 @@
+#!/bin/bash
+#   Added to gitolite as an Admin Defined Command (adc)
+#   used by ct update remote through pkglist-gitolite
+#
+#   This file is licensed under the GPL v2.
+#   (c) Michael Gebetsroither <michael@mgeb.org>
+
+CONFIG_PREFIX_="config/"
+
+if [[ $GL_REPO_BASE_ABS == "" ]]; then
+    exit 1
+fi
+cd "${GL_REPO_BASE_ABS}" || exit 1
+
+find "$CONFIG_PREFIX_" -maxdepth 1 -type d -iname '*.git' |while read i; do
+    hash_="`cat $i/refs/heads/master 2>/dev/null`"
+    if [[ $hash_ == "" ]]; then
+        continue
+    fi
+    reponame_="${i#$CONFIG_PREFIX_}"
+    reponame_="${reponame_%.git}"
+    echo "${reponame_} git $hash_"
+done
