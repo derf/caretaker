@@ -534,6 +534,7 @@ function check_prereqs {
 	typeset -a -U force_install install maybe_install
 	typeset warn info
 	typeset package=${1}
+	typeset pwd_orig=${PWD}
 
 	[[ -r ${PKG_DIR}/${package}/prereqs ]] || return 0
 	cd ${PKG_DIR}/${package}
@@ -633,6 +634,8 @@ function check_prereqs {
 			}
 		fi
 	}
+
+	cd ${pwd_orig}
 }
 
 # Write a package's documentation to .collected
