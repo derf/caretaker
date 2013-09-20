@@ -8,6 +8,8 @@ use Cwd;
 use Getopt::Long;
 use Term::ANSIColor;
 
+no if $] >= 5.018, warnings => "experimental::smartmatch"; 
+
 my $base = $ENV{HOME};
 my $msglevel = 0;
 my $remove = 0;
