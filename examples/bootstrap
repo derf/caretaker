@@ -42,7 +42,7 @@ if [[ ${#} -ge 4 ]] {
 
 		Examples: ./bootstrap ssh '' aneurysm /home/derf/var/packages_root
 		          ./bootstrap file '' '' /home/derf/var/packages_root
-		          ./bootstrap ssh derf derf.homelinux.org /home/derf/var/packages_root
+		          ./bootstrap ssh derf flux.derf0.net /home/derf/var/packages_root
 		          etc.
 	meow
 	exit 100
