@@ -63,7 +63,7 @@ function _ct_args {
 		_message 'shell code for evaluation'
 		if (( CURRENT == 3 )) {
 			case ${words[2]} in
-				exec_hook|check_prereqs|*_collected|)
+				exec_hook|check_prereqs|*_collected|'')
 					_ct_installed
 				;;
 			esac

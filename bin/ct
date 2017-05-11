@@ -138,6 +138,105 @@ if [[ ! -d ${PKG_DIR} ]] {
 	die "Error: Package directory '${PKG_DIR}' does not exist\n"
 }
 
+## List stuff
+
+function list_exists {
+	grep -q "^${1} " ${PKG_DIR}/.list-remote
+}
+
+function list_get_uri {
+	echo -n - ${$(grep "^${1} " ${PKG_DIR}/.list-remote)[4]}
+}
+
+function list_get_type {
+	echo -n - ${$(grep "^${1} " ${PKG_DIR}/.list-remote)[2]}
+}
+
+function list_get_type_local {
+	echo -n - ${$(grep "^${1} " ${PKG_DIR}/.list)[2]}
+}
+
+function list_get_version_local {
+	echo -n ${$(grep "^${1} " ${PKG_DIR}/.list)[3]}
+}
+
+function list_get_version_remote {
+	echo -n ${$(grep "^${1} " ${PKG_DIR}/.list-remote)[3]}
+}
+
+function list_incoming {
+	typeset local=$(list_get_version_local ${1})
+	typeset remote=$(list_get_version_remote ${1})
+	[[ -n ${local} && -n ${remote} && ${local} != ${remote} ]]
+}
+
+function list_is_installed {
+	grep -q "^${1} " ${PKG_DIR}/.list
+}
+
+function list_package_update {
+	typeset list
+	list=$(grep -v "^${1} " ${PKG_DIR}/.list)
+	echo - ${list} > ${PKG_DIR}/.list
+	vcs_to_list ${1} >> ${PKG_DIR}/.list
+}
+
+function list_package_remove {
+	typeset list
+	list=$(grep -v "^${1} " ${PKG_DIR}/.list)
+	echo - ${list} > ${PKG_DIR}/.list
+}
+
+function list_packages_local {
+	print -l ${PKG_DIR}/*(:t)
+}
+
+function list_packages_remote {
+	cut -d ' ' -f 1 ${PKG_DIR}/.list-remote
+}
+
+function list_update_local {
+	typeset -i all=${#$(echo ${PKG_DIR}/*(/))}
+	typeset -i current=0
+	typeset package
+
+	rm -f ${PKG_DIR}/.list
+
+	for package in *(-/); {
+		(( current++ ))
+		progress ${current} ${all} 'Updating package list' ${package}
+		vcs_to_list ${package} >> ${PKG_DIR}/.list
+	}
+	clear_line
+}
+
+function list_update_remote {
+	typeset tmpfile=$(mktemp -t pkglist.XXXXXX) PKG_ROOT
+
+	for PKG_ROOT in ${PKG_ROOTS}; {
+		pkgroot_setup ${PKG_ROOT}
+
+		if [[ ${PKGLIST_LOCAL} == 1 || ${PKG_PROTO} == 'file' ]] {
+			${PKGLIST_PATH} >> ${tmpfile}
+		} elif [[ ${PKG_PROTO} == 'ssh' ]] {
+			ssh ${PKG_UAH} \
+				"PKG_PATH=\"${PKG_PATH}\" PKG_UAH=\"${PKG_UAH}\"" \
+				"PKG_PROTO=\"${PKG_PROTO}\"" \
+				"${PKGLIST_PATH}" >> ${tmpfile}
+		}
+
+		pkgroot_clean
+	}
+
+	if [[ -n $(cat ${tmpfile}) ]] {
+		cp ${tmpfile} .list-remote
+		rm ${tmpfile}
+	} else {
+		rm ${tmpfile}
+		die "remote list update failed\n"
+	}
+}
+
 function pkgroot_setup {
 	PKGLIST_LOCAL=0
 
@@ -255,7 +354,8 @@ function split_long {
 
 ## VCS Wrappers
 
-function vcs_add (
+function vcs_add {
+	(
 	cd ${PKG_DIR}
 
 	if [[ $(list_get_type ${1}) == git ]] {
@@ -268,32 +368,42 @@ function vcs_add (
 	}
 
 	pkgroot_clean
-)
+	)
+}
 
-function vcs_has_origin (
+function vcs_has_origin {
+	(
 	[[ -e ${PKG_DIR}/${1}/.git/refs/remotes/origin ]]
 )
+}
 
-function vcs_log (
+function vcs_log {
+	(
 	vcs_setup ${1}
 	git log
 )
+}
 
-function vcs_new (
+function vcs_new {
+	(
 	mkdir ${PKG_DIR}/${1}
 	cd ${PKG_DIR}/${1} || die "Cannot cd to new package ${1}"
 	git init
 
 	git remote add origin ${PKG_PROTO}://${PKG_UAH}/${PKG_PATH}/${1}
 )
+}
 
-function vcs_pull (
+function vcs_pull {
+	(
 	vcs_setup ${1}
 	git pull ${GIT_SILENT_ARG}
 	vcs_update_submodules ${1}
 )
+}
 
-function vcs_push (
+function vcs_push {
+	(
 	vcs_setup ${1}
 
 	# Repos created with "ct new" don't have a remote tracking branch yet.
@@ -305,18 +415,22 @@ function vcs_push (
 		git push
 	}
 )
+}
 
 function vcs_setup {
 	cd ${PKG_DIR}/${1} || die "vcs_setup: Cannot cd ${PKG_DIR}/${1}"
 }
 
-function vcs_status (
+function vcs_status {
+	(
 	typeset gitstatus
 	vcs_setup ${1}
 	git status --short
 )
+}
 
-function vcs_to_list (
+function vcs_to_list {
+	(
 	vcs_setup ${1}
 	if [[ -d ${PKG_DIR}/${1}/.git ]] {
 		echo -n - "${1} git "
@@ -325,111 +439,15 @@ function vcs_to_list (
 		warn "No git repository found: '${1}'\n"
 	}
 )
+}
 
-function vcs_update_submodules (
+function vcs_update_submodules {
+	(
 	vcs_setup ${1}
 	if [[ -e .gitmodules ]] {
 		git submodule update --init
 	}
 )
-
-## List stuff
-
-function list_exists {
-	grep -q "^${1} " ${PKG_DIR}/.list-remote
-}
-
-function list_get_uri {
-	echo - ${$(grep "^${1} " ${PKG_DIR}/.list-remote)[4]}
-}
-
-function list_get_type {
-	echo - ${$(grep "^${1} " ${PKG_DIR}/.list-remote)[2]}
-}
-
-function list_get_type_local {
-	echo - ${$(grep "^${1} " ${PKG_DIR}/.list)[2]}
-}
-
-function list_get_version_local {
-	echo ${$(grep "^${1} " ${PKG_DIR}/.list)[3]}
-}
-
-function list_get_version_remote {
-	echo ${$(grep "^${1} " ${PKG_DIR}/.list-remote)[3]}
-}
-
-function list_incoming {
-	typeset local=$(list_get_version_local ${1})
-	typeset remote=$(list_get_version_remote ${1})
-	[[ -n ${local} && -n ${remote} && ${local} != ${remote} ]]
-}
-
-function list_is_installed {
-	grep -q "^${1} " ${PKG_DIR}/.list
-}
-
-function list_package_update {
-	typeset list
-	list=$(grep -v "^${1} " ${PKG_DIR}/.list)
-	echo - ${list} > ${PKG_DIR}/.list
-	vcs_to_list ${1} >> ${PKG_DIR}/.list
-}
-
-function list_package_remove {
-	typeset list
-	list=$(grep -v "^${1} " ${PKG_DIR}/.list)
-	echo - ${list} > ${PKG_DIR}/.list
-}
-
-function list_packages_local {
-	print -l ${PKG_DIR}/*(:t)
-}
-
-function list_packages_remote {
-	cut -d ' ' -f 1 ${PKG_DIR}/.list-remote
-}
-
-function list_update_local {
-	typeset -i all=${#$(echo ${PKG_DIR}/*(/))}
-	typeset -i current=0
-	typeset package
-
-	rm -f ${PKG_DIR}/.list
-
-	for package in *(-/); {
-		(( current++ ))
-		progress ${current} ${all} 'Updating package list' ${package}
-		vcs_to_list ${package} >> ${PKG_DIR}/.list
-	}
-	clear_line
-}
-
-function list_update_remote {
-	typeset tmpfile=$(mktemp -t pkglist.XXXXXX) PKG_ROOT
-
-	for PKG_ROOT in ${PKG_ROOTS}; {
-		pkgroot_setup ${PKG_ROOT}
-
-		if [[ ${PKGLIST_LOCAL} == 1 || ${PKG_PROTO} == 'file' ]] {
-			${PKGLIST_PATH} >> ${tmpfile}
-		} elif [[ ${PKG_PROTO} == 'ssh' ]] {
-			ssh ${PKG_UAH} \
-				"PKG_PATH=\"${PKG_PATH}\" PKG_UAH=\"${PKG_UAH}\"" \
-				"PKG_PROTO=\"${PKG_PROTO}\"" \
-				"${PKGLIST_PATH}" >> ${tmpfile}
-		}
-
-		pkgroot_clean
-	}
-
-	if [[ -n $(cat ${tmpfile}) ]] {
-		cp ${tmpfile} .list-remote
-		rm ${tmpfile}
-	} else {
-		rm ${tmpfile}
-		die "remote list update failed\n"
-	}
 }
 
 
