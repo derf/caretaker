@@ -108,7 +108,7 @@ a manual will be generated out of it (see L</"COLLECTED PACKAGE FILES">)
 
 Configuration files.  Unless your package contains a links file, all files in
 this directory (or, if it contains dotfiles, only the dotfiles) will
-automatically symlinked as dotfiles from your home using checklinks(1).
+automatically be symlinked as dotfiles from your home using checklinks(1).
 So, for example F<etc/vimrc> will be installed as F<~/.vimrc>.
 
 If you do not want this behaviour, create an empty links file.
