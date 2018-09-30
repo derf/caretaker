@@ -106,7 +106,7 @@ if (( ${#PKG_ROOTS} == 0 )) {
 : ${MAGIC_ETC=1}
 : ${PROGRESS=1}
 export PKG_DIR
-export PKG_PROTO PKG_USER PKG_HOST PKG_UAH PKG_PATH
+export PKG_PROTO PKG_USER PKG_HOST PKG_PORT PKG_UAH PKG_PATH
 
 if (( SILENT )) {
 	GIT_SILENT_ARG=--quiet
@@ -219,10 +219,17 @@ function list_update_remote {
 		if [[ ${PKGLIST_LOCAL} == 1 || ${PKG_PROTO} == 'file' ]] {
 			${PKGLIST_PATH} >> ${tmpfile}
 		} elif [[ ${PKG_PROTO} == 'ssh' ]] {
-			ssh ${PKG_UAH} \
-				"PKG_PATH=\"${PKG_PATH}\" PKG_UAH=\"${PKG_UAH}\"" \
-				"PKG_PROTO=\"${PKG_PROTO}\"" \
-				"${PKGLIST_PATH}" >> ${tmpfile}
+			if [[ -n ${PKG_PORT} ]] {
+				ssh -p ${PKG_PORT} ${PKG_UAH} \
+					"PKG_PATH=\"${PKG_PATH}\" PKG_UAH=\"${PKG_UAH}\"" \
+					"PKG_PORT=\"${PKG_PORT}\" PKG_PROTO=\"${PKG_PROTO}\"" \
+					"${PKGLIST_PATH}" >> ${tmpfile}
+			} else {
+				ssh ${PKG_UAH} \
+					"PKG_PATH=\"${PKG_PATH}\" PKG_UAH=\"${PKG_UAH}\"" \
+					"PKG_PROTO=\"${PKG_PROTO}\"" \
+					"${PKGLIST_PATH}" >> ${tmpfile}
+			}
 		}
 
 		pkgroot_clean
@@ -258,7 +265,7 @@ function pkgroot_setup {
 }
 
 function pkgroot_clean {
-	unset PKG_PROTO PKG_HOST PKG_PATH PKG_USER PKG_UAH PKGLIST_PATH
+	unset PKG_PROTO PKG_HOST PKG_PORT PKG_PATH PKG_USER PKG_UAH PKGLIST_PATH
 }
 
 function check_installed {
@@ -386,12 +393,16 @@ function vcs_log {
 
 function vcs_new {
 	(
-	mkdir ${PKG_DIR}/${1}
-	cd ${PKG_DIR}/${1} || die "Cannot cd to new package ${1}"
-	git init
+		mkdir ${PKG_DIR}/${1}
+		cd ${PKG_DIR}/${1} || die "Cannot cd to new package ${1}"
+		git init
 
-	git remote add origin ${PKG_PROTO}://${PKG_UAH}/${PKG_PATH}/${1}
-)
+		if [[ -n ${PKG_PORT} ]] {
+			git remote add origin ${PKG_PROTO}://${PKG_UAH}:${PKG_PORT}/${PKG_PATH}/${1}
+		} else {
+			git remote add origin ${PKG_PROTO}://${PKG_UAH}/${PKG_PATH}/${1}
+		}
+	)
 }
 
 function vcs_pull {
@@ -833,6 +844,7 @@ function pkg_debug {
 		echo "    PKG_PROTO   ${PKG_PROTO}"
 		echo "    PKG_USER    ${PKG_USER}"
 		echo "    PKG_HOST    ${PKG_HOST}"
+		echo "    PKG_PORT    ${PKG_PORT}"
 		echo "    PKG_UAH     ${PKG_UAH}"
 		echo "    PKGLIST_PATH  ${PKGLIST_PATH}"
 		echo "    PKGLIST_LOCAL ${PKGLIST_LOCAL}"
@@ -962,7 +974,11 @@ function pkg_new {
 
 		if [[ ${PKG_PROTO} == ssh ]] {
 			info "Creating remote package...\n"
-			ssh ${PKG_UAH} "GIT_DIR=${PKG_PATH}/${package} git --bare init"
+			if [[ -n ${PKG_PORT} ]] {
+				ssh -p ${PKG_PORT} ${PKG_UAH} "GIT_DIR=${PKG_PATH}/${package} git --bare init"
+			} else {
+				ssh ${PKG_UAH} "GIT_DIR=${PKG_PATH}/${package} git --bare init"
+			}
 		}
 	fi
 

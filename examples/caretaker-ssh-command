@@ -10,15 +10,18 @@
 
 # Change this to reflect your settings
 PKG_PROTO='ssh'
-PKG_UAH='derf@aneurysm'
+PKG_UAH='derf@pkgroot.finalrewind.org'
 PKG_PATH='/home/derf/var/packages_root'
+PKG_PORT='2222'
 
 # Change this to the location of your pkglist script (if non-default)
 PKG_LIST=${PKG_PATH}/pkglist
 
 args=(${(z)SSH_ORIGINAL_COMMAND})
 
-
+# Note: This check accepts connections on ports 22 (standard, PKG_PORT unset)
+# and 2222 (non-standard, PKG_PORT set). You can remove the second block if you
+# only use port 22.
 if [[ \
 	( \
 		${args[1]} == "PKG_PATH=\"${PKG_PATH}\"" && \
@@ -26,6 +29,13 @@ if [[ \
 		${args[3]} == "PKG_PROTO=\"${PKG_PROTO}\"" && \
 		${args[4]} == ${PKG_LIST} && \
 		${#args}   == 4 \
+	) || ( \
+		${args[1]} == "PKG_PATH=\"${PKG_PATH}\"" && \
+		${args[2]} == "PKG_UAH=\"${PKG_UAH}\"" && \
+		${args[3]} == "PKG_PORT=\"${PKG_PORT}\"" && \
+		${args[4]} == "PKG_PROTO=\"${PKG_PROTO}\"" && \
+		${args[5]} == ${PKG_LIST} && \
+		${#args}   == 5 \
 	) || ( \
 		${args[1]} == 'git-'(upload|receive)'-pack' && \
 		${args[2]} != *'../'* && \

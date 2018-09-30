@@ -17,13 +17,14 @@ if ! which git &> /dev/null; then
 	exit 200
 fi
 
-if [[ ${#} -ge 4 ]] {
+if [[ ${#} -ge 5 ]] {
 	PKG_PROTO=${1}
 	PKG_USER=${2}
 	PKG_HOST=${3}
-	PKG_PATH=${4}
-	PKG_DIR=${~${5-${default_path}}}
-    PKGLIST_PATH=""
+	PKG_PORT=${4}
+	PKG_PATH=${5}
+	PKG_DIR=${~${6-${default_path}}}
+	PKGLIST_PATH=""
     if [[ $PKG_PROTO == "gitolite" ]]; then
         pkglist_type="$PKG_PROTO"
         PKG_PROTO="ssh"
@@ -31,18 +32,19 @@ if [[ ${#} -ge 4 ]] {
     fi
 } else {
 	cat <<- meow
-		Usage: ./bootstrap PKG_PROTO PKG_USER PKG_HOST PKG_PATH [PKG_DIR]
+		Usage: ./bootstrap PKG_PROTO PKG_USER PKG_HOST PKG_PORT PKG_PATH [PKG_DIR]
 		PKG_PROTO : the protocol type, e.g. ssh, file or git.
 		PKG_USER : user on the package root host. May be left out if it
 		         is identical to the local user name.
 		PKG_HOST : remote host to connect to
+		PKG_PORT : remote port to connect to
 		PKG_PATH : package root path on the remote host
 		PKG_DIR : the path where caretaker and all further packages will be installed,
 		        by default ${default_path}
 
-		Examples: ./bootstrap ssh '' aneurysm /home/derf/var/packages_root
-		          ./bootstrap file '' '' /home/derf/var/packages_root
-		          ./bootstrap ssh derf flux.derf0.net /home/derf/var/packages_root
+		Examples: ./bootstrap ssh '' arclight 22 /home/derf/var/packages_root
+		          ./bootstrap file '' '' '' /home/derf/var/packages_root
+		          ./bootstrap ssh derf flux.derf0.net 22 /home/derf/var/packages_root
 		          etc.
 	meow
 	exit 100
@@ -52,6 +54,9 @@ if [[ -n ${PKG_USER} ]] {
 	PKG_UAH="${PKG_USER}@${PKG_HOST}"
 } else {
 	PKG_UAH=${PKG_HOST}
+}
+if [[ ${PKG_PORT} != 22 ]] {
+	PKG_UAH="${PKG_UAH}:${PKG_PORT}"
 }
 
 # zsh keeps complaining about not having a configuration,
@@ -75,6 +80,10 @@ cd caretaker
 echo "Writing ${XDG_CONFIG_HOME}/caretaker/caretaker.conf"
 mkdir -p ${XDG_CONFIG_HOME}/caretaker
 
+PKG_PORT_STRING=''
+if [[ ${PKG_PORT} != 22 ]] {
+	PKG_PORT_STRING="\nPKG_PORT='${PKG_PORT}'"
+}
 cat > ${XDG_CONFIG_HOME}/caretaker/caretaker.conf <<- flurbl
 	PKG_DIR="${PKG_DIR/${HOME}/\${HOME\}}"
 	PKG_ROOTS=(default)
@@ -82,7 +91,7 @@ cat > ${XDG_CONFIG_HOME}/caretaker/caretaker.conf <<- flurbl
 	function pkgroot_default {
 		PKG_PROTO='${PKG_PROTO}'
 		PKG_USER='${PKG_USER}'
-		PKG_HOST='${PKG_HOST}'
+		PKG_HOST='${PKG_HOST}'${(g::)PKG_PORT_STRING}
 		PKG_PATH='${PKG_PATH}'
 flurbl
 if [[ $PKGLIST_PATH != "" ]]; then
