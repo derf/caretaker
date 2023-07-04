@@ -142,7 +142,7 @@ Contains configuration vars
 
 =head1 AUTHOR
 
-Daniel Friesel E<lt>derf@chaosdorf.deE<gt>
+Birte Kristina Friesel E<lt>derf@chaosdorf.deE<gt>
 
 =head1 CREDITS
 
