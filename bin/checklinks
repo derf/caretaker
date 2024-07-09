@@ -43,7 +43,9 @@ sub dir_content {
 
 	opendir(my $dh, $dir) or die("Cannot opendir $dir: $!");
 	while (my $entry = readdir($dh)) {
-		next if ($entry ~~ ['.', '..', '.git', '.hg', '.links', 'links']);
+		if ($entry =~ m{ [.] | [.][.] | [.]git | [.]hg | [.]?links }x) {
+			next;
+		}
 
 		push(@return, $entry);
 
@@ -218,7 +220,7 @@ while (my $line = <$links>) {
 
 	my ($type, $src, $dst) = split(/\s+/, $line);
 
-	next if (not($type ~~ ['soft', 'hard', 'auto']));
+	next if ($type !~ m{ soft | hard | auto }x);
 
 	if ($type eq 'auto') {
 		loop_links();
