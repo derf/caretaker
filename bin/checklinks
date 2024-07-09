@@ -8,27 +8,24 @@ use Cwd;
 use Getopt::Long;
 use Term::ANSIColor;
 
-no if $] >= 5.018, warnings => "experimental::smartmatch"; 
-
-my $base = $ENV{HOME};
+my $base     = $ENV{HOME};
 my $msglevel = 0;
-my $remove = 0;
-my (%substitute, %bc_subst);
+my $remove   = 0;
+my ( %substitute, %bc_subst );
 my $linkfile;
-my $exit = 0;
+my $exit    = 0;
 my $ct_auto = 0;
-
 
 sub mkdirs {
 	my $source = shift;
-	my $path = $base;
-	my @dirs = split(/\//, $source);
+	my $path   = $base;
+	my @dirs   = split( /\//, $source );
 
 	# the last element is the file
 	pop(@dirs);
 
 	for my $dir (@dirs) {
-		if (not -d "$path/$dir") {
+		if ( not -d "$path/$dir" ) {
 			mkdir("$path/$dir") or die("Can't create $path/$dir: $!");
 		}
 		$path .= "/$dir";
@@ -39,25 +36,25 @@ sub mkdirs {
 sub dir_content {
 	my ($dir) = @_;
 	my @return;
-	my ($normal_file, $dot_file);
+	my ( $normal_file, $dot_file );
 
-	opendir(my $dh, $dir) or die("Cannot opendir $dir: $!");
-	while (my $entry = readdir($dh)) {
-		if ($entry =~ m{ [.] | [.][.] | [.]git | [.]hg | [.]?links }x) {
+	opendir( my $dh, $dir ) or die("Cannot opendir $dir: $!");
+	while ( my $entry = readdir($dh) ) {
+		if ( $entry =~ m{ [.] | [.][.] | [.]git | [.]hg | [.]?links }x ) {
 			next;
 		}
 
-		push(@return, $entry);
+		push( @return, $entry );
 
-		if (not $dot_file and $entry =~ /^\./) {
+		if ( not $dot_file and $entry =~ /^\./ ) {
 			$dot_file = 1;
 		}
-		elsif (not $normal_file) {
-			$normal_file = 1
+		elsif ( not $normal_file ) {
+			$normal_file = 1;
 		}
 	}
 
-	if ($normal_file and $dot_file) {
+	if ( $normal_file and $dot_file ) {
 		@return = grep { /^\./ } @return;
 	}
 
@@ -65,33 +62,33 @@ sub dir_content {
 }
 
 sub print_format {
-	my ($message, $src, $dst, $color, $level) = @_;
+	my ( $message, $src, $dst, $color, $level ) = @_;
 
-	if ($level > 1) {
+	if ( $level > 1 ) {
 		$exit++;
 	}
 
-	return if ($level < $msglevel);
+	return if ( $level < $msglevel );
 
-	if (defined($color)) {
-		printf(colored('%-9s', $color), $message);
+	if ( defined($color) ) {
+		printf( colored( '%-9s', $color ), $message );
 	}
 	else {
-		printf('%-9s', $message);
+		printf( '%-9s', $message );
 	}
 
-	printf(" %-15s -> %-15s\n", $src, $dst);
+	printf( " %-15s -> %-15s\n", $src, $dst );
 	return;
 }
 
 sub remove_link {
-	my ($type, $src, $dst) = @_;
+	my ( $type, $src, $dst ) = @_;
 
-	if (($type eq 'soft' and -l "$base/$src")
-	 or ($type eq 'hard' and -e "$base/$src" and -e "$base/$dst"))
+	if (   ( $type eq 'soft' and -l "$base/$src" )
+		or ( $type eq 'hard' and -e "$base/$src" and -e "$base/$dst" ) )
 	{
 		unlink("$base/$src") or warn("cannot unlink $base/$src: $!");
-		print_format('removed', $src, '', 'red', 1);
+		print_format( 'removed', $src, '', 'red', 1 );
 	}
 	return;
 }
@@ -102,23 +99,23 @@ sub check_symlink {
 
 	mkdirs($src);
 
-	if (not -l "$base/$src" and not -e "$base/$src") {
-		symlink($dst, "$base/$src");
-		print_format('created', $src, $dst, 'cyan', 1);
+	if ( not -l "$base/$src" and not -e "$base/$src" ) {
+		symlink( $dst, "$base/$src" );
+		print_format( 'created', $src, $dst, 'cyan', 1 );
 	}
-	elsif (-l "$base/$src" and readlink("$base/$src") eq $dst) {
-		print_format('ok', $src, $dst, 'green', 0);
+	elsif ( -l "$base/$src" and readlink("$base/$src") eq $dst ) {
+		print_format( 'ok', $src, $dst, 'green', 0 );
 	}
-	elsif (-l "$base/$src" and readlink("$base/$src") eq "$base/$dst") {
-		print_format('absolute', $src, $dst, 'yellow', 0);
+	elsif ( -l "$base/$src" and readlink("$base/$src") eq "$base/$dst" ) {
+		print_format( 'absolute', $src, $dst, 'yellow', 0 );
 	}
-	elsif (not -l "$base/$src" and -e "$base/$src") {
-		print_format('exists', $src, $dst, 'bold red', 2);
+	elsif ( not -l "$base/$src" and -e "$base/$src" ) {
+		print_format( 'exists', $src, $dst, 'bold red', 2 );
 	}
-	elsif (-l "$base/$src") {
+	elsif ( -l "$base/$src" ) {
 		unlink("$base/$src");
-		symlink($dst, "$base/$src");
-		print_format('fixed', $src, $dst, 'cyan', 1);
+		symlink( $dst, "$base/$src" );
+		print_format( 'fixed', $src, $dst, 'cyan', 1 );
 	}
 	return;
 }
@@ -129,20 +126,20 @@ sub check_hardlink {
 
 	mkdirs($src);
 
-	if (not -e "$base/$dst") {
-		print_format('no dest', $src, $dst, 'red bold', 2);
+	if ( not -e "$base/$dst" ) {
+		print_format( 'no dest', $src, $dst, 'red bold', 2 );
 	}
-	elsif (not -f "$base/$src") {
-		link("$base/$dst", "$base/$src") or warn($!);
-		print_format('created', $src, $dst, 'cyan', 1);
+	elsif ( not -f "$base/$src" ) {
+		link( "$base/$dst", "$base/$src" ) or warn($!);
+		print_format( 'created', $src, $dst, 'cyan', 1 );
 	}
-	elsif ((stat("$base/$src"))[1] != (stat("$base/$dst"))[1]) {
+	elsif ( ( stat("$base/$src") )[1] != ( stat("$base/$dst") )[1] ) {
 		unlink("$base/$src");
-		link("$base/$dst", "$base/$src") or warn($!);
-		print_format('updated', $src, $dst, 'cyan', 1);
+		link( "$base/$dst", "$base/$src" ) or warn($!);
+		print_format( 'updated', $src, $dst, 'cyan', 1 );
 	}
-	elsif ((stat("$base/$src"))[1] == (stat("$base/$dst"))[1]) {
-		print_format('ok', $src, $dst, 'green', 0);
+	elsif ( ( stat("$base/$src") )[1] == ( stat("$base/$dst") )[1] ) {
+		print_format( 'ok', $src, $dst, 'green', 0 );
 	}
 	return;
 }
@@ -151,42 +148,41 @@ sub loop_links {
 	my $dir;
 	my $cwd = cwd();
 
-	if (-d 'etc') {
+	if ( -d 'etc' ) {
 		$dir = 'etc';
 	}
-	elsif (!$ct_auto) {
+	elsif ( !$ct_auto ) {
 		$dir = '.';
 	}
 	else {
 		return;
 	}
 
-	foreach my $entry (dir_content($dir)) {
+	foreach my $entry ( dir_content($dir) ) {
 		my $source = $entry;
-		if ($source !~ /^\./) {
+		if ( $source !~ /^\./ ) {
 			$source = ".$source";
 		}
 
 		if ($remove) {
-			remove_link('soft', $source);
+			remove_link( 'soft', $source );
 		}
 		else {
-			check_symlink($source, "$cwd/$dir/$entry");
+			check_symlink( $source, "$cwd/$dir/$entry" );
 		}
 	}
 	return;
 }
 
-
 GetOptions(
-	'ct-auto' => \$ct_auto,
-	'm|msglevel=i' => \$msglevel,
+	'ct-auto'       => \$ct_auto,
+	'm|msglevel=i'  => \$msglevel,
 	'p|parameter=s' => \%substitute,
-	'q|quiet'  => sub {$msglevel = 1},
-	'r|remove' => \$remove,
+	'q|quiet'       => sub { $msglevel = 1 },
+	'r|remove'      => \$remove,
 );
 
-foreach my $key (keys %substitute) {
+foreach my $key ( keys %substitute ) {
 
 	my $path = $substitute{$key};
 
@@ -200,17 +196,17 @@ if ($ct_auto) {
 	loop_links();
 	exit 0;
 }
-elsif (-f 'links') {
+elsif ( -f 'links' ) {
 	$linkfile = 'links';
 }
 
-open(my $links, '<', $linkfile) or die("Cannot open $linkfile: $!");
-while (my $line = <$links>) {
+open( my $links, '<', $linkfile ) or die("Cannot open $linkfile: $!");
+while ( my $line = <$links> ) {
 	chomp($line);
 
-	foreach my $key (keys(%substitute)) {
+	foreach my $key ( keys(%substitute) ) {
 
-		if ($line =~ / ^ \S+ \s+ \S+ \s+ \$ /x) {
+		if ( $line =~ / ^ \S+ \s+ \S+ \s+ \$ /x ) {
 			$line =~ s/\$$key/$substitute{$key}/g;
 		}
 		else {
@@ -218,27 +214,26 @@ while (my $line = <$links>) {
 		}
 	}
 
-	my ($type, $src, $dst) = split(/\s+/, $line);
+	my ( $type, $src, $dst ) = split( /\s+/, $line );
 
-	next if ($type !~ m{ soft | hard | auto }x);
+	next if ( $type !~ m{ soft | hard | auto }x );
 
-	if ($type eq 'auto') {
+	if ( $type eq 'auto' ) {
 		loop_links();
 	}
 	else {
 		if ($remove) {
-			remove_link($type, $src, $dst);
+			remove_link( $type, $src, $dst );
 		}
-		elsif ($type eq 'soft') {
-			check_symlink($src, $dst);
+		elsif ( $type eq 'soft' ) {
+			check_symlink( $src, $dst );
 		}
-		elsif ($type eq 'hard') {
-			check_hardlink($src, $dst);
+		elsif ( $type eq 'hard' ) {
+			check_hardlink( $src, $dst );
 		}
 	}
 }
 close($links) or die("Cannot close $linkfile: $!");
-
 
 exit($exit);
 
