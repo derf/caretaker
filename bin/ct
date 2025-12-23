@@ -548,6 +548,12 @@ function global_hook {
 		;;
 		pre-remove)
 			exec_hook ${1} pre-remove
+			if [[ -r Makefile ]] {
+				if make -n uninstall &>/dev/null; then
+					info "${1}: running make uninstall\n"
+					make uninstall
+				fi
+			}
 			genocide_collected ${1}
 			run_checklinks --remove
 			list_package_remove ${1}
