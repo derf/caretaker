@@ -421,7 +421,7 @@ function vcs_push {
 	# Detect this and fix it.
 
 	if [[ $(git branch -r) == '' ]] {
-		git push origin master
+		git push origin main
 	} else {
 		git push
 	}
@@ -445,7 +445,11 @@ function vcs_to_list {
 	vcs_setup ${1}
 	if [[ -d ${PKG_DIR}/${1}/.git ]] {
 		echo -n - "${1} git "
-		echo ${$(git log -n 1 master)[2]}
+		if [[ -e ${PKG_DIR}/${1}/.git/refs/heads/main ]]; then
+			echo ${$(git log -n 1 main)[2]}
+		else
+			echo ${$(git log -n 1 master)[2]}
+		fi
 	} else {
 		warn "No git repository found: '${1}'\n"
 	}
